@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "507051981406",
+    "project_id": "waves-338418",
+    "storage_bucket": "waves-338418.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:507051981406:android:f97f7f38ea2ce395a1d2cf",
+        "android_client_info": {
+          "package_name": "com.waves"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "507051981406-ojpbo7bf351pkoqdns6ur37omkgstfab.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.waves",
+            "certificate_hash": "dbeef7c5e866fafb598edec297760e36343de7b2"
+          }
+        },
+        {
+          "client_id": "507051981406-ild960veti406kf1j2aru3rb1m7vtt4j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKGO9f3YwmuNYXzN6OHJ9XsNoExsNn954"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "507051981406-ild960veti406kf1j2aru3rb1m7vtt4j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
