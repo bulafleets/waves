@@ -204,9 +204,13 @@ class _AddFriendsNearByState extends State<AddFriendsNearBy> {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     var userId = _prefs.get('user_id');
 
-    final response = await http.post(Uri.parse(send_friend_request),
-        body: {'sender_id': userId.toString(), 'reciever_id': receiverID},
-        headers: {HttpHeaders.authorizationHeader: "Bearer $authorization"});
+    final response = await http.post(Uri.parse(send_friend_request), body: {
+      'sender_id': userId.toString(),
+      'reciever_id': receiverID,
+      'user_id': userId,
+    }, headers: {
+      HttpHeaders.authorizationHeader: "Bearer $authorization"
+    });
     print(send_friend_request + userId.toString() + receiverID);
 
     String data = response.body;

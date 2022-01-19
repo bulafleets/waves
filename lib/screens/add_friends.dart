@@ -239,9 +239,13 @@ class _AddFriendsState extends State<AddFriends> {
   }
 
   Future<GetAllUsersModel> findNearbyFriendsApi() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    var userID = _prefs.get('user_id');
     var apiData;
     // try {
-    final response = await http.get(Uri.parse(Get_all_users)
+    final response = await http.post(Uri.parse(Get_all_users), body: {
+      'user_id': userID,
+    }
         // headers: {HttpHeaders.authorizationHeader: "Bearer $authorization"},
         // body: {'latitude': latitude, 'longitude': longitude});
         );
