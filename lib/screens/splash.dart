@@ -48,7 +48,7 @@ class SplashScreenState extends State<SplashScreen>
     //       .pushReplacement(MaterialPageRoute(builder: (context) => UserType()));
     // }
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => AddFriends()));
+        .push(MaterialPageRoute(builder: (context) => UserType()));
   }
   // Navigator.of(context).pushReplacementNamed(SELECT_ACCOUNT);
 
