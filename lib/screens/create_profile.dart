@@ -228,8 +228,10 @@ class _CreateProfileState extends State<CreateProfile> {
                         borderSide: const BorderSide(color: Colors.white),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      labelText: "Your Name",
-                      labelStyle: TextStyle(
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                      hintText: "Your Name",
+                      hintStyle: TextStyle(
                           color: const Color(0xFFb6b3c6).withOpacity(0.8),
                           fontFamily: 'RobotoRegular'),
                       border: const OutlineInputBorder(),
@@ -261,8 +263,10 @@ class _CreateProfileState extends State<CreateProfile> {
                         borderSide: const BorderSide(color: Colors.white),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      labelText: "Enter your mobile number",
-                      labelStyle: TextStyle(
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                      hintText: "Enter your mobile number",
+                      hintStyle: TextStyle(
                           color: const Color(0xFFb6b3c6).withOpacity(0.8),
                           fontFamily: 'RobotoRegular'),
                       border: const OutlineInputBorder(),
@@ -305,8 +309,10 @@ class _CreateProfileState extends State<CreateProfile> {
                         borderSide: const BorderSide(color: Colors.white),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      labelText: "choose DOB",
-                      labelStyle: TextStyle(
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                      hintText: "choose DOB",
+                      hintStyle: TextStyle(
                           color: const Color(0xFFb6b3c6).withOpacity(0.8),
                           fontFamily: 'RobotoRegular'),
                       border: const OutlineInputBorder(),
@@ -316,6 +322,8 @@ class _CreateProfileState extends State<CreateProfile> {
                   TextFormField(
                     enabled: false,
                     validator: (val) {
+                      // print('ss');
+                      // print(differenceDOB < 17);
                       if (val!.isEmpty) return 'Please Enter Your DOB';
 
                       return null;
@@ -335,8 +343,10 @@ class _CreateProfileState extends State<CreateProfile> {
                         borderSide: const BorderSide(color: Colors.white),
                         borderRadius: BorderRadius.circular(8),
                       ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 20),
                       hintText: "Age Range",
-                      labelStyle: TextStyle(
+                      hintStyle: TextStyle(
                           color: const Color(0xFFb6b3c6).withOpacity(0.8),
                           fontFamily: 'RobotoRegular'),
                       border: const OutlineInputBorder(),
@@ -344,7 +354,8 @@ class _CreateProfileState extends State<CreateProfile> {
                   ),
                   const SizedBox(height: 15),
                   TextFormField(
-                    onTap: () {
+                    onTap: () async {
+                      await _determinePosition();
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => MapSample(_addrss)));
                     },
@@ -362,7 +373,8 @@ class _CreateProfileState extends State<CreateProfile> {
                     cursorColor: Colors.grey,
                     decoration: InputDecoration(
                       suffixIcon: GestureDetector(
-                          onTap: () {
+                          onTap: () async {
+                            await _determinePosition();
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => MapSample(_addrss)));
                           },
@@ -381,8 +393,10 @@ class _CreateProfileState extends State<CreateProfile> {
                         borderSide: const BorderSide(color: Colors.white),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      labelText: "Pick your address from map",
-                      labelStyle: TextStyle(
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 20),
+                      hintText: "Pick your address from map",
+                      hintStyle: TextStyle(
                           color: const Color(0xFFb6b3c6).withOpacity(0.8),
                           fontFamily: 'RobotoRegular'),
                       border: const OutlineInputBorder(),
@@ -415,6 +429,8 @@ class _CreateProfileState extends State<CreateProfile> {
                         borderSide: const BorderSide(color: Colors.white),
                         borderRadius: BorderRadius.circular(8),
                       ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 20),
                       hintText: 'Bio',
                       hintStyle: TextStyle(
                           color: const Color(0xFFb6b3c6).withOpacity(1),
@@ -454,29 +470,36 @@ class _CreateProfileState extends State<CreateProfile> {
 
           // Navigator.of(context).push(
           //     MaterialPageRoute(builder: (context) => const AddFriends()));
-          if (_load) {
+          if (!_load) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Upload Profile picture'),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.red,
+            ));
+          } else if (isDateSelected && differenceDOB < 17) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('You are under age'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ));
+          } else {
             if (_formkey.currentState!.validate()) {
               EasyLoading.show(status: 'Please Wait ...');
               RegisterUser();
             }
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('Upload Profile picture'),
-                behavior: SnackBarBehavior.floating
-                // backgroundColor: Colors.green,
-                ));
-
-            // showDialog(
-            //   context: context,
-            //   builder: (_) ,
-            // );
-            //  EasyLoading.show(status: 'Please Wait ...');
-            //sendRESENT();
-            //CircularProgressIndicator();
-            //  EasyLoading.show(status: 'Please Wait ...');
-
-            //print("Routing to your account");
           }
+
+          // showDialog(
+          //   context: context,
+          //   builder: (_) ,
+          // );
+          //  EasyLoading.show(status: 'Please Wait ...');
+          //sendRESENT();
+          //CircularProgressIndicator();
+          //  EasyLoading.show(status: 'Please Wait ...');
+
+          //print("Routing to your account");
+          // }
         },
         child: const Text(
           "Continue",
@@ -517,8 +540,10 @@ class _CreateProfileState extends State<CreateProfile> {
 
   _imgFromCamera() async {
     final pickedFile = await ImagePicker().getImage(
-      source: ImageSource.camera,
-    );
+        source: ImageSource.camera,
+        //  maxWidth: 2300,
+        // maxHeight: 1500,
+        imageQuality: 50);
     setState(() {
       imageFile = pickedFile!;
       _load = true;
@@ -578,7 +603,7 @@ class _CreateProfileState extends State<CreateProfile> {
         _prefs.setString('token', authorization);
         _prefs.setString('age', ageController.text);
         _prefs.setString('faceId', isBiometric);
-        name = '';
+        // name = ;
         user_id = '';
         email = '';
         Navigator.of(context).pushAndRemoveUntil(

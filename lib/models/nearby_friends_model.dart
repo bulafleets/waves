@@ -45,6 +45,7 @@ class NearbyUser {
     required this.dob,
     required this.longitude,
     required this.address,
+    required this.isFriend,
   });
 
   String id;
@@ -57,15 +58,16 @@ class NearbyUser {
   String roles;
   String username;
   String biography;
-  String age;
+  int age;
   double latitude;
   String dob;
   double longitude;
   String address;
+  bool isFriend;
 
   factory NearbyUser.fromJson(Map<String, dynamic> json) => NearbyUser(
         id: json["_id"],
-        avatar: json["avatar"] ?? null,
+        avatar: json["avatar"] ?? 'null',
         userStatus: json["user_status"],
         firebaseToken: json["firebase_token"],
         lastLoginTime: json["last_login_time"],
@@ -79,6 +81,7 @@ class NearbyUser {
         dob: json["dob"],
         longitude: json["longitude"].toDouble(),
         address: json["address"],
+        isFriend: json["isFriend"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -97,5 +100,7 @@ class NearbyUser {
         "dob": dob,
         "longitude": longitude,
         "address": address,
+        // "mobile_number": mobileNumber,
+        "isFriend": isFriend,
       };
 }

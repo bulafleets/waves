@@ -9,6 +9,7 @@ import 'package:waves/contants/common_params.dart';
 import 'package:waves/screens/about_us.dart';
 import 'package:waves/screens/change_password.dart';
 import 'package:http/http.dart' as http;
+import 'package:waves/screens/create_profile.dart';
 
 class OtpPage extends StatefulWidget {
   final String emailid;
@@ -215,8 +216,8 @@ class _OtpPageState extends State<OtpPage> {
           onPressed: () {
             if (_formkey.currentState!.validate()) {
               if (isSignUp == 'true') {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => AboutUs()));
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => CreateProfile()));
               } else {
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => ChangePassword()));

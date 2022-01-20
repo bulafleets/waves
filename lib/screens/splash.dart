@@ -5,6 +5,7 @@ import 'package:waves/contants/common_params.dart';
 import 'package:waves/screens/add_friends.dart';
 import 'package:waves/screens/create_profile.dart';
 import 'package:waves/screens/homePage.dart';
+import 'package:waves/screens/see_contact.dart';
 import 'package:waves/screens/user_type.dart';
 import 'package:waves/widget/login.dart';
 
@@ -48,7 +49,7 @@ class SplashScreenState extends State<SplashScreen>
     //       .pushReplacement(MaterialPageRoute(builder: (context) => UserType()));
     // }
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => UserType()));
+        .pushReplacement(MaterialPageRoute(builder: (context) => UserType()));
   }
   // Navigator.of(context).pushReplacementNamed(SELECT_ACCOUNT);
 
@@ -88,18 +89,12 @@ class SplashScreenState extends State<SplashScreen>
             width: MediaQuery.of(context).size.width,
             fit: BoxFit.cover,
           ),
-          // Container(
-          //   decoration: BoxDecoration(
-          //       color: Color.fromRGBO(42, 124, 202, 1),
-          //       gradient: LinearGradient(
-          //         begin: Alignment.topRight,
-          //         end: Alignment.bottomLeft,
-          //         colors: [
-          //           Color.fromRGBO(42, 124, 202, 1),
-          //           Color.fromRGBO(0, 68, 255, 1),
-          //         ],
-          //       )),
-          // ),
+          Container(
+            margin: const EdgeInsets.only(bottom: 20),
+            child: Center(
+              child: Image.asset('assets/splash_logo.png'),
+            ),
+          )
         ],
       ),
     );

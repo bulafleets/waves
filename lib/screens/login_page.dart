@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             // SizedBox(height: MediaQuery.of(context).size.height / 3),
             Container(
-                height: MediaQuery.of(context).size.height / 3,
+                height: 220,
                 padding: const EdgeInsets.all(8),
                 alignment: Alignment.bottomCenter,
                 child: Image.asset(
@@ -62,7 +62,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       Container(
                           height: 500, //height of TabBarView
-                          padding: const EdgeInsets.all(30),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 30),
                           child: const TabBarView(
                               physics: NeverScrollableScrollPhysics(),
                               children: <Widget>[LoginScreen(), SignUpPage()]))

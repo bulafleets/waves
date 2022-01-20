@@ -54,27 +54,85 @@ class _AddFriendsNearByState extends State<AddFriendsNearBy> {
                     itemCount: snapshot.data!.nearbyUsers.length,
                     itemBuilder: (context, index) {
                       var data = snapshot.data!.nearbyUsers[index];
+                      // int age = data.age;
+                      int age = data.age;
                       // if (index == snapshot.data!.nearbyUsers.length - 1) {
                       //   return const SizedBox(height: 90);
                       // }
                       return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            radius: 30.0,
-                            backgroundImage: data.avatar != 'null'
-                                ? NetworkImage(data.avatar)
-                                : null,
-                          ),
-                          title: Text(data.username,
-                              style: GoogleFonts.quicksand(
-                                  color: Colors.black,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w400)),
-                          subtitle: const Text('0.1 mile away'),
-                          trailing: add(data.id),
-                        ),
-                      );
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 11.0, horizontal: 15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                      // margin: const EdgeInsets.only(right: 5),
+                                      padding: const EdgeInsets.all(3),
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: age > 17 && age < 30
+                                              ? const Color.fromRGBO(
+                                                  0, 0, 255, 1)
+                                              : age > 29 && age < 50
+                                                  ? const Color.fromRGBO(
+                                                      255, 255, 0, 1)
+                                                  : const Color.fromRGBO(
+                                                      0, 255, 128, 1)),
+                                      child: CircleAvatar(
+                                        radius: 25,
+                                        backgroundImage: data.avatar != null
+                                            ? NetworkImage(data.avatar)
+                                            : null,
+                                      )),
+                                  SizedBox(width: 15),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(data.username,
+                                          style: GoogleFonts.quicksand(
+                                              color: Colors.black,
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w400)),
+                                      SizedBox(height: 5),
+                                      const Text('0.1 mile away'),
+                                    ],
+                                  )
+                                ],
+                              ),
+                              add(data.id, data.isFriend),
+                            ],
+                          ));
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: ListTile(
+                      //     leading: Container(
+                      //         padding: const EdgeInsets.all(3),
+                      //         decoration: BoxDecoration(
+                      //             shape: BoxShape.circle,
+                      //             color: age > 17 && age < 30
+                      //                 ? const Color.fromRGBO(0, 0, 255, 1)
+                      //                 : age > 29 && age < 50
+                      //                     ? const Color.fromRGBO(255, 255, 0, 1)
+                      //                     : const Color.fromRGBO(
+                      //                         0, 255, 128, 1)),
+                      //         child: CircleAvatar(
+                      //           radius: 50,
+                      //           backgroundImage: data.avatar != 'null'
+                      //               ? NetworkImage(data.avatar)
+                      //               : null,
+                      //         )),
+                      // title: Text(data.username,
+                      //     style: GoogleFonts.quicksand(
+                      //         color: Colors.black,
+                      //         fontSize: 17,
+                      //         fontWeight: FontWeight.w400)),
+                      // subtitle: const Text('0.1 mile away'),
+                      //     trailing: add(data.id, data.isFriend),
+                      //   ),
+                      // );
                     },
                   ),
                 );
@@ -96,54 +154,67 @@ class _AddFriendsNearByState extends State<AddFriendsNearBy> {
     );
   }
 
-  Widget add(String recID) {
-    return SizedBox(
-      // margin: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 50.0),
-      height: 40,
-      child: isReqData.contains(recID)
-          ? const Text(
-              'Request Sent',
-              style: TextStyle(
-                  color: Colors.black, fontSize: 15, fontFamily: 'RobotoBold'),
-            )
-          : ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                onPrimary: Colors.white,
-                primary: const Color.fromRGBO(0, 69, 255, 1),
-                minimumSize: const Size(88, 36),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(30)),
-                ),
-              ),
-              onPressed: () {
-                EasyLoading.show(status: 'Please Wait ...');
-                isReqData.add(recID);
-                sendFriendRequest(recID);
-                // Navigator.of(context)
-                //     .push(MaterialPageRoute(builder: (context) => OtpPage()));
-                // if (_formkey.currentState.validate()) {
-                // showDialog(
-                //   context: context,
-                //   builder: (_) ,
-                // );
-                //  EasyLoading.show(status: 'Please Wait ...');
-                //sendRESENT();
-                //CircularProgressIndicator();
-                //  EasyLoading.show(status: 'Please Wait ...');
-
-                //print("Routing to your account");
-                // }
-              },
-              child: const Text(
-                "Add",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontFamily: 'RobotoBold'),
-              ),
+  Widget add(String recID, bool isFriend) {
+    if (isReqData.contains(recID) || isFriend) {
+      return SizedBox(
+          width: 126,
+          // margin: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 50.0),
+          height: 40,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: const [
+              Text('Request Sent',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontFamily: 'RobotoBold')),
+              Icon(
+                Icons.check_circle,
+                color: Colors.black,
+              )
+            ],
+          ));
+    } else {
+      return SizedBox(
+        // margin: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 50.0),
+        height: 40,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            onPrimary: Colors.white,
+            primary: const Color.fromRGBO(0, 69, 255, 1),
+            minimumSize: const Size(88, 36),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(30)),
             ),
-    );
+          ),
+          onPressed: () {
+            EasyLoading.show(status: 'Please Wait ...');
+            isReqData.add(recID);
+            sendFriendRequest(recID);
+            // Navigator.of(context)
+            //     .push(MaterialPageRoute(builder: (context) => OtpPage()));
+            // if (_formkey.currentState.validate()) {
+            // showDialog(
+            //   context: context,
+            //   builder: (_) ,
+            // );
+            //  EasyLoading.show(status: 'Please Wait ...');
+            //sendRESENT();
+            //CircularProgressIndicator();
+            //  EasyLoading.show(status: 'Please Wait ...');
+
+            //print("Routing to your account");
+            // }
+          },
+          child: const Text(
+            "Add",
+            style: TextStyle(
+                color: Colors.white, fontSize: 18, fontFamily: 'RobotoBold'),
+          ),
+        ),
+      );
+    }
   }
 
   Future<NearbyFriendsModel> findNearbyFriendsApi() async {

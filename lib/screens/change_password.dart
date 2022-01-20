@@ -85,8 +85,10 @@ class _ChangePasswordState extends State<ChangePassword> {
                     ),
                     prefixIcon:
                         const Icon(Icons.lock, color: Colors.grey, size: 20),
-                    labelText: "New Password",
-                    labelStyle: TextStyle(
+                    hintText: "New Password",
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                    hintStyle: TextStyle(
                         color: const Color(0xFFb6b3c6).withOpacity(0.8),
                         fontFamily: 'RobotoRegular'),
                     border: const OutlineInputBorder(),
@@ -142,8 +144,10 @@ class _ChangePasswordState extends State<ChangePassword> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   prefixIcon: Icon(Icons.lock, color: Colors.grey, size: 20),
-                  labelText: "Confirm New Password",
-                  labelStyle:
+                  hintText: "Confirm New Password",
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  hintStyle:
                       TextStyle(color: Color(0xFFb6b3c6).withOpacity(0.8)),
                   border: OutlineInputBorder(),
                 ),

@@ -60,97 +60,107 @@ class _UserTypeState extends State<UserType> {
                         style: GoogleFonts.quicksand(
                             fontSize: 14, color: Colors.white))),
                 const SizedBox(height: 100),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(1),
-                      decoration: BoxDecoration(boxShadow: [
-                        BoxShadow(color: Colors.white, spreadRadius: 1),
-                      ], borderRadius: BorderRadius.circular(16)),
-                      width: 166,
-                      height: 145,
-                      child: RaisedButton(
-                          color: isregularclicked
-                              ? Colors.white
-                              : Theme.of(context).primaryColor,
-                          onPressed: () => {
-                                setState(() {
-                                  AccountType = "REGULAR";
-                                  isselect = true;
-                                  isregularclicked = true;
-                                  isbussinesstclicked = false;
-                                })
-                              },
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 2.0, bottom: 15),
-                                child: FaIcon(FontAwesomeIcons.userAlt,
-                                    size: 57,
-                                    color: !isregularclicked
-                                        ? Colors.white
-                                        : Color.fromRGBO(12, 41, 93, 1)),
-                              ),
-                              Text('Regular Customers',
-                                  style: GoogleFonts.muli(
-                                      fontSize: 13,
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(
+                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        // padding: const EdgeInsets.all(1),
+                        decoration: BoxDecoration(boxShadow: [
+                          BoxShadow(color: Colors.white, spreadRadius: 1),
+                        ], borderRadius: BorderRadius.circular(16)),
+                        width: MediaQuery.of(context).size.width / 2 - 30,
+                        height: 145,
+                        child: RaisedButton(
+                            color: isregularclicked
+                                ? Colors.white
+                                : Theme.of(context).primaryColor,
+                            onPressed: () => {
+                                  setState(() {
+                                    AccountType = "REGULAR";
+                                    isselect = true;
+                                    isregularclicked = true;
+                                    isbussinesstclicked = false;
+                                  })
+                                },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 2.0, bottom: 15),
+                                  child: FaIcon(FontAwesomeIcons.userAlt,
+                                      size: 57,
                                       color: !isregularclicked
                                           ? Colors.white
-                                          : const Color.fromRGBO(
-                                              12, 41, 93, 1)))
-                            ],
-                          ),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15.0))),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(1),
-                      decoration: BoxDecoration(boxShadow: [
-                        BoxShadow(color: Colors.white, spreadRadius: 1),
-                      ], borderRadius: BorderRadius.circular(16)),
-                      width: 166,
-                      height: 145,
-                      child: RaisedButton(
-                          color: isbussinesstclicked
-                              ? Colors.white
-                              : Theme.of(context).primaryColor,
-                          onPressed: () => {
-                                setState(() {
-                                  AccountType = "BUSINESS";
-                                  isselect = true;
-                                  isregularclicked = false;
-                                  isbussinesstclicked = true;
-                                })
-                              },
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 2.0, bottom: 15),
-                                child: FaIcon(FontAwesomeIcons.userTie,
-                                    size: 60,
-                                    color: !isbussinesstclicked
-                                        ? Colors.white
-                                        : const Color.fromRGBO(12, 41, 93, 1)),
-                              ),
-                              Text('Bussiness Customers',
-                                  style: GoogleFonts.muli(
-                                      fontSize: 13,
+                                          : Color.fromRGBO(12, 41, 93, 1)),
+                                ),
+                                Text('Regular Customers',
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.muli(
+                                        fontSize: 13,
+                                        color: !isregularclicked
+                                            ? Colors.white
+                                            : const Color.fromRGBO(
+                                                12, 41, 93, 1)))
+                              ],
+                            ),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0))),
+                      ),
+                      SizedBox(width: 20),
+                      Container(
+                        // padding: const EdgeInsets.all(1),
+                        decoration: BoxDecoration(boxShadow: [
+                          BoxShadow(color: Colors.white, spreadRadius: 1),
+                        ], borderRadius: BorderRadius.circular(16)),
+                        width: MediaQuery.of(context).size.width / 2 - 30,
+                        height: 145,
+                        child: RaisedButton(
+                            color: isbussinesstclicked
+                                ? Colors.white
+                                : Theme.of(context).primaryColor,
+                            onPressed: () => {
+                                  setState(() {
+                                    AccountType = "BUSINESS";
+                                    isselect = true;
+                                    isregularclicked = false;
+                                    isbussinesstclicked = true;
+                                  })
+                                },
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 2.0, bottom: 15),
+                                  child: FaIcon(FontAwesomeIcons.userTie,
+                                      size: 60,
                                       color: !isbussinesstclicked
                                           ? Colors.white
                                           : const Color.fromRGBO(
-                                              12, 41, 93, 1)))
-                            ],
-                          ),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15.0))),
-                    ),
-                  ],
+                                              12, 41, 93, 1)),
+                                ),
+                                Text('Bussiness Customers',
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.muli(
+                                        fontSize: 13,
+                                        color: !isbussinesstclicked
+                                            ? Colors.white
+                                            : const Color.fromRGBO(
+                                                12, 41, 93, 1))),
+                                SizedBox(width: 10)
+                              ],
+                            ),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0))),
+                      ),
+                    ],
+                  ),
                 ),
                 // SizedBox(height: 50),
               ])),

@@ -16,7 +16,7 @@ var longitude;
 var latitude;
 var isReqData = [];
 
-final String BASE = "http://34.229.12.96/api/";
+final String BASE = "http://54.167.80.99/api/";
 final String URL_Login = BASE + "user/login";
 final String URL_OTP = BASE + "send-otp";
 final String URL_Signup = BASE + "signup";

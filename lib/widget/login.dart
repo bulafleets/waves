@@ -59,8 +59,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 borderRadius: BorderRadius.circular(8),
               ),
               prefixIcon: const Icon(Icons.email, color: Colors.grey, size: 20),
-              labelText: "Email",
-              labelStyle: TextStyle(
+              hintText: "Email",
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+              hintStyle: TextStyle(
                   color: const Color(0xFFb6b3c6).withOpacity(0.8),
                   fontFamily: 'RobotoRegular'),
               border: const OutlineInputBorder(),
@@ -119,13 +121,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 prefixIcon:
                     const Icon(Icons.lock, color: Colors.grey, size: 20),
-                labelText: "Password",
-                labelStyle: TextStyle(
+                // labelText: '',
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                hintText: "Password",
+                hintStyle: TextStyle(
                     color: const Color(0xFFb6b3c6).withOpacity(0.8),
                     fontFamily: 'RobotoRegular'),
                 border: const OutlineInputBorder(),
               )),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           InkWell(
               onTap: () {},
               child: Row(
@@ -136,10 +141,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: GoogleFonts.quicksand(
                         fontSize: 13, color: Colors.white),
                   ),
-                  const SizedBox(width: 5),
+                  // const SizedBox(width: 2),
                   Checkbox(
-                    checkColor: Colors.white,
-                    activeColor: Colors.transparent,
+                    checkColor: Colors.black,
+                    activeColor: Colors.white,
                     side: const BorderSide(
                       color: Colors.white,
                       width: 1.5,
@@ -153,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   )
                 ],
               )),
-          const SizedBox(height: 50),
+          const SizedBox(height: 45),
           TextButton(
               onPressed: () {
                 Navigator.of(context).push(
@@ -172,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 60,
-      margin: const EdgeInsets.only(left: 20.0, right: 20.0),
+      margin: const EdgeInsets.only(left: 10.0, right: 10.0),
       // padding: EdgeInsets.symmetric(horizontal: 16),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
@@ -189,27 +194,27 @@ class _LoginScreenState extends State<LoginScreen> {
           final LocalAuthentication localAuthentication = LocalAuthentication();
           bool isBiometricSupported =
               await localAuthentication.isDeviceSupported();
-          if (value) {
-            bool isAuthenticated =
-                await Authentication.authenticateWithBiometrics();
-            print(isAuthenticated);
+          // if (value) {
+          //   bool isAuthenticated =
+          //       await Authentication.authenticateWithBiometrics();
+          //   print(isAuthenticated);
 
-            if (isAuthenticated) {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => AboutUs()));
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Error authenticating using Biometrics.'),
-                ),
-              );
-            }
-          } else {
-            if (_formkey.currentState!.validate()) {
-              EasyLoading.show(status: 'Please Wait ...');
-              loginPage();
-            }
+          //   if (isAuthenticated) {
+          //     Navigator.of(context)
+          //         .push(MaterialPageRoute(builder: (context) => AboutUs()));
+          //   } else {
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       const SnackBar(
+          //         content: Text('Error authenticating using Biometrics.'),
+          //       ),
+          //     );
+          //   }
+          // } else {
+          if (_formkey.currentState!.validate()) {
+            EasyLoading.show(status: 'Please Wait ...');
+            loginPage();
           }
+          // }
         },
         // Navigator.of(context)
         //     .push(MaterialPageRoute(builder: (context) => AboutUs()));
@@ -257,16 +262,18 @@ class _LoginScreenState extends State<LoginScreen> {
       email = jsonDecode(data)['user']['email'];
       user_id = jsonDecode(data)['user']['_id'].toString();
       AccountType = jsonDecode(data)['user']['role'];
+      name = jsonDecode(data)['user']['name'];
 
       SharedPreferences _prefs = await SharedPreferences.getInstance();
 
       _prefs.setString('email', email);
       _prefs.setString('user_id', user_id);
       _prefs.setString('role', AccountType);
+      _prefs.setString('name', name);
       _prefs.setString('token', authorization);
 
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => MyHomePage()),
+          MaterialPageRoute(builder: (context) => AboutUs(name)),
           (Route<dynamic> route) => false);
 
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(

@@ -61,8 +61,10 @@ class _SignUpPageState extends State<SignUpPage> {
                 borderRadius: BorderRadius.circular(8),
               ),
               prefixIcon: const Icon(Icons.email, color: Colors.grey, size: 20),
-              labelText: "Email",
-              labelStyle: TextStyle(
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+              hintText: "Email",
+              hintStyle: TextStyle(
                   color: const Color(0xFFb6b3c6).withOpacity(0.8),
                   fontFamily: 'RobotoRegular'),
               border: const OutlineInputBorder(),
@@ -121,8 +123,10 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 prefixIcon:
                     const Icon(Icons.lock, color: Colors.grey, size: 20),
-                labelText: "Password",
-                labelStyle: TextStyle(
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                hintText: "Password",
+                hintStyle: TextStyle(
                     color: const Color(0xFFb6b3c6).withOpacity(0.8),
                     fontFamily: 'RobotoRegular'),
                 border: const OutlineInputBorder(),
@@ -182,14 +186,15 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 prefixIcon:
                     const Icon(Icons.lock, color: Colors.grey, size: 20),
-                labelText: "Re-enter Password",
-                labelStyle: TextStyle(
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                hintText: "Re-enter Password",
+                hintStyle: TextStyle(
                     color: const Color(0xFFb6b3c6).withOpacity(0.8),
                     fontFamily: 'RobotoRegular'),
                 border: const OutlineInputBorder(),
               )),
-          const SizedBox(height: 20),
-          // const SizedBox(width: 5),
+          const SizedBox(height: 2),
           InkWell(
               onTap: () {},
               child: Row(
@@ -200,10 +205,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     style: GoogleFonts.quicksand(
                         fontSize: 13, color: Colors.white),
                   ),
-                  const SizedBox(width: 5),
+                  // const SizedBox(width: 5),
                   Checkbox(
-                    checkColor: Colors.white,
-                    activeColor: Colors.transparent,
+                    checkColor: Colors.black,
+                    activeColor: Colors.white,
                     side: const BorderSide(
                       color: Colors.white,
                       width: 1.5,
@@ -218,7 +223,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   )
                 ],
               )),
-          const SizedBox(height: 50),
+          const SizedBox(height: 40),
           signUpButton()
         ],
       ),
@@ -229,7 +234,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 60,
-      margin: const EdgeInsets.only(left: 20.0, right: 20.0),
+      margin: const EdgeInsets.only(left: 10.0, right: 10.0),
       // padding: EdgeInsets.symmetric(horizontal: 16),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
@@ -277,13 +282,14 @@ class _SignUpPageState extends State<SignUpPage> {
         'email': emailController.text,
       },
     );
+    EasyLoading.dismiss();
+
     print(URL_OTP + emailController.text);
 
     String data = response.body;
     print(data);
     String status = jsonDecode(data)['status'].toString();
 
-    EasyLoading.dismiss();
     if (status == "200") {
       OTP = jsonDecode(data)['Otp'];
       setState(() {

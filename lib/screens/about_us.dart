@@ -2,12 +2,14 @@ import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:waves/screens/homePage.dart';
 
 import 'create_profile.dart';
 
 class AboutUs extends StatefulWidget {
-  const AboutUs({Key? key}) : super(key: key);
-
+  final String name;
+  // ignore: use_key_in_widget_constructors
+  const AboutUs(this.name);
   @override
   _AboutUsState createState() => _AboutUsState();
 }
@@ -42,7 +44,7 @@ class _AboutUsState extends State<AboutUs> {
             padding: const EdgeInsets.all(20),
             child: Column(children: [
               const SizedBox(height: 60),
-              Text('Hi Vincent!',
+              Text('Hi ${widget.name}!',
                   style: GoogleFonts.quicksand(
                       fontWeight: FontWeight.bold,
                       fontSize: 37,
@@ -132,8 +134,9 @@ class _AboutUsState extends State<AboutUs> {
           ),
         ),
         onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => CreateProfile()));
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const MyHomePage()),
+              (Route<dynamic> route) => false);
           // if (_formkey.currentState.validate()) {
           // showDialog(
           //   context: context,
