@@ -5,7 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:waves/contants/common_params.dart';
-import 'package:waves/screens/login_page.dart';
+import 'package:waves/screens/auth/login_page.dart';
 
 class UserType extends StatefulWidget {
   const UserType({Key? key}) : super(key: key);
@@ -67,7 +67,7 @@ class _UserTypeState extends State<UserType> {
                     children: [
                       Container(
                         // padding: const EdgeInsets.all(1),
-                        decoration: BoxDecoration(boxShadow: [
+                        decoration: BoxDecoration(boxShadow: const [
                           BoxShadow(color: Colors.white, spreadRadius: 1),
                         ], borderRadius: BorderRadius.circular(16)),
                         width: MediaQuery.of(context).size.width / 2 - 30,
@@ -100,7 +100,7 @@ class _UserTypeState extends State<UserType> {
                                     textAlign: TextAlign.center,
                                     overflow: TextOverflow.ellipsis,
                                     style: GoogleFonts.muli(
-                                        fontSize: 13,
+                                        fontSize: 12,
                                         color: !isregularclicked
                                             ? Colors.white
                                             : const Color.fromRGBO(
@@ -113,7 +113,7 @@ class _UserTypeState extends State<UserType> {
                       SizedBox(width: 20),
                       Container(
                         // padding: const EdgeInsets.all(1),
-                        decoration: BoxDecoration(boxShadow: [
+                        decoration: BoxDecoration(boxShadow: const [
                           BoxShadow(color: Colors.white, spreadRadius: 1),
                         ], borderRadius: BorderRadius.circular(16)),
                         width: MediaQuery.of(context).size.width / 2 - 30,
@@ -148,7 +148,7 @@ class _UserTypeState extends State<UserType> {
                                     overflow: TextOverflow.ellipsis,
                                     textAlign: TextAlign.center,
                                     style: GoogleFonts.muli(
-                                        fontSize: 13,
+                                        fontSize: 12,
                                         color: !isbussinesstclicked
                                             ? Colors.white
                                             : const Color.fromRGBO(

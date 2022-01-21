@@ -2,14 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
-import 'package:waves/screens/add_friends.dart';
-import 'package:waves/screens/create_profile.dart';
-import 'package:waves/screens/homePage.dart';
-import 'package:waves/screens/see_contact.dart';
-import 'package:waves/screens/user_type.dart';
-import 'package:waves/widget/login.dart';
+import 'package:waves/screens/friends/add_friends.dart';
+import 'package:waves/screens/home/main_page.dart';
+import 'package:waves/screens/profile/create_profile.dart';
+import 'package:waves/screens/contact/see_contact.dart';
+import 'package:waves/screens/user_type/user_type.dart';
+import 'package:waves/screens/auth/widgets/login.dart';
 
-import 'login_page.dart';
+import '../auth/login_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

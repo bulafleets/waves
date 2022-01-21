@@ -7,7 +7,7 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
-import 'package:waves/screens/otp_page.dart';
+import 'package:waves/screens/otp/otp_page.dart';
 import 'package:http/http.dart' as http;
 
 class SignUpPage extends StatefulWidget {

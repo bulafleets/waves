@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:waves/screens/splash.dart';
+import 'package:waves/screens/splash/splash.dart';
 
 void main() {
   runApp(const MyApp());

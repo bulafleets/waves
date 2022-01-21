@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:waves/contants/common_params.dart';
-import 'package:waves/screens/login_page.dart';
+import 'package:waves/screens/auth/login_page.dart';
 import 'package:http/http.dart' as http;
 
 class ChangePassword extends StatefulWidget {

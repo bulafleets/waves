@@ -25,3 +25,4 @@ final String Reset_password = BASE + "user/resetPassword";
 final String Get_all_users = BASE + 'get-all-users';
 final String find_nearBy_friends = BASE + "get-users-by-location";
 final String send_friend_request = BASE + "send-friend-request";
+final String MobileList = BASE + 'register/mobileList';

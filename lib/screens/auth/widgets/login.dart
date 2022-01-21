@@ -8,11 +8,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
-import 'package:waves/screens/about_us.dart';
-import 'package:waves/screens/homePage.dart';
-import 'package:waves/widget/local_auth.dart';
+import 'package:waves/screens/about_us/about_us.dart';
+import 'package:waves/screens/home/main_page.dart';
+import 'package:waves/screens/auth/local_auth/local_auth.dart';
 import 'package:http/http.dart' as http;
-import '../screens/forget_password.dart';
+import '../../forgetPassword/forget_password.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -272,8 +272,11 @@ class _LoginScreenState extends State<LoginScreen> {
       _prefs.setString('name', name);
       _prefs.setString('token', authorization);
 
+      var isSeen = _prefs.getString('seen');
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => AboutUs(name)),
+          MaterialPageRoute(
+              builder: (context) =>
+                  isSeen == 'true' ? const MainPage() : AboutUs(name)),
           (Route<dynamic> route) => false);
 
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(

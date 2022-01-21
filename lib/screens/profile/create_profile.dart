@@ -9,11 +9,13 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
-import 'package:waves/screens/add_friends.dart';
+import 'package:waves/screens/friends/add_friends.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:waves/widget/map.dart';
+import 'package:waves/screens/map/map.dart';
+
+import '../friends/add_friends.dart';
 
 class CreateProfile extends StatefulWidget {
   const CreateProfile({Key? key}) : super(key: key);

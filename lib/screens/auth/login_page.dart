@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:waves/contants/common_params.dart';
-import 'package:waves/widget/signup.dart';
+import 'package:waves/screens/auth/widgets/login.dart';
+import 'package:waves/screens/auth/widgets/signup.dart';
 
-import '../widget/login.dart';
+import 'widgets/login.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);

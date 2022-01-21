@@ -6,10 +6,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:waves/contants/common_params.dart';
-import 'package:waves/screens/about_us.dart';
-import 'package:waves/screens/change_password.dart';
+import 'package:waves/screens/about_us/about_us.dart';
+import 'package:waves/screens/forgetPassword/change_password.dart';
 import 'package:http/http.dart' as http;
-import 'package:waves/screens/create_profile.dart';
+import 'package:waves/screens/profile/create_profile.dart';
 
 class OtpPage extends StatefulWidget {
   final String emailid;

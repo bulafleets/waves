@@ -5,7 +5,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waves/contants/common_params.dart';
-import 'package:waves/widget/permission_denied.dart';
+import 'package:waves/screens/map/widget/permission_denied.dart';
 
 class MapSample extends StatefulWidget {
   final void Function(String address) addressFn;

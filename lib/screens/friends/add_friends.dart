@@ -10,11 +10,11 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
 import 'package:waves/models/getAllUsers_model.dart';
-import 'package:waves/screens/about_us.dart';
-import 'package:waves/screens/add_friends_nearby.dart';
-import 'package:waves/screens/homePage.dart';
+import 'package:waves/screens/about_us/about_us.dart';
+import 'package:waves/screens/friends/add_friends_nearby.dart';
+import 'package:waves/screens/home/main_page.dart';
 import 'package:http/http.dart' as http;
-import 'package:waves/screens/see_contact.dart';
+import 'package:waves/screens/contact/see_contact.dart';
 
 class AddFriends extends StatefulWidget {
   const AddFriends({Key? key}) : super(key: key);
@@ -135,6 +135,7 @@ class _AddFriendsState extends State<AddFriends> {
                   prefixIcon: const Icon(Icons.search,
                       color: Color(0xffb7c2d5), size: 20),
                   hintText: "Search",
+                  contentPadding: const EdgeInsets.only(top: 15),
                   // contentPadding:
                   //     const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                   hintStyle: TextStyle(

@@ -2,9 +2,10 @@ import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:waves/screens/homePage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waves/screens/home/main_page.dart';
 
-import 'create_profile.dart';
+import '../profile/create_profile.dart';
 
 class AboutUs extends StatefulWidget {
   final String name;
@@ -133,9 +134,12 @@ class _AboutUsState extends State<AboutUs> {
             borderRadius: BorderRadius.all(Radius.circular(30)),
           ),
         ),
-        onPressed: () {
+        onPressed: () async {
+          SharedPreferences _prefs = await SharedPreferences.getInstance();
+          _prefs.setString('seen', 'true');
+
           Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const MyHomePage()),
+              MaterialPageRoute(builder: (context) => const MainPage()),
               (Route<dynamic> route) => false);
           // if (_formkey.currentState.validate()) {
           // showDialog(
