@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:waves/contants/check_in.dart';
+import 'package:waves/contants/comment_widget.dart';
+import 'package:waves/contants/leave_comment.dart';
+import 'package:waves/contants/review_comment.dart';
+import 'package:waves/screens/TYPE/regular_type/map/map_screen.dart';
+import 'dart:async';
 
-class WaveDetailsScreen extends StatefulWidget {
-  const WaveDetailsScreen({Key? key}) : super(key: key);
+class WaveDetailsBussinessScreen extends StatefulWidget {
+  const WaveDetailsBussinessScreen({Key? key}) : super(key: key);
 
   @override
-  _WaveDetailsScreenState createState() => _WaveDetailsScreenState();
+  _WaveDetailsBussinessScreenState createState() =>
+      _WaveDetailsBussinessScreenState();
 }
 
-class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
+class _WaveDetailsBussinessScreenState
+    extends State<WaveDetailsBussinessScreen> {
+  Completer<GoogleMapController> _mapController = Completer();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,10 +51,11 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
                 )),
             centerTitle: true,
           )),
-      body: Column(
+      body: ListView(
+        physics: const NeverScrollableScrollPhysics(),
         children: [
           Container(
-              height: 250,
+              height: 251,
               decoration: const BoxDecoration(
                 color: Color.fromRGBO(188, 220, 243, 1),
                 borderRadius: BorderRadius.only(
@@ -56,28 +68,14 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
                     // width: 102,
                     // color: Colors.black,
                     margin: const EdgeInsets.only(right: 20, left: 20),
-                    child: Stack(
-                      alignment: Alignment.bottomRight,
-                      children: const [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Colors.black,
-                          child: CircleAvatar(
-                            radius: 48,
-                            backgroundImage: NetworkImage(
-                                "https://i.pinimg.com/564x/bd/cd/4e/bdcd4e097d609543724874b01aa91c76.jpg"),
-                          ),
-                        ),
-                        CircleAvatar(
-                          radius: 19,
-                          child: CircleAvatar(
-                            radius: 17,
-                            backgroundImage: NetworkImage(
-                                "https://miro.medium.com/max/1200/1*mk1-6aYaf_Bes1E3Imhc0A.jpeg"),
-                          ),
-                        ),
-                      ],
-                    ),
+                    child: const CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Colors.black,
+                        child: CircleAvatar(
+                          radius: 48,
+                          backgroundImage: NetworkImage(
+                              "https://i.pinimg.com/564x/bd/cd/4e/bdcd4e097d609543724874b01aa91c76.jpg"),
+                        )),
                   ),
                   Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +105,7 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
                         ),
                         SizedBox(height: 10),
                         Text(
-                          'Restaurant Name',
+                          'Location Name',
                           style: GoogleFonts.quicksand(
                               fontSize: 17, fontWeight: FontWeight.w300),
                         ),
@@ -118,57 +116,50 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
                               fontSize: 10, fontWeight: FontWeight.w400),
                         ),
                         SizedBox(
-                          height: 10,
+                          height: 20,
                         )
                       ])
                 ]),
-                Row(children: [
-                  SizedBox(width: 30),
-                  Column(children: [
-                    Row(children: [
-                      Text('4.5'),
-                      Icon(Icons.star, color: Colors.yellow)
-                    ]),
-                    Row(children: [
-                      Text('Review',
-                          style: GoogleFonts.quicksand(
-                              fontSize: 13, fontWeight: FontWeight.w300)),
-                      Icon(Icons.edit_location_alt, size: 20)
-                    ]),
-                  ]),
-                  SizedBox(width: 50),
-                  Expanded(
-                      child: Text(
-                          "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type ",
-                          textAlign: TextAlign.start,
-                          overflow: TextOverflow.fade,
-                          style: GoogleFonts.quicksand(
-                              fontSize: 14, fontWeight: FontWeight.w500)))
-                ]),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton.icon(
-                        onPressed: () {},
-                        label: Icon(Icons.location_on,
-                            color: Color.fromRGBO(42, 124, 202, 1)),
-                        icon: Text('See Location',
-                            style: GoogleFonts.quicksand(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromRGBO(42, 124, 202, 1)))),
-                    SizedBox(width: 15),
-                    TextButton(
-                        onPressed: () {},
-                        child: Text('Check-In',
-                            style: GoogleFonts.quicksand(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromRGBO(42, 124, 202, 1)))),
-                  ],
-                )
+                Container(
+                    height: 130,
+                    width: MediaQuery.of(context).size.width - 60,
+                    decoration:
+                        BoxDecoration(borderRadius: BorderRadius.circular(50)),
+                    child: GoogleMap(
+                      myLocationEnabled: true,
+                      // onTap: _mapTapped,
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(26.838055, 75.7952836),
+                        zoom: 17,
+                      ),
+                      onMapCreated: (GoogleMapController mapController) {
+                        _mapController.complete(mapController);
+                      },
+                      zoomControlsEnabled: false,
+                    ))
               ])),
+          const SizedBox(height: 5),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+            Text(
+              'COMMENTS',
+              style: GoogleFonts.quicksand(
+                  fontSize: 19, fontWeight: FontWeight.w300),
+            ),
+            TextButton(
+                onPressed: () {
+                  showDialog(
+                      context: context, builder: (_) => const LeaveComment());
+                },
+                child: Text(
+                  'Check-In List',
+                  style: GoogleFonts.quicksand(
+                      fontSize: 13,
+                      color: const Color.fromRGBO(42, 124, 202, 1),
+                      fontWeight: FontWeight.w300),
+                ))
+          ]),
+          const SizedBox(height: 5),
+          const CommentScreen()
         ],
       ),
     );

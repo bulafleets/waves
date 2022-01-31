@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:waves/screens/wave_details/wave_details_screen.dart';
+import 'package:waves/screens/TYPE/regular_type/activity/widget/show_dialog.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class ActivityScreen extends StatefulWidget {
+  const ActivityScreen({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _ActivityScreenState createState() => _ActivityScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _ActivityScreenState extends State<ActivityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,15 +18,6 @@ class _HomePageState extends State<HomePage> {
             preferredSize: Size.fromHeight(80.0), // here the desired height
             child: AppBar(
               backgroundColor: Theme.of(context).primaryColor,
-              leading: Padding(
-                padding: const EdgeInsets.only(top: 18.0, left: 5),
-                child: IconButton(
-                  iconSize: 24,
-                  alignment: Alignment.bottomLeft,
-                  icon: const FaIcon(FontAwesomeIcons.solidBell),
-                  onPressed: () {},
-                ),
-              ),
               actions: [
                 Padding(
                   padding: const EdgeInsets.only(top: 18.0, right: 5),
@@ -56,18 +47,15 @@ class _HomePageState extends State<HomePage> {
               if (index == 0) {
                 return const SizedBox(height: 15);
               }
-              return InkWell(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const WaveDetailsScreen()));
-                },
-                child: Container(
+              return Stack(alignment: AlignmentDirectional.topEnd, children: [
+                Container(
+                  width: MediaQuery.of(context).size.width - 20,
                   height: 102,
                   // padding: const EdgeInsets.all(8),
                   margin: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(50),
-                      color: const Color.fromRGBO(188, 220, 243, 1)),
+                      color: Color.fromRGBO(188, 220, 243, 1)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -98,20 +86,19 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                       ),
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      Column(crossAxisAlignment: CrossAxisAlignment.start,
+                          // mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
+                            SizedBox(height: 15),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Person Name',
+                                  'My Wave',
                                   style: GoogleFonts.quicksand(
                                       fontSize: 17,
                                       fontWeight: FontWeight.w500),
                                 ),
-                                SizedBox(width: 15),
-                                FaIcon(FontAwesomeIcons.solidIdBadge),
                                 SizedBox(width: 30),
                                 Text(
                                   '2m',
@@ -121,24 +108,34 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 5),
+                            SizedBox(height: 15),
                             Text(
                               'Checked into Bar Name',
                               style: GoogleFonts.quicksand(
                                   fontSize: 17, fontWeight: FontWeight.w400),
                             ),
                             SizedBox(height: 5),
-                            Text(
-                              '21/01/2021  2:00pm - 6:00pm',
-                              style: GoogleFonts.quicksand(
-                                  fontSize: 10, fontWeight: FontWeight.w400),
-                            ),
-                            SizedBox(height: 5),
-                          ])
+                          ]),
                     ],
                   ),
                 ),
-              );
+                Positioned(
+                  top: -6,
+                  right: 15,
+                  // padding: const EdgeInsets.only(right: 8.0),
+                  child: IconButton(
+                      iconSize: 30,
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (_) => ShowDialogScreen());
+                      },
+                      icon: const FaIcon(
+                        FontAwesomeIcons.solidTimesCircle,
+                        color: Colors.black,
+                      )),
+                ),
+              ]);
             }));
   }
 }

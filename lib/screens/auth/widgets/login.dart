@@ -8,8 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
+import 'package:waves/screens/Main/main_page.dart';
 import 'package:waves/screens/about_us/about_us.dart';
-import 'package:waves/screens/home/main_page.dart';
 import 'package:waves/screens/auth/local_auth/local_auth.dart';
 import 'package:http/http.dart' as http;
 import '../../forgetPassword/forget_password.dart';
@@ -44,8 +44,8 @@ class _LoginScreenState extends State<LoginScreen> {
             controller: emailController,
             keyboardType: TextInputType.emailAddress,
             cursorColor: Colors.grey,
-            inputFormatters: [
-              LengthLimitingTextInputFormatter(25),
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.deny(' ')
             ],
             decoration: InputDecoration(
               filled: true,
@@ -83,8 +83,9 @@ class _LoginScreenState extends State<LoginScreen> {
               keyboardType: TextInputType.text,
               obscureText: isObscureText,
               cursorColor: Colors.grey,
-              inputFormatters: [
+              inputFormatters: <TextInputFormatter>[
                 LengthLimitingTextInputFormatter(20),
+                FilteringTextInputFormatter.deny(' ')
               ],
               onChanged: (val) {
                 setState(() {
@@ -131,34 +132,34 @@ class _LoginScreenState extends State<LoginScreen> {
                 border: const OutlineInputBorder(),
               )),
           const SizedBox(height: 10),
-          InkWell(
-              onTap: () {},
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Use Biometric ID',
-                    style: GoogleFonts.quicksand(
-                        fontSize: 13, color: Colors.white),
-                  ),
-                  // const SizedBox(width: 2),
-                  Checkbox(
-                    checkColor: Colors.black,
-                    activeColor: Colors.white,
-                    side: const BorderSide(
-                      color: Colors.white,
-                      width: 1.5,
-                    ),
-                    value: this.value,
-                    onChanged: (var value) {
-                      setState(() {
-                        this.value = value!;
-                      });
-                    },
-                  )
-                ],
-              )),
-          const SizedBox(height: 45),
+          // InkWell(
+          //     onTap: () {},
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: [
+          //         Text(
+          //           'Use Biometric ID',
+          //           style: GoogleFonts.quicksand(
+          //               fontSize: 13, color: Colors.white),
+          //         ),
+          //         // const SizedBox(width: 2),
+          //         Checkbox(
+          //           checkColor: Colors.black,
+          //           activeColor: Colors.white,
+          //           side: const BorderSide(
+          //             color: Colors.white,
+          //             width: 1.5,
+          //           ),
+          //           value: this.value,
+          //           onChanged: (var value) {
+          //             setState(() {
+          //               this.value = value!;
+          //             });
+          //           },
+          //         )
+          //       ],
+          //     )),
+          const SizedBox(height: 80),
           TextButton(
               onPressed: () {
                 Navigator.of(context).push(
@@ -241,11 +242,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> loginPage() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    var token = _prefs.getString('device_token');
+    print(token);
     final response = await http.post(
       Uri.parse(URL_Login),
       body: {
         'username': emailController.text,
-        'password': passwordController.text
+        'password': passwordController.text,
+        "firebase_token": token.toString()
       },
     );
     print(URL_Login + emailController.text + passwordController.text);
@@ -261,22 +266,37 @@ class _LoginScreenState extends State<LoginScreen> {
 
       email = jsonDecode(data)['user']['email'];
       user_id = jsonDecode(data)['user']['_id'].toString();
-      AccountType = jsonDecode(data)['user']['role'];
-      name = jsonDecode(data)['user']['name'];
-
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
+      AccountType = jsonDecode(data)['user']['roles'];
+      name = jsonDecode(data)['user']['username'];
+      var mobile = jsonDecode(data)['user']['mobile_number'];
+      var image = jsonDecode(data)['user']['avatar'];
+      var faceId = jsonDecode(data)['user']['isFaceId'];
+      var bio = jsonDecode(data)['user']['biography'];
+      var age = jsonDecode(data)['user']['age'];
+      var address = jsonDecode(data)['user']['address'];
+      //   var lat = jsonDecode(data)['user']['location']['coordinates'][1];
+      // var log = jsonDecode(data)['user']['location']['coordinates'][2];
 
       _prefs.setString('email', email);
       _prefs.setString('user_id', user_id);
-      _prefs.setString('role', AccountType);
+      _prefs.setString('roleType', AccountType);
       _prefs.setString('name', name);
       _prefs.setString('token', authorization);
+      _prefs.setString('mobileno', mobile);
+      // _prefs.setString('profileimg', image);
+      _prefs.setString('token', authorization);
+      _prefs.setString('age', age.toString());
+      _prefs.setString('faceId', faceId.toString());
+      _prefs.setString('bio', bio);
+      _prefs.setString('address', address);
+      // _prefs.setString('lat', lat);
+      //   _prefs.setString('log', log);
 
       var isSeen = _prefs.getString('seen');
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
               builder: (context) =>
-                  isSeen == 'true' ? const MainPage() : AboutUs(name)),
+                  isSeen == 'true' ? const MainPage() : AboutUs(name, true)),
           (Route<dynamic> route) => false);
 
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -290,9 +310,8 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     if (status == "400") {
       String message = jsonDecode(data)['message'];
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(message),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message), backgroundColor: Colors.red));
     }
   }
 }

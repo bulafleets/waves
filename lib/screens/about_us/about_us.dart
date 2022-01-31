@@ -3,14 +3,15 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:waves/screens/home/main_page.dart';
-
+import 'package:waves/screens/Main/main_page.dart';
+import 'package:waves/screens/friends/add_friends.dart';
 import '../profile/create_profile.dart';
 
 class AboutUs extends StatefulWidget {
   final String name;
+  final bool isLogin;
   // ignore: use_key_in_widget_constructors
-  const AboutUs(this.name);
+  const AboutUs(this.name, this.isLogin);
   @override
   _AboutUsState createState() => _AboutUsState();
 }
@@ -139,7 +140,9 @@ class _AboutUsState extends State<AboutUs> {
           _prefs.setString('seen', 'true');
 
           Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const MainPage()),
+              MaterialPageRoute(
+                  builder: (context) =>
+                      widget.isLogin ? const MainPage() : const AddFriends()),
               (Route<dynamic> route) => false);
           // if (_formkey.currentState.validate()) {
           // showDialog(

@@ -8,7 +8,7 @@ import 'package:waves/contants/common_params.dart';
 import 'package:waves/screens/map/widget/permission_denied.dart';
 
 class MapSample extends StatefulWidget {
-  final void Function(String address) addressFn;
+  final void Function(String address, String log, String lat) addressFn;
   MapSample(this.addressFn);
   @override
   State<MapSample> createState() => MapSampleState();
@@ -21,23 +21,23 @@ class MapSampleState extends State<MapSample> {
   Completer<GoogleMapController> _mapController = Completer();
   var searchAddr;
   TextEditingController _textEditingController = TextEditingController();
+  late String log;
+  late String lat;
   var isLoading = false;
 
   _mapTapped(LatLng location) async {
-    print('ss');
     List<Placemark> placemarks =
         await placemarkFromCoordinates(latitude, longitude);
     setState(() {
       latitude = location.latitude;
       longitude = location.longitude;
+      log = location.longitude.toString();
+      lat = location.latitude.toString();
 
-      print(placemarks);
       Placemark place = placemarks[0];
       var Address =
           '${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}';
       _textEditingController.text = Address.toString();
-
-      print(Address);
     });
   }
 
@@ -97,9 +97,9 @@ class MapSampleState extends State<MapSample> {
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(5)),
                   child: TextField(
-                    //    onTap: () {
-                    //       _textEditingController.text = '';
-                    //     },
+                    onTap: () {
+                      _textEditingController.text = '';
+                    },
                     controller: _textEditingController,
                     decoration: InputDecoration(
                       hintText: 'Enter Address..',
@@ -158,7 +158,7 @@ class MapSampleState extends State<MapSample> {
             ? null
             : () {
                 if (_textEditingController.text.isNotEmpty) {
-                  widget.addressFn(_textEditingController.text);
+                  widget.addressFn(_textEditingController.text, log, lat);
                   address = _textEditingController.text;
                   Navigator.of(context).pop();
                 } else {
@@ -184,10 +184,10 @@ class MapSampleState extends State<MapSample> {
     if (permission == LocationPermission.denied) {
       // showCustomSnackBar('you_have_to_allow'.tr);
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('you_have_to_allow'),
-          behavior: SnackBarBehavior.floating
-          // backgroundColor: Colors.green,
-          ));
+        content: Text('you_have_to_allow'),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.red,
+      ));
     } else if (permission == LocationPermission.deniedForever) {
       showDialog(context: context, builder: (context) => PermissionDialog());
     } else {
@@ -216,7 +216,5 @@ class MapSampleState extends State<MapSample> {
         zoom: 19.151926040649414);
     final GoogleMapController controller = await _mapController.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-
-    print(locations);
   }
 }

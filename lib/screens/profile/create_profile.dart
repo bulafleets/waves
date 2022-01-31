@@ -9,11 +9,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
+import 'package:waves/contants/common_widgets.dart';
+import 'package:waves/screens/about_us/about_us.dart';
 import 'package:waves/screens/friends/add_friends.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:waves/screens/map/map.dart';
+import 'package:waves/screens/map/widget/permission_denied.dart';
 
 import '../friends/add_friends.dart';
 
@@ -36,6 +39,8 @@ class _CreateProfileState extends State<CreateProfile> {
   late String birthDateInString;
   DateTime birthDate = DateTime.now();
   bool isDateSelected = false;
+  var log;
+  var lat;
   // ignore: prefer_typing_uninitialized_variables
   var differenceDOB;
   // var latitude;
@@ -49,7 +54,7 @@ class _CreateProfileState extends State<CreateProfile> {
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(1901, 1),
-        lastDate: DateTime(2100));
+        lastDate: DateTime.now());
     if (picked != null && picked != birthDate) {
       setState(() {
         isDateSelected = true;
@@ -75,8 +80,10 @@ class _CreateProfileState extends State<CreateProfile> {
     }
   }
 
-  _addrss(String add) {
+  _addrss(String add, String longitute, String latitude) {
     setState(() {
+      log = longitute;
+      lat = latitude;
       addressController.text = add;
     });
   }
@@ -104,7 +111,7 @@ class _CreateProfileState extends State<CreateProfile> {
 
   @override
   void initState() {
-    _determinePosition();
+    determinePosition(context);
     super.initState();
   }
 
@@ -265,8 +272,8 @@ class _CreateProfileState extends State<CreateProfile> {
                         borderSide: const BorderSide(color: Colors.white),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 20),
                       hintText: "Enter your mobile number",
                       hintStyle: TextStyle(
                           color: const Color(0xFFb6b3c6).withOpacity(0.8),
@@ -356,8 +363,8 @@ class _CreateProfileState extends State<CreateProfile> {
                   ),
                   const SizedBox(height: 15),
                   TextFormField(
-                    onTap: () async {
-                      await _determinePosition();
+                    onTap: () {
+                      determinePosition(context);
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => MapSample(_addrss)));
                     },
@@ -375,8 +382,8 @@ class _CreateProfileState extends State<CreateProfile> {
                     cursorColor: Colors.grey,
                     decoration: InputDecoration(
                       suffixIcon: GestureDetector(
-                          onTap: () async {
-                            await _determinePosition();
+                          onTap: () {
+                            determinePosition(context);
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => MapSample(_addrss)));
                           },
@@ -577,8 +584,8 @@ class _CreateProfileState extends State<CreateProfile> {
       request.fields['age'] = differenceDOB.toString();
       request.fields['isFaceId'] = isBiometric.toString();
       request.fields['address'] = addressController.text;
-      request.fields['latitude'] = latitude.toString();
-      request.fields['longitude'] = longitude.toString();
+      request.fields['latitude'] = log.toString();
+      request.fields['longitude'] = lat.toString();
       request.fields['dob'] = dobController.text;
       request.fields['mobile_number'] = mobileController.text;
       // request.fields['firebase_token'] = fcmtoken;
@@ -609,7 +616,8 @@ class _CreateProfileState extends State<CreateProfile> {
         user_id = '';
         email = '';
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => AddFriends()),
+            MaterialPageRoute(
+                builder: (context) => AboutUs(nameController.text, false)),
             (Route<dynamic> route) => false);
         isSignUp = '';
         // Navigator.of(context).pushNamed(OTP_SCREEN);
@@ -678,42 +686,45 @@ class _CreateProfileState extends State<CreateProfile> {
     // }
   }
 
-  Future<Position> _determinePosition() async {
-    // Position position = await Geolocator.getCurrentPosition(
-    //     desiredAccuracy: LocationAccuracy.high);
-    bool serviceEnabled;
-    LocationPermission permission;
+  // Future<Position> _determinePosition() async {
+  //   // Position position = await Geolocator.getCurrentPosition(
+  //   //     desiredAccuracy: LocationAccuracy.high);
+  //   bool serviceEnabled;
+  //   LocationPermission permission;
 
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      return Future.error('Location services are disabled.');
-    }
+  //   // Test if location services are enabled.
+  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  //   if (!serviceEnabled) {
+  //     // return PermissionDialog();
 
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
+  //     // Location services are not enabled don't continue
+  //     // accessing the position and request users of the
+  //     // App to enable the location services.
+  //     return Future.error('Location services are disabled.');
+  //   }
 
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    latitude = position.latitude;
-    longitude = position.longitude;
-    print(position.latitude);
-    print(position.longitude);
+  //   permission = await Geolocator.checkPermission();
+  //   if (permission == LocationPermission.denied) {
+  //     permission = await Geolocator.requestPermission();
+  //     if (permission == LocationPermission.denied) {
+  //       return Future.error('Location permissions are denied');
+  //     }
+  //   }
 
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
-    return await Geolocator.getCurrentPosition();
-  }
+  //   if (permission == LocationPermission.deniedForever) {
+  //     return Future.error(
+  //         'Location permissions are permanently denied, we cannot request permissions.');
+  //   }
+  //   Position position = await Geolocator.getCurrentPosition(
+  //       desiredAccuracy: LocationAccuracy.high);
+  //   latitude = position.latitude;
+  //   longitude = position.longitude;
+  //   print(position.latitude);
+  //   print(position.longitude);
+
+  //   // When we reach here, permissions are granted and we can
+  //   // continue accessing the position of the device.
+  //   return await Geolocator.getCurrentPosition();
+  // }
+
 }

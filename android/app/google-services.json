@@ -7,7 +7,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:507051981406:android:f97f7f38ea2ce395a1d2cf",
+        "mobilesdk_app_id": "1:507051981406:android:48170934fca70db3a1d2cf",
         "android_client_info": {
           "package_name": "com.waves"
         }
@@ -37,6 +37,13 @@
             {
               "client_id": "507051981406-ild960veti406kf1j2aru3rb1m7vtt4j.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "507051981406-jtv7l20d5h2g3daonmbu0vn0133aqdip.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.waves"
+              }
             }
           ]
         }

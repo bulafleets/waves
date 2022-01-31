@@ -12,8 +12,8 @@ String authorization = "";
 String isSignUp = "";
 String isBiometric = 'false';
 String address = '';
-var longitude;
-var latitude;
+var longitude = 75.7952836;
+var latitude = 26.838055;
 var isReqData = [];
 
 final String BASE = "http://54.167.80.99/api/";
@@ -26,3 +26,7 @@ final String Get_all_users = BASE + 'get-all-users';
 final String find_nearBy_friends = BASE + "get-users-by-location";
 final String send_friend_request = BASE + "send-friend-request";
 final String MobileList = BASE + 'register/mobileList';
+final String WaveCreate = BASE + 'waves/create';
+final String EventList = BASE + 'get/event-list';
+final String waveListing = BASE + 'home/waves/lists';
+final String SingleWaveView = BASE + 'wave/view';

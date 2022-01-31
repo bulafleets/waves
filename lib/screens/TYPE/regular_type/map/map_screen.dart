@@ -5,14 +5,22 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waves/contants/common_params.dart';
 
-class MapScreen extends StatefulWidget {
-  const MapScreen({Key? key}) : super(key: key);
+class MapScreenRegular extends StatefulWidget {
+  final double longitute;
+  final double latitute;
+  final String image;
+  const MapScreenRegular(
+      {Key? key,
+      required this.longitute,
+      required this.latitute,
+      required this.image})
+      : super(key: key);
 
   @override
-  _MapScreenState createState() => _MapScreenState();
+  _MapScreenRegularState createState() => _MapScreenRegularState();
 }
 
-class _MapScreenState extends State<MapScreen> {
+class _MapScreenRegularState extends State<MapScreenRegular> {
   Completer<GoogleMapController> _mapController = Completer();
 
   @override
@@ -27,8 +35,10 @@ class _MapScreenState extends State<MapScreen> {
               child: IconButton(
                 iconSize: 24,
                 alignment: Alignment.bottomLeft,
-                icon: const FaIcon(FontAwesomeIcons.addressCard),
-                onPressed: () {},
+                icon: const FaIcon(FontAwesomeIcons.arrowLeft),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
             ),
             actions: [
@@ -62,7 +72,7 @@ class _MapScreenState extends State<MapScreen> {
               myLocationEnabled: true,
               // onTap: _mapTapped,
               initialCameraPosition: CameraPosition(
-                target: LatLng(26.838055, 75.7952836),
+                target: LatLng(widget.latitute, widget.longitute),
                 zoom: 17,
               ),
               onMapCreated: (GoogleMapController mapController) {
@@ -85,9 +95,14 @@ class _MapScreenState extends State<MapScreen> {
               //   });
               // },
             ),
-            // Center(
-            //     child: Image.asset('assets/pick_marker.png',
-            //         height: 50, width: 50)),
+            Center(
+                child: CircleAvatar(
+                    radius: 19,
+                    child: CircleAvatar(
+                        radius: 17,
+                        backgroundImage: NetworkImage(widget.image))))
+
+            // Image.network(widget.image, height: 50, width: 50)),
           ])),
     );
   }

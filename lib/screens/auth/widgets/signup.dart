@@ -46,8 +46,8 @@ class _SignUpPageState extends State<SignUpPage> {
             controller: emailController,
             keyboardType: TextInputType.emailAddress,
             cursorColor: Colors.grey,
-            inputFormatters: [
-              LengthLimitingTextInputFormatter(25),
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.deny(' ')
             ],
             decoration: InputDecoration(
               filled: true,
@@ -62,7 +62,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               prefixIcon: const Icon(Icons.email, color: Colors.grey, size: 20),
               contentPadding:
-                  EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
               hintText: "Email",
               hintStyle: TextStyle(
                   color: const Color(0xFFb6b3c6).withOpacity(0.8),
@@ -78,12 +78,14 @@ class _SignUpPageState extends State<SignUpPage> {
               keyboardType: TextInputType.text,
               obscureText: isObscureText,
               cursorColor: Colors.grey,
-              inputFormatters: [
+              inputFormatters: <TextInputFormatter>[
                 LengthLimitingTextInputFormatter(20),
+                FilteringTextInputFormatter.deny(' ')
               ],
               validator: (val) {
                 if (val!.isEmpty) return 'Please Enter Password';
-                if (val.length < 8) {
+                if (val.trim().isEmpty) return 'Please remove spaces';
+                if (val.trim().length < 8) {
                   return 'Please enter Minimum 8 char Password';
                 }
                 return null;
@@ -124,7 +126,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 prefixIcon:
                     const Icon(Icons.lock, color: Colors.grey, size: 20),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                 hintText: "Password",
                 hintStyle: TextStyle(
                     color: const Color(0xFFb6b3c6).withOpacity(0.8),
@@ -139,14 +141,19 @@ class _SignUpPageState extends State<SignUpPage> {
               keyboardType: TextInputType.text,
               obscureText: isObscureTextc,
               cursorColor: Colors.grey,
-              inputFormatters: [
+              inputFormatters: <TextInputFormatter>[
                 LengthLimitingTextInputFormatter(20),
+                FilteringTextInputFormatter.deny(' ')
               ],
               validator: (val) {
                 if (val!.isEmpty) return 'Please Enter Password';
                 if (val != passwordController.text) return 'Password not match';
-                if (val.length < 8) {
+                if (val.trim().isEmpty) return 'Please remove spaces';
+                if (val.trim().length < 8) {
                   return 'Please enter Minimum 8 char Password';
+                }
+                if (val.trim().length > 20) {
+                  return 'Can not enter maximum 20 char Password';
                 }
                 return null;
               },
@@ -249,7 +256,7 @@ class _SignUpPageState extends State<SignUpPage> {
         onPressed: () {
           if (_formkey.currentState!.validate()) {
             email = emailController.text;
-            password = passwordController.text;
+            password = passwordController.text.trim();
             // SharedPreferences _prefs = await SharedPreferences.getInstance();
             // _prefs.setString(password, passwordController.text);
             // _prefs.setString(email, emailController.text);

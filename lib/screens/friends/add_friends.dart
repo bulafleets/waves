@@ -4,15 +4,13 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-// import 'package:flutter_share/flutter_share.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
 import 'package:waves/models/getAllUsers_model.dart';
-import 'package:waves/screens/about_us/about_us.dart';
+import 'package:waves/screens/Main/main_page.dart';
 import 'package:waves/screens/friends/add_friends_nearby.dart';
-import 'package:waves/screens/home/main_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:waves/screens/contact/see_contact.dart';
 
@@ -359,11 +357,10 @@ class _AddFriendsState extends State<AddFriends> {
             borderRadius: BorderRadius.all(Radius.circular(30)),
           ),
         ),
-        onPressed: () async {
-          SharedPreferences _prefs = await SharedPreferences.getInstance();
-          var name = _prefs.get('name').toString();
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => AboutUs(name)));
+        onPressed: () {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const MainPage()),
+              (Route<dynamic> route) => false);
           // Navigator.of(context).pushAndRemoveUntil(
           //     MaterialPageRoute(builder: (context) => const MyHomePage()),
           //     (Route<dynamic> route) => false);
