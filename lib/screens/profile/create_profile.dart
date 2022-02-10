@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
 import 'package:waves/contants/common_widgets.dart';
+import 'package:waves/contants/share_pref.dart';
 import 'package:waves/screens/about_us/about_us.dart';
 import 'package:waves/screens/friends/add_friends.dart';
 import 'package:image_picker/image_picker.dart';
@@ -36,6 +37,7 @@ class _CreateProfileState extends State<CreateProfile> {
   TextEditingController bioController = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey();
   late PickedFile imageFile;
+  bool _load = false;
   late String birthDateInString;
   DateTime birthDate = DateTime.now();
   bool isDateSelected = false;
@@ -45,14 +47,13 @@ class _CreateProfileState extends State<CreateProfile> {
   var differenceDOB;
   // var latitude;
   // var longitude;
-  bool _load = false;
 
   Future<Null> _selectDate(BuildContext context) async {
     DateFormat formatter = DateFormat('dd/MM/yyyy');
 
     final DateTime? picked = await showDatePicker(
         context: context,
-        initialDate: DateTime.now(),
+        initialDate: isDateSelected ? birthDate : DateTime.now(),
         firstDate: DateTime(1901, 1),
         lastDate: DateTime.now());
     if (picked != null && picked != birthDate) {
@@ -89,35 +90,17 @@ class _CreateProfileState extends State<CreateProfile> {
   }
 
   @override
-  void setState(VoidCallback fn) {
-    if (address.isNotEmpty) {
-      addressController.text = address;
-    }
-
-    super.setState(fn);
-  }
-
-  @override
-  void didChangeDependencies() {
-    print('deepak');
-
-    setState(() {
-      if (address.isNotEmpty) {
-        addressController.text = address;
-      }
-    });
-    super.didChangeDependencies();
-  }
-
-  @override
   void initState() {
+    addressController.text = '';
     determinePosition(context);
     super.initState();
   }
 
   @override
   void dispose() {
+    addressController.clear();
     dobController.clear();
+    EasyLoading.dismiss();
     super.dispose();
   }
 
@@ -135,322 +118,317 @@ class _CreateProfileState extends State<CreateProfile> {
         ),
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          color: Theme.of(context).primaryColor,
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          padding: const EdgeInsets.all(20),
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formkey,
-              child: Column(
-                // mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 20),
-                  InkWell(
-                      onTap: () {
-                        _showPicker(context);
-                      },
-                      child: _load
-                          ? Stack(alignment: Alignment.topRight, children: [
-                              Container(
-                                padding: const EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: isDateSelected
-                                        ? differenceDOB > 17 &&
-                                                differenceDOB < 30
-                                            ? const Color.fromRGBO(0, 0, 255, 1)
-                                            : differenceDOB > 29 &&
-                                                    differenceDOB < 50
-                                                ? const Color.fromRGBO(
-                                                    255, 255, 0, 1)
-                                                : const Color.fromRGBO(
-                                                    0, 255, 128, 1)
-                                        : Colors.white),
-                                child: CircleAvatar(
-                                    radius: 50,
-                                    backgroundImage:
-                                        FileImage(File(imageFile.path))),
-                              ),
-                              Container(
-                                  alignment: Alignment.center,
-                                  height: 28,
-                                  width: 28,
-                                  margin: const EdgeInsets.all(3),
-                                  // padding: const EdgeInsets.all(2),
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(50)),
-                                  child: const FaIcon(FontAwesomeIcons.camera,
-                                      size: 15, color: Colors.black)),
-                            ])
-                          : Stack(alignment: Alignment.topRight, children: [
-                              Container(
-                                padding: const EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: Colors.white),
-                                child: const CircleAvatar(
-                                    radius: 50,
-                                    child: Icon(
-                                      Icons.person,
-                                      size: 60,
-                                    )),
-                              ),
-                              Container(
-                                  alignment: Alignment.center,
-                                  height: 28,
-                                  width: 28,
-                                  margin: const EdgeInsets.all(3),
-                                  // padding: const EdgeInsets.all(2),
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(50)),
-                                  child: const FaIcon(FontAwesomeIcons.plus,
-                                      size: 15, color: Colors.black)),
-                            ])),
-                  const SizedBox(height: 30),
-                  TextFormField(
-                    validator: (val) {
-                      if (val!.isEmpty) return 'Please Enter Your Name';
-
-                      return null;
-                    },
-                    style: const TextStyle(color: Colors.black),
-                    // validator: emailValidator,
-                    controller: nameController,
-                    keyboardType: TextInputType.name,
-                    cursorColor: Colors.grey,
-                    // inputFormatters: [
-                    //   LengthLimitingTextInputFormatter(25),
-                    // ],
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                      hintText: "Your Name",
-                      hintStyle: TextStyle(
-                          color: const Color(0xFFb6b3c6).withOpacity(0.8),
-                          fontFamily: 'RobotoRegular'),
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  TextFormField(
-                    validator: (val) {
-                      if (val!.isEmpty)
-                        return 'Please enter your mobile number';
-
-                      return null;
-                    },
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(10),
-                    ],
-                    style: const TextStyle(color: Colors.black),
-                    controller: mobileController,
-                    keyboardType: TextInputType.number,
-                    cursorColor: Colors.grey,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 20),
-                      hintText: "Enter your mobile number",
-                      hintStyle: TextStyle(
-                          color: const Color(0xFFb6b3c6).withOpacity(0.8),
-                          fontFamily: 'RobotoRegular'),
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  TextFormField(
-                    validator: (val) {
-                      if (val!.isEmpty) return 'Please choose you DOB';
-
-                      return null;
-                    },
+      body: Container(
+        color: Theme.of(context).primaryColor,
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        padding: const EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formkey,
+            child: Column(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 20),
+                InkWell(
                     onTap: () {
-                      _selectDate(context);
+                      _showPicker(context);
                     },
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(10),
-                    ],
-                    style: const TextStyle(color: Colors.black),
-                    controller: dobController,
-                    keyboardType: TextInputType.none,
-                    cursorColor: Colors.grey,
-                    decoration: InputDecoration(
-                      suffixIcon: GestureDetector(
-                          onTap: () {
-                            _selectDate(context);
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: FaIcon(FontAwesomeIcons.calendarAlt,
-                                color: Colors.black),
-                          )),
-                      filled: true,
-                      fillColor: Colors.white,
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                      hintText: "choose DOB",
-                      hintStyle: TextStyle(
-                          color: const Color(0xFFb6b3c6).withOpacity(0.8),
-                          fontFamily: 'RobotoRegular'),
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  TextFormField(
-                    enabled: false,
-                    validator: (val) {
-                      // print('ss');
-                      // print(differenceDOB < 17);
-                      if (val!.isEmpty) return 'Please Enter Your DOB';
+                    child: _load
+                        ? Stack(alignment: Alignment.topRight, children: [
+                            Container(
+                              padding: const EdgeInsets.all(3),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50),
+                                  color: isDateSelected
+                                      ? differenceDOB > 17 && differenceDOB < 30
+                                          ? const Color.fromRGBO(0, 0, 255, 1)
+                                          : differenceDOB > 29 &&
+                                                  differenceDOB < 50
+                                              ? const Color.fromRGBO(
+                                                  255, 255, 0, 1)
+                                              : const Color.fromRGBO(
+                                                  0, 255, 128, 1)
+                                      : Colors.white),
+                              child: CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage:
+                                      FileImage(File(imageFile.path))),
+                            ),
+                            Container(
+                                alignment: Alignment.center,
+                                height: 28,
+                                width: 28,
+                                margin: const EdgeInsets.all(3),
+                                // padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(50)),
+                                child: const FaIcon(FontAwesomeIcons.camera,
+                                    size: 15, color: Colors.black)),
+                          ])
+                        : Stack(alignment: Alignment.topRight, children: [
+                            Container(
+                              padding: const EdgeInsets.all(3),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50),
+                                  color: Colors.white),
+                              child: const CircleAvatar(
+                                  radius: 50,
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 60,
+                                  )),
+                            ),
+                            Container(
+                                alignment: Alignment.center,
+                                height: 28,
+                                width: 28,
+                                margin: const EdgeInsets.all(3),
+                                // padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(50)),
+                                child: const FaIcon(FontAwesomeIcons.plus,
+                                    size: 15, color: Colors.black)),
+                          ])),
+                const SizedBox(height: 30),
+                TextFormField(
+                  validator: (val) {
+                    if (val!.isEmpty) return 'Please Enter Your Name';
 
-                      return null;
-                    },
-                    style: const TextStyle(color: Colors.black),
-                    controller: ageController,
-                    keyboardType: TextInputType.none,
-                    cursorColor: Colors.grey,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 20),
-                      hintText: "Age Range",
-                      hintStyle: TextStyle(
-                          color: const Color(0xFFb6b3c6).withOpacity(0.8),
-                          fontFamily: 'RobotoRegular'),
-                      border: const OutlineInputBorder(),
+                    return null;
+                  },
+                  style: const TextStyle(color: Colors.black),
+                  // validator: emailValidator,
+                  controller: nameController,
+                  keyboardType: TextInputType.name,
+                  cursorColor: Colors.grey,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(25),
+                  ],
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
                     ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 20),
+                    hintText: "Your Name",
+                    hintStyle: TextStyle(
+                        color: const Color(0xFFb6b3c6).withOpacity(0.8),
+                        fontFamily: 'RobotoRegular'),
+                    border: const OutlineInputBorder(),
                   ),
-                  const SizedBox(height: 15),
-                  TextFormField(
-                    onTap: () {
-                      determinePosition(context);
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => MapSample(_addrss)));
-                    },
-                    validator: (val) {
-                      if (val!.isEmpty) return 'Pick your location from map';
+                ),
+                const SizedBox(height: 15),
+                TextFormField(
+                  validator: (val) {
+                    if (val!.isEmpty) return 'Please enter your mobile number';
 
-                      return null;
-                    },
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(10),
-                    ],
-                    style: const TextStyle(color: Colors.black),
-                    controller: addressController,
-                    keyboardType: TextInputType.none,
-                    cursorColor: Colors.grey,
-                    decoration: InputDecoration(
-                      suffixIcon: GestureDetector(
-                          onTap: () {
-                            determinePosition(context);
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => MapSample(_addrss)));
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(15.0),
-                            child:
-                                FaIcon(Icons.my_location, color: Colors.black),
-                          )),
-                      filled: true,
-                      fillColor: Colors.white,
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 20),
-                      hintText: "Pick your address from map",
-                      hintStyle: TextStyle(
-                          color: const Color(0xFFb6b3c6).withOpacity(0.8),
-                          fontFamily: 'RobotoRegular'),
-                      border: const OutlineInputBorder(),
+                    return null;
+                  },
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(10),
+                  ],
+                  style: const TextStyle(color: Colors.black),
+                  controller: mobileController,
+                  keyboardType: TextInputType.number,
+                  cursorColor: Colors.grey,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
                     ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 20),
+                    hintText: "Enter your mobile number",
+                    hintStyle: TextStyle(
+                        color: const Color(0xFFb6b3c6).withOpacity(0.8),
+                        fontFamily: 'RobotoRegular'),
+                    border: const OutlineInputBorder(),
                   ),
-                  const SizedBox(height: 15),
-                  TextFormField(
-                    validator: (val) {
-                      if (val!.isEmpty) return 'Please Enter Bio';
+                ),
+                const SizedBox(height: 15),
+                TextFormField(
+                  validator: (val) {
+                    if (val!.isEmpty) return 'Please choose you DOB';
 
-                      return null;
-                    },
-                    maxLines: 8,
-                    style: const TextStyle(color: Colors.black),
-                    // validator: emailValidator,
-                    controller: bioController,
-                    keyboardType: TextInputType.text,
-                    cursorColor: Colors.grey,
-                    // inputFormatters: [
-                    //   LengthLimitingTextInputFormatter(25),
-                    // ],
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 20),
-                      hintText: 'Bio',
-                      hintStyle: TextStyle(
-                          color: const Color(0xFFb6b3c6).withOpacity(1),
-                          fontFamily: 'RobotoRegular'),
-                      border: const OutlineInputBorder(),
+                    return null;
+                  },
+                  onTap: () {
+                    _selectDate(context);
+                  },
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(10),
+                  ],
+                  style: const TextStyle(color: Colors.black),
+                  controller: dobController,
+                  keyboardType: TextInputType.none,
+                  cursorColor: Colors.grey,
+                  decoration: InputDecoration(
+                    suffixIcon: GestureDetector(
+                        onTap: () {
+                          _selectDate(context);
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: FaIcon(FontAwesomeIcons.calendarAlt,
+                              color: Colors.black),
+                        )),
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
                     ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 20),
+                    hintText: "choose DOB",
+                    hintStyle: TextStyle(
+                        color: const Color(0xFFb6b3c6).withOpacity(0.8),
+                        fontFamily: 'RobotoRegular'),
+                    border: const OutlineInputBorder(),
                   ),
-                  const SizedBox(height: 50),
-                  continueButton()
-                ],
-              ),
+                ),
+                const SizedBox(height: 15),
+                TextFormField(
+                  enabled: false,
+                  validator: (val) {
+                    // print('ss');
+                    // print(differenceDOB < 17);
+                    if (val!.isEmpty) return 'Please Enter Your DOB';
+
+                    return null;
+                  },
+                  style: const TextStyle(color: Colors.black),
+                  controller: ageController,
+                  keyboardType: TextInputType.none,
+                  cursorColor: Colors.grey,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 20),
+                    hintText: "Age Range",
+                    hintStyle: TextStyle(
+                        color: const Color(0xFFb6b3c6).withOpacity(0.8),
+                        fontFamily: 'RobotoRegular'),
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                TextFormField(
+                  onTap: () {
+                    determinePosition(context);
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => MapSample(_addrss)));
+                  },
+                  validator: (val) {
+                    if (val!.isEmpty) return 'Pick your location from map';
+
+                    return null;
+                  },
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(10),
+                  ],
+                  style: const TextStyle(color: Colors.black),
+                  controller: addressController,
+                  keyboardType: TextInputType.none,
+                  cursorColor: Colors.grey,
+                  decoration: InputDecoration(
+                    suffixIcon: GestureDetector(
+                        onTap: () {
+                          determinePosition(context);
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => MapSample(_addrss)));
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(15.0),
+                          child: FaIcon(Icons.my_location, color: Colors.black),
+                        )),
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 20),
+                    hintText: "Pick your address from map",
+                    hintStyle: TextStyle(
+                        color: const Color(0xFFb6b3c6).withOpacity(0.8),
+                        fontFamily: 'RobotoRegular'),
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                TextFormField(
+                  validator: (val) {
+                    if (val!.isEmpty) return 'Please Enter Bio';
+
+                    return null;
+                  },
+                  maxLines: 8,
+                  style: const TextStyle(color: Colors.black),
+                  // validator: emailValidator,
+                  controller: bioController,
+                  keyboardType: TextInputType.text,
+                  cursorColor: Colors.grey,
+                  // inputFormatters: [
+                  //   LengthLimitingTextInputFormatter(25),
+                  // ],
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 20),
+                    hintText: 'Bio',
+                    hintStyle: TextStyle(
+                        color: const Color(0xFFb6b3c6).withOpacity(1),
+                        fontFamily: 'RobotoRegular'),
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 50),
+                continueButton()
+              ],
             ),
           ),
         ),
@@ -584,8 +562,8 @@ class _CreateProfileState extends State<CreateProfile> {
       request.fields['age'] = differenceDOB.toString();
       request.fields['isFaceId'] = isBiometric.toString();
       request.fields['address'] = addressController.text;
-      request.fields['latitude'] = log.toString();
-      request.fields['longitude'] = lat.toString();
+      request.fields['latitude'] = lat.toString();
+      request.fields['longitude'] = log.toString();
       request.fields['dob'] = dobController.text;
       request.fields['mobile_number'] = mobileController.text;
       // request.fields['firebase_token'] = fcmtoken;
@@ -598,133 +576,49 @@ class _CreateProfileState extends State<CreateProfile> {
 
       EasyLoading.dismiss();
       if (status == '200') {
-        String userid = jsonDecode(data)['user_id'].toString();
-        authorization = jsonDecode(data)['accessToken'].toString();
+        user_id = jsonDecode(data)['user']['id'].toString();
+        authorization = jsonDecode(data)['accessToken'];
         SharedPreferences _prefs = await SharedPreferences.getInstance();
-
-        _prefs.setString('name', nameController.text);
-        _prefs.setString('email', email);
-        _prefs.setString('user_id', userid);
-        _prefs.setString('mobileno', mobileController.text);
-        _prefs.setString('profileimg', "");
-        _prefs.setString('roleType', AccountType);
-        _prefs.setString('password', password);
-        _prefs.setString('token', authorization);
-        _prefs.setString('age', ageController.text);
-        _prefs.setString('faceId', isBiometric);
+        name = nameController.text;
+        mobile = mobileController.text;
+        profileimg = jsonDecode(data)['user']['avatar'];
+        bio = bioController.text;
+        age = differenceDOB.toString();
+        address = addressController.text;
+        dateOfBirth = dobController.text;
+        _prefs.setString(Prefs.userId, user_id);
+        _prefs.setString(Prefs.address, address);
+        _prefs.setString(Prefs.name, name);
+        _prefs.setString(Prefs.email, email);
+        _prefs.setString(Prefs.userId, user_id);
+        _prefs.setString(Prefs.mobile, mobile);
+        _prefs.setString(Prefs.bio, bio);
+        _prefs.setString(Prefs.avatar, profileimg);
+        _prefs.setString(Prefs.roleType, AccountType);
+        _prefs.setString(Prefs.password, password);
+        _prefs.setString(Prefs.accessToken, authorization);
+        _prefs.setString(Prefs.age, differenceDOB.toString());
+        _prefs.setString(Prefs.faceId, isBiometric);
+        _prefs.setDouble(Prefs.latitude, latitude);
+        _prefs.setDouble(Prefs.longitude, longitude);
+        _prefs.setString(Prefs.dob, dateOfBirth);
         // name = ;
-        user_id = '';
-        email = '';
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (context) => AboutUs(nameController.text, false)),
-            (Route<dynamic> route) => false);
+
+        if (authorization != null) {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (context) => AboutUs(nameController.text, false)),
+              (Route<dynamic> route) => false);
+        }
         isSignUp = '';
         // Navigator.of(context).pushNamed(OTP_SCREEN);
       } else if (status == '400') {
         String message = jsonDecode(data)['message'].toString();
         EasyLoading.showToast(message);
       } else {
-        EasyLoading.showToast("Something Happen Wrong");
+        String message = jsonDecode(data)['message'].toString();
+        EasyLoading.showToast(message);
       }
     }
-    // else {
-    //   print("null");
-    //   var request = http.MultipartRequest('POST', Uri.parse(URL_Signup));
-
-    //   request.fields['name'] = nameController.text;
-    //   request.fields['email'] = email;
-    //   request.fields['password'] = password;
-    //   request.fields['roleType'] = AccountType;
-    //   request.fields['avatar'] = "";
-    //   request.fields['biography'] = bioController.text;
-    // request.fields['age'] = ageController.text;
-    // request.fields['isFaceId'] = 'true';
-    //   //  request.fields['firebase_token'] = fcmtoken;
-
-    //   var res = await request.send();
-    //   var response = await http.Response.fromStream(res);
-    //   String data = response.body;
-    //   /*final response = await http.post(Uri.parse(URL_Signup),
-    //    body: {
-    //      'mobile_number': widget.phoneno,
-    //      'name': namecontroll.text,
-    //      'email': widget.emailid,
-    //      'password': widget.password,
-    //      'roleType': AccountType,
-    //      'avatar': "",
-    //    },
-    //  );
-    //  String data = response.body;*/
-    //   print(data);
-    //   String status = jsonDecode(data)['status'].toString();
-
-    //   EasyLoading.dismiss();
-    //   if (status == '200') {
-    //     String userid = jsonDecode(data)['user_id'].toString();
-    //     authorization = jsonDecode(data)['accessToken'].toString();
-    //     SharedPreferences _prefs = await SharedPreferences.getInstance();
-    //     _prefs.setString('name', nameController.text);
-    //     _prefs.setString('email', email);
-    //     _prefs.setString('user_id', userid);
-    //     _prefs.setString('profileimg', "");
-    //     _prefs.setString('role', AccountType);
-    //     _prefs.setString('password', password);
-    //     _prefs.setString('token', authorization);
-    //     name = nameController.text;
-    //     user_id = userid;
-    //      Navigator.of(context).pushAndRemoveUntil(
-    //         MaterialPageRoute(builder: (context) => AddFriends()),
-    //         (Route<dynamic> route) => false);
-    //     // Navigator.of(context).pushNamed(OTP_SCREEN);
-    //   } else if (status == '400') {
-    //     String message = jsonDecode(data)['message'].toString();
-    //     EasyLoading.showToast(message);
-    //   } else {
-    //     EasyLoading.showToast("Something Happen Wrong");
-    //   }
-    // }
   }
-
-  // Future<Position> _determinePosition() async {
-  //   // Position position = await Geolocator.getCurrentPosition(
-  //   //     desiredAccuracy: LocationAccuracy.high);
-  //   bool serviceEnabled;
-  //   LocationPermission permission;
-
-  //   // Test if location services are enabled.
-  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  //   if (!serviceEnabled) {
-  //     // return PermissionDialog();
-
-  //     // Location services are not enabled don't continue
-  //     // accessing the position and request users of the
-  //     // App to enable the location services.
-  //     return Future.error('Location services are disabled.');
-  //   }
-
-  //   permission = await Geolocator.checkPermission();
-  //   if (permission == LocationPermission.denied) {
-  //     permission = await Geolocator.requestPermission();
-  //     if (permission == LocationPermission.denied) {
-  //       return Future.error('Location permissions are denied');
-  //     }
-  //   }
-
-  //   if (permission == LocationPermission.deniedForever) {
-  //     return Future.error(
-  //         'Location permissions are permanently denied, we cannot request permissions.');
-  //   }
-  //   Position position = await Geolocator.getCurrentPosition(
-  //       desiredAccuracy: LocationAccuracy.high);
-  //   latitude = position.latitude;
-  //   longitude = position.longitude;
-  //   print(position.latitude);
-  //   print(position.longitude);
-
-  //   // When we reach here, permissions are granted and we can
-  //   // continue accessing the position of the device.
-  //   return await Geolocator.getCurrentPosition();
-  // }
-
 }

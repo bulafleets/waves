@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter_sms/flutter_sms.dart';
 import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
@@ -14,13 +15,15 @@ class ContactsPage extends StatefulWidget {
 }
 
 class _ContactsPageState extends State<ContactsPage> {
+  TextEditingController _searchController = TextEditingController();
   String? _message;
   String message =
       'Hey, your friends are on waves app , download here http://wave.com ';
   List<String> people = [];
-  late Iterable<Contact> _contacts;
+  // late Iterable<Contact> _contacts;
   bool _isContact = false;
   var contactNumbers = [];
+  List<Conta> alreadyContact = [];
   @override
   void initState() {
     getContacts();
@@ -30,17 +33,61 @@ class _ContactsPageState extends State<ContactsPage> {
 
   Future<void> getContacts() async {
     final Iterable<Contact> contacts = await ContactsService.getContacts();
+    for (var i in contacts) {
+      // var str = i.phones!.forEach((element) {
+      //   element.value;
+      // }).value!;
+      for (var j in i.phones!) {
+        var str = j.value;
+        var number = replaceWhitespacesUsingRegex(str!, '');
+        if (number!.length > 10) {
+          var s = number.substring(3);
+
+          alreadyContact
+              .add(Conta(name: i.displayName!, avtar: i.initials(), number: s));
+        }
+      }
+    }
     setState(() {
-      _contacts = contacts;
       _isContact = true;
+      _userDetails = alreadyContact;
     });
   }
 
+  String? replaceWhitespacesUsingRegex(String s, String replace) {
+    if (s == null) {
+      return null;
+    }
+    final pattern = RegExp('\\s+');
+    return s.replaceAll(pattern, replace);
+  }
+
+  onSearchTextChanged(String text) async {
+    _searchResult.clear();
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    for (var userDetail in _userDetails) {
+      if (userDetail.name.contains(text)) {
+        _searchResult.add(userDetail);
+      }
+    }
+
+    setState(() {});
+  }
+
+  List<Conta> _searchResult = [];
+
+  List<Conta> _userDetails = [];
+
   @override
   Widget build(BuildContext context) {
+    print(alreadyContact.length);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Contacts',
+        title: Text('Contacts List',
             textAlign: TextAlign.center,
             style: GoogleFonts.quicksand(
                 fontWeight: FontWeight.bold,
@@ -49,103 +96,236 @@ class _ContactsPageState extends State<ContactsPage> {
         centerTitle: true,
       ),
       body: _isContact
-          ? ListView.builder(
-              itemCount: _contacts.length,
-              itemBuilder: (BuildContext context, int index) {
-                Contact? contact = _contacts.elementAt(index);
-                // print(contactNumbers.contains(contact.phones!.first.value));
-                var vl = contact.phones!.first.value!.trim();
-                print(vl);
-                if (index == 0) {
-                  return Container(
-                    width: 300,
-                    height: 50,
-                    margin: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color.fromRGBO(78, 114, 136, .15),
-                          )
-                        ]),
-                    child: TextField(
-                      style: const TextStyle(color: Colors.black),
-                      keyboardType: TextInputType.text,
-                      cursorColor: Colors.grey,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.white),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.white),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        prefixIcon:
-                            const Icon(Icons.search, color: Color(0xffb7c2d5)),
-                        hintText: "Search",
-                        contentPadding: const EdgeInsets.only(top: 15),
-                        hintStyle: TextStyle(
-                            color: const Color(0xFFb6b3c6).withOpacity(0.8),
-                            fontFamily: 'RobotoRegular'),
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                  );
-                }
-
-                return ListTile(
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 2, horizontal: 18),
-                    leading:
-                        (contact.avatar != null && contact.avatar!.isNotEmpty)
-                            ? CircleAvatar(
-                                backgroundImage: MemoryImage(contact.avatar!),
+          ? _searchResult.isNotEmpty
+              ? ListView.builder(
+                  itemCount: _searchResult.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    // Contact? contact = _searchResult.elementAt(index);
+                    // print(contactNumbers.contains(contact.phones!.first.value));
+                    // var vl = contact.phones!.first.value!.trim();
+                    if (index == 0) {
+                      return Container(
+                        width: 300,
+                        height: 50,
+                        margin: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color.fromRGBO(78, 114, 136, .15),
                               )
-                            : CircleAvatar(
-                                child: Text(contact.initials()),
-                                backgroundColor: Theme.of(context).accentColor,
-                              ),
-                    title: Text(contact.displayName ?? ''),
-                    subtitle: Text(contact.phones!.first.value.toString()),
-                    trailing: SizedBox(
-                        height: 40,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            onPrimary: Colors.white,
-                            primary: Theme.of(context).primaryColor,
-                            minimumSize: const Size(88, 36),
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(30)),
+                            ]),
+                        child: TextField(
+                          onChanged: onSearchTextChanged,
+                          style: const TextStyle(color: Colors.black),
+                          keyboardType: TextInputType.text,
+                          cursorColor: Colors.grey,
+                          decoration: InputDecoration(
+                            suffixIcon: _searchController.text.isNotEmpty
+                                ? InkWell(
+                                    onTap: () {
+                                      _searchController.clear();
+                                      onSearchTextChanged('');
+                                    },
+                                    child: Icon(Icons.close))
+                                : null,
+                            filled: true,
+                            fillColor: Colors.white,
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(30),
                             ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            prefixIcon: const Icon(Icons.search,
+                                color: Color(0xffb7c2d5)),
+                            hintText: "Search",
+                            contentPadding: const EdgeInsets.only(top: 15),
+                            hintStyle: TextStyle(
+                                color: const Color(0xFFb6b3c6).withOpacity(0.8),
+                                fontFamily: 'RobotoRegular'),
+                            border: const OutlineInputBorder(),
                           ),
-                          onPressed: !contactNumbers
-                                  .contains(contact.phones!.first.value)
-                              ? () async {
-                                  var number = contact.phones!.first.value;
-                                  setState(() {
-                                    people.add(number!);
-                                  });
-                                  if (people.isNotEmpty) {
-                                    await _sendSMS(people);
-                                    people.clear();
-                                  }
-                                }
-                              : null,
-                          child: const Text(
-                            "Invite",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontFamily: 'RobotoBold'),
+                        ),
+                      );
+                    }
+
+                    return ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 2, horizontal: 18),
+                        leading:
+                            //  (alreadyContact[index].avtar != null)
+                            // ? CircleAvatar(
+                            //     backgroundImage:
+                            //         MemoryImage(alreadyContact[index].avtar),
+                            //   )
+                            // :
+                            CircleAvatar(
+                          child: Text(_searchResult[index].avtar),
+                          backgroundColor: Theme.of(context).accentColor,
+                        ),
+                        title: Text(_searchResult[index].name),
+                        subtitle: Text(_searchResult[index].number),
+                        trailing: SizedBox(
+                            height: 40,
+                            child: !contactNumbers
+                                    .contains(_searchResult[index].number)
+                                ? ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      onPrimary: Colors.white,
+                                      primary: Theme.of(context).primaryColor,
+                                      minimumSize: const Size(88, 36),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16),
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(30)),
+                                      ),
+                                    ),
+                                    onPressed: () async {
+                                      var number = _searchResult[index].number;
+                                      setState(() {
+                                        people.add(number);
+                                      });
+                                      if (people.isNotEmpty) {
+                                        await _sendSMS(people);
+                                        people.clear();
+                                      }
+                                    },
+                                    child: const Text(
+                                      "Invite",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontFamily: 'RobotoBold'),
+                                    ),
+                                  )
+                                : const Text(
+                                    "Already on Waves",
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 16,
+                                        fontFamily: 'RobotoBold'),
+                                  )));
+                  },
+                )
+              : ListView.builder(
+                  itemCount: alreadyContact.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    // Contact? contact = _contacts.elementAt(index);
+                    // print(contactNumbers.contains(contact.phones!.first.value));
+                    // var vl = contact.phones!.first.value!.trim();
+
+                    if (index == 0) {
+                      return Container(
+                        width: 300,
+                        height: 50,
+                        margin: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color.fromRGBO(78, 114, 136, .15),
+                              )
+                            ]),
+                        child: TextField(
+                          onChanged: onSearchTextChanged,
+                          style: const TextStyle(color: Colors.black),
+                          keyboardType: TextInputType.text,
+                          cursorColor: Colors.grey,
+                          decoration: InputDecoration(
+                            suffixIcon: _searchController.text.isNotEmpty
+                                ? InkWell(
+                                    onTap: () {
+                                      _searchController.clear();
+                                      onSearchTextChanged('');
+                                    },
+                                    child: Icon(Icons.close))
+                                : null,
+                            filled: true,
+                            fillColor: Colors.white,
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            prefixIcon: const Icon(Icons.search,
+                                color: Color(0xffb7c2d5)),
+                            hintText: "Search",
+                            contentPadding: const EdgeInsets.only(top: 15),
+                            hintStyle: TextStyle(
+                                color: const Color(0xFFb6b3c6).withOpacity(0.8),
+                                fontFamily: 'RobotoRegular'),
+                            border: const OutlineInputBorder(),
                           ),
-                        )));
-              },
-            )
+                        ),
+                      );
+                    }
+
+                    return ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 2, horizontal: 18),
+                        leading:
+                            //  (alreadyContact[index].avtar != null)
+                            // ? CircleAvatar(
+                            //     backgroundImage:
+                            //         MemoryImage(alreadyContact[index].avtar),
+                            //   )
+                            // :
+                            CircleAvatar(
+                          child: Text(alreadyContact[index].avtar),
+                          backgroundColor: Theme.of(context).accentColor,
+                        ),
+                        title: Text(alreadyContact[index].name),
+                        subtitle: Text(alreadyContact[index].number),
+                        trailing: SizedBox(
+                            height: 40,
+                            child: !contactNumbers
+                                    .contains(alreadyContact[index].number)
+                                ? ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      onPrimary: Colors.white,
+                                      primary: Theme.of(context).primaryColor,
+                                      minimumSize: const Size(88, 36),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16),
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(30)),
+                                      ),
+                                    ),
+                                    onPressed: () async {
+                                      var number = alreadyContact[index].number;
+                                      setState(() {
+                                        people.add(number);
+                                      });
+                                      if (people.isNotEmpty) {
+                                        await _sendSMS(people);
+                                        people.clear();
+                                      }
+                                    },
+                                    child: const Text(
+                                      "Invite",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontFamily: 'RobotoBold'),
+                                    ),
+                                  )
+                                : const Text(
+                                    "Already on Waves",
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 16,
+                                        fontFamily: 'RobotoBold'),
+                                  )));
+                  },
+                )
           : const Center(child: CircularProgressIndicator()),
     );
   }
@@ -177,4 +357,11 @@ class _ContactsPageState extends State<ContactsPage> {
   //       _result ? 'This unit can send SMS' : 'This unit cannot send SMS');
   //   return _result;
   // }
+}
+
+class Conta {
+  final String name;
+  final String avtar;
+  final String number;
+  Conta({required this.name, required this.avtar, required this.number});
 }

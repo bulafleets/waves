@@ -1,10 +1,22 @@
+import 'dart:convert';
 import 'dart:ui';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waves/contants/common_params.dart';
 
 class CheckIn extends StatefulWidget {
-  const CheckIn({Key? key}) : super(key: key);
+  final String waveId;
+  final String image;
+  final String waveName;
+  final String waveType;
+  final Function(bool isCheckIN) checkInData;
+  const CheckIn(
+      this.waveId, this.checkInData, this.image, this.waveName, this.waveType,
+      {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => CheckInState();
@@ -46,7 +58,7 @@ class CheckInState extends State<CheckIn> with SingleTickerProviderStateMixin {
                   child: Container(
                       margin: const EdgeInsets.all(10.0),
                       padding: const EdgeInsets.all(10.0),
-                      height: 260.0,
+                      height: 282.0,
                       width: 310,
                       decoration: ShapeDecoration(
                           color: Colors.white,
@@ -56,20 +68,25 @@ class CheckInState extends State<CheckIn> with SingleTickerProviderStateMixin {
                       child: Column(
                         children: <Widget>[
                           const SizedBox(height: 2),
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 37,
                             backgroundColor: Colors.black,
                             child: CircleAvatar(
                               radius: 36,
-                              backgroundImage: NetworkImage(
-                                  "https://i.pinimg.com/564x/bd/cd/4e/bdcd4e097d609543724874b01aa91c76.jpg"),
+                              backgroundImage: NetworkImage(widget.image),
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Text('Bar Name',
+                          Text(widget.waveName,
                               style: GoogleFonts.quicksand(
                                   color: const Color.fromRGBO(38, 69, 255, 1),
                                   fontSize: 18,
+                                  fontWeight: FontWeight.w300)),
+                          const SizedBox(height: 8),
+                          Text(widget.waveType,
+                              style: GoogleFonts.quicksand(
+                                  color: const Color.fromRGBO(38, 69, 255, 1),
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w300)),
                           const SizedBox(height: 18),
                           Text(
@@ -129,8 +146,13 @@ class CheckInState extends State<CheckIn> with SingleTickerProviderStateMixin {
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w500)),
                                         onPressed: () {
-                                          Navigator.of(context).pop();
-                                          // Navigator.of(context).push(MaterialPageRoute(
+                                          EasyLoading.show(
+                                              status: 'Please Wait ...');
+                                          checkInApi();
+
+                                          setState(() {
+                                            widget.checkInData(true);
+                                          }); // Navigator.of(context).push(MaterialPageRoute(
                                           //     builder: (context) =>
                                           //       ));
                                         },
@@ -143,5 +165,33 @@ class CheckInState extends State<CheckIn> with SingleTickerProviderStateMixin {
               ),
               // ),
             ));
+  }
+
+  Future<void> checkInApi() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    var userId = _prefs.getString('user_id');
+    final response = await http.post(
+      Uri.parse(checkIn),
+      body: {"wave_id": widget.waveId, "user_id": userId},
+    );
+    EasyLoading.dismiss();
+
+    String data = response.body;
+    print(data);
+    String status = jsonDecode(data)['status'].toString();
+
+    if (status == "200") {
+      String message = jsonDecode(data)['message'];
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(message),
+      ));
+    }
+    Navigator.of(context).pop();
+    if (status == "400") {
+      String message = jsonDecode(data)['message'];
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(message),
+      ));
+    }
   }
 }

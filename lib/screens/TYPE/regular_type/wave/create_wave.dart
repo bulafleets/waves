@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:waves/contants/common_params.dart';
 import 'package:waves/contants/common_widgets.dart';
 import 'package:waves/contants/event_id.dart';
 import 'package:waves/screens/TYPE/regular_type/wave/widget/calender.dart';
@@ -19,9 +23,12 @@ class _CreateWaveScreenState extends State<CreateWaveScreen> {
   TextEditingController addressController = TextEditingController();
   TextEditingController eventTypeController = TextEditingController();
   TextEditingController eventDetailsController = TextEditingController();
+  TextEditingController waveNameController = TextEditingController();
 
   bool friendsOnly = false;
   bool inviteOnly = false;
+  late PickedFile imageFile;
+  bool _load = false;
   var log;
   var lat;
   var eventName;
@@ -87,6 +94,57 @@ class _CreateWaveScreenState extends State<CreateWaveScreen> {
                       fontSize: 29, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 35),
+                InkWell(
+                  onTap: () {
+                    _showPicker(context);
+                  },
+                  child: Container(
+                      height: 100,
+                      width: 100,
+                      decoration: const BoxDecoration(
+                          color: Colors.white60,
+                          boxShadow: [BoxShadow(color: Colors.grey)]),
+                      child: !_load
+                          ? const Icon(Icons.add, size: 35)
+                          : Image.file(File(imageFile.path),
+                              fit: BoxFit.cover)),
+                ),
+                const SizedBox(height: 20),
+
+                TextFormField(
+                  // onTap: () {
+                  //   determinePosition(context);
+                  //   Navigator.of(context).push(MaterialPageRoute(
+                  //       builder: (context) => MapSample(_addrss)));
+                  // },
+                  validator: (val) {
+                    if (val!.isEmpty) return 'Please enter wave name';
+
+                    return null;
+                  },
+                  style: const TextStyle(color: Colors.black),
+                  controller: waveNameController,
+                  keyboardType: TextInputType.text,
+                  cursorColor: Colors.grey,
+                  decoration: InputDecoration(
+                      filled: true,
+                      fillColor: const Color.fromRGBO(234, 234, 234, 1),
+                      enabledBorder: UnderlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(8)),
+                      focusedBorder: UnderlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(8)),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 20),
+                      hintText: "Wave Name",
+                      hintStyle: const TextStyle(
+                          color: Color.fromRGBO(145, 145, 145, 1),
+                          fontFamily: 'RobotoRegular'),
+                      border: const OutlineInputBorder()),
+                ),
+                const SizedBox(height: 15),
+
                 TextFormField(
                   onTap: () {
                     determinePosition(context);
@@ -106,8 +164,10 @@ class _CreateWaveScreenState extends State<CreateWaveScreen> {
                       suffixIcon: GestureDetector(
                           onTap: () {
                             determinePosition(context);
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => MapSample(_addrss)));
+                            if (latitude != '' && longitude != '') {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => MapSample(_addrss)));
+                            }
                           },
                           child: Padding(
                               padding: const EdgeInsets.all(16.0),
@@ -275,6 +335,56 @@ class _CreateWaveScreenState extends State<CreateWaveScreen> {
     );
   }
 
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Wrap(
+              children: <Widget>[
+                ListTile(
+                    leading: const Icon(Icons.photo_library),
+                    title: const Text('Photo Library'),
+                    onTap: () {
+                      _imgFromGallery();
+                      Navigator.of(context).pop();
+                    }),
+                ListTile(
+                  leading: const Icon(Icons.photo_camera),
+                  title: const Text('Camera'),
+                  onTap: () {
+                    _imgFromCamera();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  _imgFromCamera() async {
+    final pickedFile = await ImagePicker().getImage(
+        source: ImageSource.camera,
+        //  maxWidth: 2300,
+        // maxHeight: 1500,
+        imageQuality: 50);
+    setState(() {
+      imageFile = pickedFile!;
+      _load = true;
+    });
+  }
+
+  _imgFromGallery() async {
+    final pickedFile = await ImagePicker()
+        .getImage(source: ImageSource.gallery, imageQuality: 50);
+
+    setState(() {
+      imageFile = pickedFile!;
+      _load = true;
+    });
+  }
+
   Widget selectDateTime() {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
@@ -296,15 +406,24 @@ class _CreateWaveScreenState extends State<CreateWaveScreen> {
           // _selectDate(context);
           if (_formkey.currentState!.validate()) {
             if (eventValue != null) {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => CalenderScreenRegular(
-                      address: addressController.text,
-                      log: log,
-                      lat: lat,
-                      eventId: eventValue,
-                      eventDetails: eventDetailsController.text,
-                      isFriendOnly: friendsOnly,
-                      isInviteOnly: inviteOnly)));
+              if (_load) {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => CalenderScreenRegular(
+                          wavename: waveNameController.text,
+                          address: addressController.text,
+                          log: log,
+                          lat: lat,
+                          eventId: eventValue,
+                          eventDetails: eventDetailsController.text,
+                          isFriendOnly: friendsOnly,
+                          isInviteOnly: inviteOnly,
+                          image: imageFile.path,
+                        )));
+              } else {
+                String message = 'please add event image';
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(message), backgroundColor: Colors.red));
+              }
             } else {
               String message = 'please select event Type';
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(

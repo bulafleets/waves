@@ -22,6 +22,12 @@ class _ChangePasswordState extends State<ChangePassword> {
   GlobalKey<FormState> _formkey = GlobalKey();
   bool isalldone = false;
   @override
+  void dispose() {
+    EasyLoading.dismiss();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     bool keyboardIsOpened = MediaQuery.of(context).viewInsets.bottom != 0.0;
     return Scaffold(

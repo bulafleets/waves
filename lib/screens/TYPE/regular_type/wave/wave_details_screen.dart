@@ -16,7 +16,8 @@ import 'package:waves/screens/TYPE/regular_type/map/map_screen.dart';
 
 class WaveDetailsScreen extends StatefulWidget {
   final String WaveId;
-  const WaveDetailsScreen(this.WaveId, {Key? key}) : super(key: key);
+  final int age;
+  const WaveDetailsScreen(this.WaveId, this.age, {Key? key}) : super(key: key);
 
   @override
   _WaveDetailsScreenState createState() => _WaveDetailsScreenState();
@@ -24,15 +25,22 @@ class WaveDetailsScreen extends StatefulWidget {
 
 class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
   late Future<SingleWaveModel> _future;
+  bool _isCheckIn = false;
+
+  void _check(bool checkIn) {
+    setState(() {
+      _isCheckIn = checkIn;
+    });
+  }
 
   @override
   void initState() {
     _future = singleWavebyRegular();
-    // TODO: implement initState
     super.initState();
   }
 
   Future<void> _pullRefresh() async {
+    await Future.delayed(const Duration(seconds: 2));
     setState(() {
       _future = singleWavebyRegular();
     });
@@ -73,11 +81,18 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               var data = snapshot.data!.wave.first;
-              var date = DateFormat('yyyy-MM-dd').format(data.date);
+
+              var date = DateFormat('yyyy/MM/dd').format(data.date);
+              var time = DateTime.now().difference(data.createdAt).inMinutes;
+              String tt = time > 59
+                  ? time > 1440
+                      ? '${DateTime.now().difference(data.createdAt).inDays.toString()} d'
+                      : '${DateTime.now().difference(data.createdAt).inHours.toString()} h'
+                  : "${DateTime.now().difference(data.createdAt).inMinutes.toString()} m";
               return RefreshIndicator(
                   onRefresh: _pullRefresh,
                   child: ListView(
-                    physics: const NeverScrollableScrollPhysics(),
+                    // physics: const NeverScrollableScrollPhysics(),
                     children: [
                       Container(
                           // height: 251,
@@ -99,16 +114,26 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
                                     child: Stack(
                                       alignment: Alignment.bottomRight,
                                       children: [
-                                        const CircleAvatar(
+                                        CircleAvatar(
                                             radius: 50,
                                             backgroundColor: Colors.black,
                                             child: CircleAvatar(
                                               radius: 48,
                                               backgroundImage: NetworkImage(
-                                                  "https://i.pinimg.com/564x/bd/cd/4e/bdcd4e097d609543724874b01aa91c76.jpg"),
+                                                  data.media.first.location),
                                             )),
                                         CircleAvatar(
                                             radius: 19,
+                                            backgroundColor: widget.age > 17 &&
+                                                    widget.age < 30
+                                                ? const Color.fromRGBO(
+                                                    0, 0, 255, 1)
+                                                : widget.age > 29 &&
+                                                        widget.age < 50
+                                                    ? const Color.fromRGBO(
+                                                        255, 255, 0, 1)
+                                                    : const Color.fromRGBO(
+                                                        0, 255, 128, 1),
                                             child: CircleAvatar(
                                               radius: 17,
                                               backgroundImage:
@@ -133,16 +158,20 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
                                                   fontWeight: FontWeight.w500),
                                             ),
                                             const SizedBox(width: 15),
-                                            if (AccountType == 'BUSINESS')
-                                              const FaIcon(
-                                                FontAwesomeIcons.shieldAlt,
-                                                color: Color.fromRGBO(
-                                                    0, 149, 242, 1),
-                                                size: 18,
+                                            if (data.userType == 'BUSINESS')
+                                              Image.asset(
+                                                'assets/icons/verified.png',
+                                                scale: .9,
                                               ),
+                                            // const FaIcon(
+                                            //   FontAwesomeIcons.shieldAlt,
+                                            //   color: Color.fromRGBO(
+                                            //       0, 149, 242, 1),
+                                            //   size: 18,
+                                            // ),
                                             const SizedBox(width: 30),
                                             Text(
-                                              data.createdAt,
+                                              tt,
                                               style: GoogleFonts.quicksand(
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.w400),
@@ -151,7 +180,9 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
                                         ),
                                         const SizedBox(height: 10),
                                         Text(
-                                          'Restaurant Name',
+                                          data.isCheckedIn
+                                              ? 'Checked in ${data.eventInfo.eventName}'
+                                              : 'Wave at ${data.waveName}',
                                           style: GoogleFonts.quicksand(
                                               fontSize: 17,
                                               fontWeight: FontWeight.w300),
@@ -229,12 +260,24 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
                                                 42, 124, 202, 1)))),
                                 const SizedBox(width: 15),
                                 TextButton(
-                                    onPressed: () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (_) => const CheckIn());
-                                    },
-                                    child: Text('Check-In',
+                                    onPressed: !data.isCheckedIn
+                                        ? () {
+                                            showDialog(
+                                                context: context,
+                                                builder: (_) => CheckIn(
+                                                    data.id,
+                                                    _check,
+                                                    data.media.first.location,
+                                                    data.waveName,
+                                                    data.eventInfo.eventName));
+                                          }
+                                        : null,
+                                    child: Text(
+                                        !data.isCheckedIn
+                                            ? _isCheckIn
+                                                ? 'Already checked-In'
+                                                : 'Check-In'
+                                            : 'Already checked-In',
                                         style: GoogleFonts.quicksand(
                                             fontSize: 18,
                                             fontWeight: FontWeight.w500,
@@ -243,32 +286,32 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
                               ],
                             )
                           ])),
+                      // const SizedBox(height: 5),
+                      // Row(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      //     children: [
+                      //       Text(
+                      //         'COMMENTS',
+                      //         style: GoogleFonts.quicksand(
+                      //             fontSize: 19, fontWeight: FontWeight.w300),
+                      //       ),
+                      //       TextButton(
+                      //           onPressed: () {
+                      //             showDialog(
+                      //                 context: context,
+                      //                 builder: (_) => LeaveComment(data.id));
+                      //           },
+                      //           child: Text(
+                      //             'Leave a comment+',
+                      //             style: GoogleFonts.quicksand(
+                      //                 fontSize: 13,
+                      //                 color:
+                      //                     const Color.fromRGBO(42, 124, 202, 1),
+                      //                 fontWeight: FontWeight.w300),
+                      //           ))
+                      //     ]),
                       const SizedBox(height: 5),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              'COMMENTS',
-                              style: GoogleFonts.quicksand(
-                                  fontSize: 19, fontWeight: FontWeight.w300),
-                            ),
-                            TextButton(
-                                onPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (_) => const LeaveComment());
-                                },
-                                child: Text(
-                                  'Leave a comment+',
-                                  style: GoogleFonts.quicksand(
-                                      fontSize: 13,
-                                      color:
-                                          const Color.fromRGBO(42, 124, 202, 1),
-                                      fontWeight: FontWeight.w300),
-                                ))
-                          ]),
-                      const SizedBox(height: 5),
-                      const CommentScreen()
+                      CommentScreen(data.waveComments, data.id, data.userId)
                     ],
                   ));
             } else {
@@ -280,10 +323,10 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
 
   Future<SingleWaveModel> singleWavebyRegular() async {
     var data;
-    http.Response response = await http
-        .post(Uri.parse(SingleWaveView), body: {'wave_id': widget.WaveId});
+    http.Response response = await http.post(Uri.parse(SingleWaveView),
+        body: {'wave_id': widget.WaveId, 'user_id': user_id});
     final jsonString = response.body;
-    print(jsonString);
+
     final jsonMap = jsonDecode(jsonString);
     data = SingleWaveModel.fromJson(jsonMap);
     return data;

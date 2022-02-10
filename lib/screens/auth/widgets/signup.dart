@@ -35,6 +35,12 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _isLoading = false;
 
   @override
+  void dispose() {
+    EasyLoading.dismiss();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Form(
       key: _formkey,

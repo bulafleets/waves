@@ -12,6 +12,7 @@ import 'package:waves/screens/TYPE/regular_type/wave/invite_screen.dart';
 import 'package:intl/intl.dart';
 
 class CalenderScreenRegular extends StatefulWidget {
+  final String wavename;
   final String log;
   final String lat;
   final String eventId;
@@ -19,9 +20,11 @@ class CalenderScreenRegular extends StatefulWidget {
   final String address;
   final bool isFriendOnly;
   final bool isInviteOnly;
+  final String image;
 
   const CalenderScreenRegular({
     Key? key,
+    required this.wavename,
     required this.address,
     required this.log,
     required this.lat,
@@ -29,6 +32,7 @@ class CalenderScreenRegular extends StatefulWidget {
     required this.eventDetails,
     required this.isFriendOnly,
     required this.isInviteOnly,
+    required this.image,
   }) : super(key: key);
   @override
   _CalenderScreenRegularState createState() => _CalenderScreenRegularState();
@@ -98,7 +102,6 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
 
   @override
   Widget build(BuildContext context) {
-    print(_dateController.text);
     return Scaffold(
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(80.0), // here the desired height
@@ -131,7 +134,7 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           padding: const EdgeInsets.all(20),
-          child: Column(
+          child: ListView(
               // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -270,7 +273,6 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
   }
 
   Widget confirm() {
-    print(widget.isInviteOnly);
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       height: 60,
@@ -289,8 +291,20 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
           //     context: context, builder: (context) => SelectDateTime());
           // _selectDate(context);
           if (widget.isInviteOnly) {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => InviteScreen()));
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => InviteScreen(
+                    wavename: widget.wavename,
+                    address: widget.address,
+                    log: widget.log,
+                    lat: widget.lat,
+                    eventId: widget.eventId,
+                    eventDetails: widget.eventDetails,
+                    isFriendOnly: widget.isFriendOnly,
+                    isInviteOnly: widget.isInviteOnly,
+                    image: widget.image,
+                    startTime: _starttimeController.text,
+                    endTime: _endTimeController.text,
+                    date: _dateController.text)));
           } else {
             createWaveRegular();
             EasyLoading.show(status: 'Please Wait ...');
@@ -308,11 +322,9 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
   Future<void> createWaveRegular() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     var userid = _prefs.getString('user_id');
-    print(userid);
-
     var request = http.MultipartRequest('POST', Uri.parse(WaveCreate));
-    // request.files
-    //     .add(await http.MultipartFile.fromPath('media', imageFile.path));
+    request.files.add(await http.MultipartFile.fromPath('media', widget.image));
+    request.fields['wave_name'] = widget.wavename;
     request.fields['user_id'] = userid!;
     request.fields['event_id'] = widget.eventId;
     request.fields['date'] = _dateController.text;
@@ -328,12 +340,10 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
     request.fields['end_time'] = _endTimeController.text;
     // invite_tags[0] see it later
 
-    print(latitude);
     var res = await request.send();
     var response = await http.Response.fromStream(res);
     String data = response.body;
     String status = jsonDecode(data)['status'].toString();
-    print(data);
     EasyLoading.dismiss();
     if (status == "200") {
       Navigator.of(context).pushReplacement(

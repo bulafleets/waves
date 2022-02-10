@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
+import 'package:waves/contants/share_pref.dart';
 import 'package:waves/screens/Main/main_page.dart';
 import 'package:waves/screens/about_us/about_us.dart';
 import 'package:waves/screens/auth/local_auth/local_auth.dart';
@@ -32,6 +33,13 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isObscureText = true;
   var isalldone = false;
   bool value = false;
+
+  @override
+  void dispose() {
+    EasyLoading.dismiss();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -243,7 +251,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> loginPage() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
-    var token = _prefs.getString('device_token');
+    var token = _prefs.getString(Prefs.firebasetoken);
     print(token);
     final response = await http.post(
       Uri.parse(URL_Login),
@@ -260,7 +268,7 @@ class _LoginScreenState extends State<LoginScreen> {
     String status = jsonDecode(data)['status'].toString();
 
     EasyLoading.dismiss();
-    if (status == "true") {
+    if (status == "200") {
       authorization = jsonDecode(data)['accessToken'];
       // String userdata = jsonDecode(data)['user'].toString();
 
@@ -268,27 +276,29 @@ class _LoginScreenState extends State<LoginScreen> {
       user_id = jsonDecode(data)['user']['_id'].toString();
       AccountType = jsonDecode(data)['user']['roles'];
       name = jsonDecode(data)['user']['username'];
-      var mobile = jsonDecode(data)['user']['mobile_number'];
-      var image = jsonDecode(data)['user']['avatar'];
-      var faceId = jsonDecode(data)['user']['isFaceId'];
-      var bio = jsonDecode(data)['user']['biography'];
-      var age = jsonDecode(data)['user']['age'];
-      var address = jsonDecode(data)['user']['address'];
-      //   var lat = jsonDecode(data)['user']['location']['coordinates'][1];
-      // var log = jsonDecode(data)['user']['location']['coordinates'][2];
-
-      _prefs.setString('email', email);
-      _prefs.setString('user_id', user_id);
-      _prefs.setString('roleType', AccountType);
-      _prefs.setString('name', name);
-      _prefs.setString('token', authorization);
-      _prefs.setString('mobileno', mobile);
-      // _prefs.setString('profileimg', image);
-      _prefs.setString('token', authorization);
-      _prefs.setString('age', age.toString());
-      _prefs.setString('faceId', faceId.toString());
-      _prefs.setString('bio', bio);
-      _prefs.setString('address', address);
+      mobile = jsonDecode(data)['user']['mobile_number'];
+      profileimg = jsonDecode(data)['user']['avatar'];
+      isBiometric = jsonDecode(data)['user']['isFaceId'].toString();
+      bio = jsonDecode(data)['user']['biography'];
+      age = jsonDecode(data)['user']['age'].toString();
+      address = jsonDecode(data)['user']['address'];
+      latitude = jsonDecode(data)['user']['latitude'];
+      longitude = jsonDecode(data)['user']['longitude'];
+      dateOfBirth = jsonDecode(data)['user']['dob'];
+      _prefs.setString(Prefs.email, email);
+      _prefs.setString(Prefs.userId, user_id);
+      _prefs.setString(Prefs.roleType, AccountType);
+      _prefs.setString(Prefs.name, name);
+      _prefs.setString(Prefs.accessToken, authorization);
+      _prefs.setString(Prefs.mobile, mobile);
+      _prefs.setString(Prefs.avatar, profileimg);
+      _prefs.setString(Prefs.age, age.toString());
+      _prefs.setString(Prefs.faceId, isBiometric.toString());
+      _prefs.setString(Prefs.bio, bio);
+      _prefs.setString(Prefs.address, address);
+      _prefs.setDouble(Prefs.latitude, latitude);
+      _prefs.setDouble(Prefs.longitude, longitude);
+      _prefs.setString(Prefs.dob, dateOfBirth);
       // _prefs.setString('lat', lat);
       //   _prefs.setString('log', log);
 

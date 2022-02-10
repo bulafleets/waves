@@ -27,6 +27,12 @@ class _AddFriendsNearByState extends State<AddFriendsNearBy> {
   }
 
   @override
+  void dispose() {
+    EasyLoading.dismiss();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -140,7 +146,7 @@ class _AddFriendsNearByState extends State<AddFriendsNearBy> {
                 return SizedBox(
                   height: MediaQuery.of(context).size.height,
                   child: Center(
-                      child: Text('No friends Nearby',
+                      child: Text('No user Nearby',
                           style: GoogleFonts.quicksand(
                               color: Colors.black,
                               fontSize: 17,

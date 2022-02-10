@@ -45,7 +45,7 @@ class NearbyUser {
     // required this.dob,
     required this.longitude,
     required this.address,
-    required this.mobileNumber,
+    //  required this.mobileNumber,
     required this.isFriend,
   });
 
@@ -64,7 +64,7 @@ class NearbyUser {
   // String dob;
   double longitude;
   String address;
-  String mobileNumber;
+  // String mobileNumber;
   bool isFriend;
 
   factory NearbyUser.fromJson(Map<String, dynamic> json) => NearbyUser(
@@ -83,7 +83,7 @@ class NearbyUser {
         // dob: json["dob"] == null ? null : json["dob"],
         longitude: json["longitude"].toDouble(),
         address: json["address"],
-        mobileNumber: json["mobile_number"],
+        //  mobileNumber: json["mobile_number"],
         isFriend: json["isFriend"],
       );
 
@@ -103,7 +103,7 @@ class NearbyUser {
         // "dob": dob == null ? null : dob,
         "longitude": longitude,
         "address": address,
-        "mobile_number": mobileNumber,
+        //  "mobile_number": mobileNumber,
         "isFriend": isFriend,
       };
 }

@@ -76,51 +76,56 @@ class ShowDialogScreenState extends State<ShowDialogScreen>
                                 Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: ButtonTheme(
+                                      minWidth: 118,
+                                      height: 45,
                                       child: RaisedButton(
-                                    color: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                    ),
-                                    splashColor: Colors.white,
-                                    child: const Text(
-                                      'No',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18.0),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  )),
+                                        color: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                        ),
+                                        splashColor: Colors.white,
+                                        child: const Text(
+                                          'No',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18.0),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      )),
                                 ),
                                 Padding(
                                     padding: const EdgeInsets.only(
                                         left: 10.0, right: 10.0),
                                     child: ButtonTheme(
+                                        minWidth: 118,
+                                        height: 45,
                                         child: RaisedButton(
-                                      color: Theme.of(context).primaryColor,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(20.0),
-                                      ),
-                                      splashColor: Colors.red,
-                                      child: const Text(
-                                        'Yes',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18.0),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                        // Navigator.of(context).push(MaterialPageRoute(
-                                        //     builder: (context) =>
-                                        //       ));
-                                      },
-                                    ))),
+                                          color: Theme.of(context).primaryColor,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                          ),
+                                          splashColor: Colors.red,
+                                          child: const Text(
+                                            'Yes',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.0),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            // Navigator.of(context).push(MaterialPageRoute(
+                                            //     builder: (context) =>
+                                            //       ));
+                                          },
+                                        ))),
                               ],
                             )
                           ],

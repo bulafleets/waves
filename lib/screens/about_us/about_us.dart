@@ -141,8 +141,9 @@ class _AboutUsState extends State<AboutUs> {
 
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
-                  builder: (context) =>
-                      widget.isLogin ? const MainPage() : const AddFriends()),
+                  builder: (context) => widget.isLogin
+                      ? const MainPage()
+                      : const AddFriends(false)),
               (Route<dynamic> route) => false);
           // if (_formkey.currentState.validate()) {
           // showDialog(

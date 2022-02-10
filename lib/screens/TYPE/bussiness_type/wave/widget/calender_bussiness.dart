@@ -24,23 +24,25 @@ class CalenderScreenBussiness extends StatefulWidget {
   final String disDetails;
   final String radius;
   final String additionalDetails;
+  final String image;
 
-  const CalenderScreenBussiness(
-      {Key? key,
-      required this.isSendFollower,
-      required this.address,
-      required this.log,
-      required this.lat,
-      required this.eventId,
-      required this.eventDetails,
-      required this.waveName,
-      required this.isDiscountFollower,
-      required this.isAdult,
-      required this.isDiscountAll,
-      required this.disDetails,
-      required this.radius,
-      required this.additionalDetails})
-      : super(key: key);
+  const CalenderScreenBussiness({
+    Key? key,
+    required this.isSendFollower,
+    required this.address,
+    required this.log,
+    required this.lat,
+    required this.eventId,
+    required this.eventDetails,
+    required this.waveName,
+    required this.isDiscountFollower,
+    required this.isAdult,
+    required this.isDiscountAll,
+    required this.disDetails,
+    required this.radius,
+    required this.additionalDetails,
+    required this.image,
+  }) : super(key: key);
   @override
   _CalenderScreenBussinessState createState() =>
       _CalenderScreenBussinessState();
@@ -109,6 +111,12 @@ class _CalenderScreenBussinessState extends State<CalenderScreenBussiness> {
   }
 
   @override
+  void dispose() {
+    EasyLoading.dismiss();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
@@ -142,7 +150,7 @@ class _CalenderScreenBussinessState extends State<CalenderScreenBussiness> {
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           padding: const EdgeInsets.all(20),
-          child: Column(
+          child: ListView(
               // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -307,8 +315,7 @@ class _CalenderScreenBussinessState extends State<CalenderScreenBussiness> {
     var userid = _prefs.getString('user_id');
 
     var request = http.MultipartRequest('POST', Uri.parse(WaveCreate));
-    // request.files
-    //     .add(await http.MultipartFile.fromPath('media', imageFile.path));
+    request.files.add(await http.MultipartFile.fromPath('media', widget.image));
     request.fields['user_id'] = userid!;
     request.fields['event_id'] = widget.eventId;
     request.fields['date'] = _dateController.text;
@@ -334,7 +341,7 @@ class _CalenderScreenBussinessState extends State<CalenderScreenBussiness> {
     var response = await http.Response.fromStream(res);
     String data = response.body;
     String status = jsonDecode(data)['status'].toString();
-    print(status);
+    print(data);
     EasyLoading.dismiss();
     if (status == '200') {
       Navigator.of(context).pushReplacement(MaterialPageRoute(

@@ -97,9 +97,9 @@ class MapSampleState extends State<MapSample> {
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(5)),
                   child: TextField(
-                    onTap: () {
-                      _textEditingController.text = '';
-                    },
+                    // onTap: () {
+                    //   _textEditingController.text = '';
+                    // },
                     controller: _textEditingController,
                     decoration: InputDecoration(
                       hintText: 'Enter Address..',

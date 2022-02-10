@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:waves/contants/share_pref.dart';
 import 'package:waves/screens/splash/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -19,7 +20,7 @@ void main() async {
   messaging = FirebaseMessaging.instance;
   messaging.getToken().then((value) {
     print(value);
-    prefs.setString('device_token', value!);
+    prefs.setString(Prefs.firebasetoken, value!);
   });
   messaging.setForegroundNotificationPresentationOptions();
   AwesomeNotifications().initialize('resource://drawable/new_logo', [

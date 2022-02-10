@@ -1,11 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
+import 'package:waves/contants/share_pref.dart';
 import 'package:waves/screens/Main/main_page.dart';
 import 'package:waves/screens/auth/local_auth/local_auth.dart';
-
 import 'package:waves/screens/user_type/user_type.dart';
 
 import '../auth/login_page.dart';
@@ -33,7 +34,6 @@ class SplashScreenState extends State<SplashScreen>
   Future<void> navigationPage() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     final LocalAuthentication localAuthentication = LocalAuthentication();
-    AccountType = _prefs.getString('roleType').toString();
 
     // // ignore: non_constant_identifier_names
     String? faceId = _prefs.getString('faceId');
@@ -42,6 +42,21 @@ class SplashScreenState extends State<SplashScreen>
     print(latitude);
     print(faceId);
     if (checkValue) {
+      AccountType = _prefs.getString(Prefs.roleType).toString();
+      email = _prefs.getString(Prefs.email)!;
+      user_id = _prefs.getString(Prefs.userId)!;
+      AccountType = _prefs.getString(Prefs.roleType)!;
+      name = _prefs.getString(Prefs.name)!;
+      authorization = _prefs.getString(Prefs.accessToken)!;
+      mobile = _prefs.getString(Prefs.mobile)!;
+      profileimg = _prefs.getString(Prefs.avatar)!;
+      age = _prefs.getString(Prefs.age)!;
+      isBiometric = _prefs.getString(Prefs.faceId)!;
+      bio = _prefs.getString(Prefs.bio)!;
+      address = _prefs.getString(Prefs.address)!;
+      latitude = _prefs.getDouble(Prefs.latitude)!;
+      longitude = _prefs.getDouble(Prefs.longitude)!;
+      dateOfBirth = _prefs.getString(Prefs.dob);
       if (faceId == 'true') {
         bool isAuthenticated =
             await Authentication.authenticateWithBiometrics();

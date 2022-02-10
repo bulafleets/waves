@@ -1,11 +1,18 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:waves/contants/common_params.dart';
+import 'package:http/http.dart' as http;
+import 'package:waves/models/singlewave_model.dart';
 
 class LeaveComment extends StatefulWidget {
-  const LeaveComment({Key? key}) : super(key: key);
+  final String waveId;
+  final void Function(String commentText) commentData;
+  const LeaveComment(this.waveId, this.commentData, {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => LeaveCommentState();
@@ -15,7 +22,7 @@ class LeaveCommentState extends State<LeaveComment>
     with SingleTickerProviderStateMixin {
   late AnimationController controller;
   late Animation<double> scaleAnimation;
-
+  TextEditingController _commentController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -31,6 +38,9 @@ class LeaveCommentState extends State<LeaveComment>
 
     controller.forward();
   }
+
+  final List<String> _list = [];
+  final List<CommentReply> _d = [];
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +96,7 @@ class LeaveCommentState extends State<LeaveComment>
                                     maxLines: 7,
                                     style: const TextStyle(color: Colors.black),
                                     // validator:RequiredValidator(errorText: "Please Enter Your Mobile Number."),
-                                    // controller: passwordController,
+                                    controller: _commentController,
                                     keyboardType: TextInputType.text,
                                     cursorColor: Colors.grey,
                                     onChanged: (val) {},
@@ -141,8 +151,17 @@ class LeaveCommentState extends State<LeaveComment>
           ),
         ),
         // onPressed: () {
-        onPressed: () {},
-
+        onPressed: () {
+          if (_commentController.text.isNotEmpty) {
+            commentApi();
+            widget.commentData(_commentController.text);
+          } else {
+            String message = 'please enter comment first';
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(message),
+            ));
+          }
+        },
         child: const Text(
           "Submit",
           style: TextStyle(
@@ -150,5 +169,32 @@ class LeaveCommentState extends State<LeaveComment>
         ),
       ),
     );
+  }
+
+  Future<void> commentApi() async {
+    final response = await http.post(Uri.parse(Comment), body: {
+      "user_id": user_id,
+      "wave_id": widget.waveId,
+      "comment": _commentController.text,
+    });
+
+    String data = response.body;
+    print(data);
+    String status = jsonDecode(data)['status'].toString();
+
+    if (status == "200") {
+      String message = jsonDecode(data)['message'];
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(message),
+      ));
+      Navigator.of(context).pop();
+    }
+    if (status == "400") {
+      String message = jsonDecode(data)['message'];
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(message),
+      ));
+      Navigator.of(context).pop();
+    }
   }
 }

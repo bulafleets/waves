@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
+import 'package:waves/contants/share_pref.dart';
 import 'package:waves/models/event_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -21,7 +22,7 @@ class _EventListWidgetState extends State<EventListWidget> {
   var idLocal;
   Future<EventIdModel> eventIdAPi() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
-    var token = _prefs.getString('token');
+    var token = _prefs.getString(Prefs.accessToken);
     var dataDropDown;
     http.Response response = await http.get(Uri.parse(EventList),
         headers: {HttpHeaders.authorizationHeader: "Bearer $token"});

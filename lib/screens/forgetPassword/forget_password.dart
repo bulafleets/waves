@@ -24,6 +24,11 @@ class _ForgetPasswordState extends State<ForgetPassword> {
   ]);
   GlobalKey<FormState> _formkey = GlobalKey();
   String OTP = '';
+  @override
+  void dispose() {
+    EasyLoading.dismiss();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
