@@ -173,27 +173,41 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                               ),
                                               const SizedBox(height: 15),
                                               if (data.activityType == 'wave')
-                                                Text(
-                                                  'Wave at ${data.waveName}',
-                                                  style: GoogleFonts.quicksand(
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.w400),
+                                                Expanded(
+                                                  child: SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width -
+                                                            150,
+                                                    child: Text(
+                                                      'Wave at ${data.waveName}',
+                                                      style:
+                                                          GoogleFonts.quicksand(
+                                                              fontSize: 17,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400),
+                                                    ),
+                                                  ),
                                                 ),
                                               if (data.activityType != 'wave')
-                                                SizedBox(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width -
-                                                      150,
-                                                  child: Text(
-                                                    'Checked into at ${data.waveName}',
-                                                    style:
-                                                        GoogleFonts.quicksand(
-                                                            fontSize: 17,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w400),
+                                                Expanded(
+                                                  child: SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width -
+                                                            150,
+                                                    child: Text(
+                                                      'Checked into at ${data.waveName}',
+                                                      style:
+                                                          GoogleFonts.quicksand(
+                                                              fontSize: 17,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400),
+                                                    ),
                                                   ),
                                                 ),
                                               const SizedBox(height: 5),

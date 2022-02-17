@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waves/contants/common_params.dart';
 import 'package:waves/contants/common_widgets.dart';
+import 'package:waves/contants/map_pop_screen.dart';
 import 'package:waves/models/map_listing_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:typed_data';
@@ -45,52 +46,93 @@ class _MapScreenBussinessState extends State<MapScreenBussiness> {
     final jsonString = response.body;
     print(jsonString);
     final jsonMap = jsonDecode(jsonString);
-    data = MapListingModel.fromJson(jsonMap).wavesListByLocation;
+    data = MapListingModel.fromJson(jsonMap).wavesList;
     for (int j = 0;
-        j < MapListingModel.fromJson(jsonMap).wavesListByLocation.length;
+        j < MapListingModel.fromJson(jsonMap).wavesList.length;
         j++) {
-      final File markerImageFile = await DefaultCacheManager().getSingleFile(
-          MapListingModel.fromJson(jsonMap).wavesListByLocation[j].avatar);
-      final Uint8List markerImageBytes = await markerImageFile.readAsBytes();
+      var modelData = MapListingModel.fromJson(jsonMap).wavesList[j];
+      // final File markerImageFile = await DefaultCacheManager()
+      //     .getSingleFile(MapListingModel.fromJson(jsonMap).wavesList[j].avatar);
+      // final Uint8List markerImageBytes = await markerImageFile.readAsBytes();
 
-      ui.Codec codec =
-          await ui.instantiateImageCodec(markerImageBytes, targetWidth: 50);
-      ui.FrameInfo fi = await codec.getNextFrame();
+      // ui.Codec codec =
+      //     await ui.instantiateImageCodec(markerImageBytes, targetWidth: 50);
+      // ui.FrameInfo fi = await codec.getNextFrame();
 
-      final Uint8List markerImage =
-          (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
-              .buffer
-              .asUint8List();
+      // final Uint8List markerImage =
+      //     (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+      //         .buffer
+      //         .asUint8List();
+      final File markerImageFile = await DefaultCacheManager()
+          .getSingleFile(MapListingModel.fromJson(jsonMap).wavesList[j].avatar);
+      final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
+      int size = 200;
+      final Canvas canvas = Canvas(pictureRecorder);
+      final Paint paint = Paint()..color;
+      final TextPainter textPainter = TextPainter(
+        textDirection: TextDirection.ltr,
+      );
+      final double radius = size / 2;
 
-      userIdMarkerMap[MapListingModel.fromJson(jsonMap)
-          .wavesListByLocation[j]
-          .avatar] = markerImage;
+      //make canvas clip path to prevent image drawing over the circle
+      final Path clipPath = Path();
+      clipPath.addRRect(RRect.fromRectAndRadius(
+          Rect.fromLTWH(0, 0, size.toDouble(), size.toDouble()),
+          const Radius.circular(100)));
+      clipPath.addRRect(RRect.fromRectAndRadius(
+          Rect.fromLTWH(size / 2.toDouble(), size + 20.toDouble(), 10, 10),
+          const Radius.circular(100)));
+      canvas.clipPath(clipPath);
+
+      //paintImage
+      final Uint8List imageUint8List = await markerImageFile.readAsBytes();
+      final ui.Codec codec = await ui.instantiateImageCodec(imageUint8List);
+      final ui.FrameInfo imageFI = await codec.getNextFrame();
+      paintImage(
+          canvas: canvas,
+          rect: Rect.fromLTWH(0, 0, size.toDouble(), size.toDouble()),
+          image: imageFI.image);
+
+      //convert canvas as PNG bytes
+      final _image = await pictureRecorder
+          .endRecording()
+          .toImage(size, (size * 1.1).toInt());
+      final data = await _image.toByteData(format: ui.ImageByteFormat.png);
+
+      //convert PNG bytes as BitmapDescriptor
+      final Uint8List markerImage = data!.buffer.asUint8List();
+      // BitmapDescriptor.fromBytes(data!.buffer.asUint8List()) as Uint8List;
+
+      userIdMarkerMap[MapListingModel.fromJson(jsonMap).wavesList[j].avatar] =
+          markerImage;
       setState(() {
         //call your function to build google map
         markers.add(Marker(
-          infoWindow: InfoWindow(
-            // popup info
-            title: MapListingModel.fromJson(jsonMap)
-                .wavesListByLocation[j]
-                .waveName,
-            snippet: MapListingModel.fromJson(jsonMap)
-                .wavesListByLocation[j]
-                .eventDetail,
-          ),
-          markerId: MarkerId(
-              MapListingModel.fromJson(jsonMap).wavesListByLocation[j].id),
+          onTap: () {
+            showDialog(
+                context: context,
+                builder: (_) => MapPopScreen(
+                    image: modelData.media.first.location,
+                    waveName: modelData.waveName,
+                    waveDetail: modelData.eventDetail,
+                    waveHistory: ''));
+          },
+          // infoWindow: InfoWindow(
+          //   // popup info
+          //   title: MapListingModel.fromJson(jsonMap)
+          //       .wavesList[j]
+          //       .waveName,
+          //   snippet: MapListingModel.fromJson(jsonMap)
+          //       .wavesList[j]
+          //       .eventDetail,
+          // ),
+          markerId: MarkerId(MapListingModel.fromJson(jsonMap).wavesList[j].id),
           position: LatLng(
-              MapListingModel.fromJson(jsonMap)
-                  .wavesListByLocation[j]
-                  .lattitude,
-              MapListingModel.fromJson(jsonMap)
-                  .wavesListByLocation[j]
-                  .longitude),
-          icon: MapListingModel.fromJson(jsonMap).wavesListByLocation[j] != null
+              MapListingModel.fromJson(jsonMap).wavesList[j].lattitude,
+              MapListingModel.fromJson(jsonMap).wavesList[j].longitude),
+          icon: MapListingModel.fromJson(jsonMap).wavesList[j] != null
               ? BitmapDescriptor.fromBytes(userIdMarkerMap[
-                  MapListingModel.fromJson(jsonMap)
-                      .wavesListByLocation[j]
-                      .avatar]!)
+                  MapListingModel.fromJson(jsonMap).wavesList[j].avatar]!)
               : BitmapDescriptor.defaultMarker,
         ));
       });

@@ -44,19 +44,33 @@ class _CommentScreenState extends State<CommentScreen> {
   }
 
   final List<String> _list = [];
-  final List<CommentReply> _d = [];
-  void _commentText(String commentText) {
+  final List<CommentReply> _commentReplyNull = [];
+  void _replyData(String text, String waveId, int index, String commentId) {
+    print(index);
+    setState(() {
+      _commentData[index].commentReply.add(CommentReply(
+          userId: user_id,
+          waveId: widget.waveId,
+          comment: text,
+          commentLikes: _list,
+          username: name,
+          avatar: profileimg,
+          createdAt: DateTime.now()));
+    });
+  }
+
+  void _commentText(String commentText, String id) {
+    _reply = List.filled(widget.comment.length + 1, false);
     setState(() {
       _commentData.add(WaveComment(
-          id: '',
+          id: id,
           commentLikes: _list,
-          commentReply: _d,
+          commentReply: _commentReplyNull,
           userId: user_id,
           waveId: widget.waveId,
           comment: commentText,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
-          v: 1,
           avatar: profileimg,
           username: name));
     });
@@ -105,9 +119,10 @@ class _CommentScreenState extends State<CommentScreen> {
           ]));
     } else {
       return Container(
-        margin: const EdgeInsets.only(bottom: 25),
-        height: MediaQuery.of(context).size.height,
-        child: Column(children: [
+        margin: const EdgeInsets.only(bottom: 15),
+        height: double.maxFinite,
+        child:
+            ListView(physics: const NeverScrollableScrollPhysics(), children: [
           if (widget.userid != user_id)
             Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
               Text(
@@ -143,6 +158,7 @@ class _CommentScreenState extends State<CommentScreen> {
                         ? '${DateTime.now().difference(_commentData[index].createdAt).inDays.toString()} d'
                         : '${DateTime.now().difference(_commentData[index].createdAt).inHours.toString()} h'
                     : "${DateTime.now().difference(_commentData[index].createdAt).inMinutes.toString()} m";
+
                 return Container(
                   // height: 200,
                   // width: MediaQuery.of(context).size.width - 50,
@@ -246,10 +262,13 @@ class _CommentScreenState extends State<CommentScreen> {
                                         showDialog(
                                             context: context,
                                             builder: (_) => ReplyCommentWidget(
-                                                commentId:
-                                                    _commentData[index].id,
-                                                waveId: widget
-                                                    .comment[index].waveId));
+                                                  commentId:
+                                                      _commentData[index].id,
+                                                  waveId: widget
+                                                      .comment[index].waveId,
+                                                  index: index,
+                                                  replyData: _replyData,
+                                                ));
                                       },
                                       child: Text('Reply',
                                           style: GoogleFonts.quicksand(

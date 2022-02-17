@@ -47,6 +47,7 @@ class _AboutUsState extends State<AboutUs> {
             child: Column(children: [
               const SizedBox(height: 60),
               Text('Hi ${widget.name}!',
+                  textAlign: TextAlign.center,
                   style: GoogleFonts.quicksand(
                       fontWeight: FontWeight.bold,
                       fontSize: 37,
@@ -141,9 +142,8 @@ class _AboutUsState extends State<AboutUs> {
 
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
-                  builder: (context) => widget.isLogin
-                      ? const MainPage()
-                      : const AddFriends(false)),
+                  builder: (context) =>
+                      widget.isLogin ? MainPage(0) : const AddFriends(false)),
               (Route<dynamic> route) => false);
           // if (_formkey.currentState.validate()) {
           // showDialog(

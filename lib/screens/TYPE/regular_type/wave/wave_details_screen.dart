@@ -1,23 +1,25 @@
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:waves/contants/check_in.dart';
 import 'package:waves/contants/comment_widget.dart';
 import 'package:waves/contants/common_params.dart';
-import 'package:waves/contants/leave_comment.dart';
 import 'package:waves/contants/review_comment.dart';
+import 'package:waves/models/get_following_data_model.dart';
 import 'package:waves/models/singlewave_model.dart';
-import 'package:waves/models/waveListing_regular_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:waves/screens/TYPE/regular_type/map/map_screen.dart';
 
 class WaveDetailsScreen extends StatefulWidget {
   final String WaveId;
+  final String userId;
   final int age;
-  const WaveDetailsScreen(this.WaveId, this.age, {Key? key}) : super(key: key);
+  const WaveDetailsScreen(this.WaveId, this.age, this.userId, {Key? key})
+      : super(key: key);
 
   @override
   _WaveDetailsScreenState createState() => _WaveDetailsScreenState();
@@ -25,17 +27,27 @@ class WaveDetailsScreen extends StatefulWidget {
 
 class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
   late Future<SingleWaveModel> _future;
-  bool _isCheckIn = false;
+  List<Follower> _getFollowingData = [];
 
+  bool _isCheckIn = false;
+  bool isFollow = false;
+  var _countStar;
   void _check(bool checkIn) {
     setState(() {
       _isCheckIn = checkIn;
     });
   }
 
+  void _starData(int countStart) {
+    setState(() {
+      _countStar = countStart;
+    });
+  }
+
   @override
   void initState() {
     _future = singleWavebyRegular();
+    getfollowingNumber();
     super.initState();
   }
 
@@ -48,6 +60,7 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // print(widget.userId);
     return Scaffold(
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(80.0), // here the desired height
@@ -163,13 +176,22 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
                                                 'assets/icons/verified.png',
                                                 scale: .9,
                                               ),
+                                            if (data.userType == 'BUSINESS')
+                                              isFollow
+                                                  ? _unfollowButon()
+                                                  : _getFollowingData
+                                                          .map((e) => e.user.id)
+                                                          .contains(user_id)
+                                                      ? _unfollowButon()
+                                                      : _followButon(),
                                             // const FaIcon(
                                             //   FontAwesomeIcons.shieldAlt,
                                             //   color: Color.fromRGBO(
                                             //       0, 149, 242, 1),
                                             //   size: 18,
                                             // ),
-                                            const SizedBox(width: 30),
+
+                                            const SizedBox(width: 15),
                                             Text(
                                               tt,
                                               style: GoogleFonts.quicksand(
@@ -206,7 +228,8 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
                               if (data.userType == 'BUSINESS')
                                 Column(children: [
                                   Row(children: [
-                                    Text(data.waveRating.toString()),
+                                    Text(
+                                        '${_countStar ?? data.waveRating.toString()} '),
                                     const Icon(Icons.star, color: Colors.yellow)
                                   ]),
                                   Row(children: [
@@ -214,7 +237,13 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
                                       onPressed: () {
                                         showDialog(
                                             context: context,
-                                            builder: (_) => ReviewComment());
+                                            builder: (_) => ReviewComment(
+                                                  bussinessName: data.username,
+                                                  waveId: data.id,
+                                                  image:
+                                                      data.media.first.location,
+                                                  starData: _starData,
+                                                ));
                                       },
                                       label: const Icon(Icons.edit_location_alt,
                                           size: 20, color: Colors.black),
@@ -329,6 +358,136 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
 
     final jsonMap = jsonDecode(jsonString);
     data = SingleWaveModel.fromJson(jsonMap);
+    return data;
+  }
+
+  _followButon() {
+    return Container(
+      margin: const EdgeInsets.only(left: 15.0),
+      height: 40,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          onPrimary: Colors.white,
+          primary: Theme.of(context).primaryColor,
+          minimumSize: const Size(88, 36),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(30)),
+          ),
+        ),
+        onPressed: () {
+          EasyLoading.show(status: 'Please Wait ...');
+          followRequestApi();
+        },
+        child: const Text(
+          "Follow",
+          style: TextStyle(
+              color: Colors.white, fontSize: 18, fontFamily: 'RobotoBold'),
+        ),
+      ),
+    );
+  }
+
+  Future<void> followRequestApi() async {
+    final response = await http.post(Uri.parse(Follow),
+        body: {'followingId': widget.userId, 'followerId': user_id},
+        headers: {HttpHeaders.authorizationHeader: "Bearer $authorization"});
+    EasyLoading.dismiss();
+
+    String data = response.body;
+    print(data);
+    String status = jsonDecode(data)['status'].toString();
+
+    if (status == "200") {
+      setState(() {
+        isFollow = true;
+        getfollowingNumber();
+      });
+      String message = jsonDecode(data)['message'];
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message), backgroundColor: Colors.green));
+
+      if (status == "400") {
+        String message = jsonDecode(data)['message'];
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(message),
+        ));
+      }
+    }
+  }
+
+  _unfollowButon() {
+    return Container(
+      margin: const EdgeInsets.only(left: 15.0),
+      height: 40,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          onPrimary: Colors.black,
+          primary: const Color.fromRGBO(188, 220, 243, 1),
+          minimumSize: const Size(70, 36),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(30)),
+          ),
+        ),
+        onPressed: () {
+          EasyLoading.show(status: 'Please Wait ...');
+          unfollowRequestApi();
+        },
+        child: const Text(
+          "Unfollow",
+          style: TextStyle(
+              color: Colors.black, fontSize: 18, fontFamily: 'RobotoBold'),
+        ),
+      ),
+    );
+  }
+
+  Future<void> unfollowRequestApi() async {
+    final response = await http.post(Uri.parse(UnFollow),
+        body: {'followingId': widget.userId, 'followerId': user_id},
+        headers: {HttpHeaders.authorizationHeader: "Bearer $authorization"});
+    EasyLoading.dismiss();
+
+    String data = response.body;
+    print(data);
+    String status = jsonDecode(data)['status'].toString();
+
+    if (status == "200") {
+      setState(() {
+        isFollow = false;
+        getfollowingNumber();
+      });
+      String message = jsonDecode(data)['message'];
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message), backgroundColor: Colors.green));
+
+      if (status == "400") {
+        String message = jsonDecode(data)['message'];
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(message),
+        ));
+      }
+    }
+  }
+
+  Future<GetFollowingDataModel> getfollowingNumber() async {
+    GetFollowingDataModel data;
+    http.Response response = await http.post(Uri.parse(MyFollows),
+        body: {'followingId': widget.userId},
+        headers: {HttpHeaders.authorizationHeader: "Bearer $authorization"});
+    final jsonString = response.body;
+
+    final jsonMap = jsonDecode(jsonString);
+    data = GetFollowingDataModel.fromJson(jsonMap);
+
+    String apidata = response.body;
+    // print(apidata);
+    String status = jsonDecode(apidata)['status'].toString();
+    if (status == "200") {
+      _getFollowingData = GetFollowingDataModel.fromJson(jsonMap).followers;
+    }
+    setState(() {});
     return data;
   }
 }

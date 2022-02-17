@@ -23,11 +23,13 @@ class _ContactsPageState extends State<ContactsPage> {
   // late Iterable<Contact> _contacts;
   bool _isContact = false;
   var contactNumbers = [];
+  var invtedContact = [];
   List<Conta> alreadyContact = [];
   @override
   void initState() {
     getContacts();
     getContactsApi();
+    getContactInvited();
     super.initState();
   }
 
@@ -84,7 +86,6 @@ class _ContactsPageState extends State<ContactsPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(alreadyContact.length);
     return Scaffold(
       appBar: AppBar(
         title: Text('Contacts List',
@@ -127,7 +128,7 @@ class _ContactsPageState extends State<ContactsPage> {
                                       _searchController.clear();
                                       onSearchTextChanged('');
                                     },
-                                    child: Icon(Icons.close))
+                                    child: const Icon(Icons.close))
                                 : null,
                             filled: true,
                             fillColor: Colors.white,
@@ -172,36 +173,93 @@ class _ContactsPageState extends State<ContactsPage> {
                             height: 40,
                             child: !contactNumbers
                                     .contains(_searchResult[index].number)
-                                ? ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      onPrimary: Colors.white,
-                                      primary: Theme.of(context).primaryColor,
-                                      minimumSize: const Size(88, 36),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16),
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(30)),
-                                      ),
-                                    ),
-                                    onPressed: () async {
-                                      var number = _searchResult[index].number;
-                                      setState(() {
-                                        people.add(number);
-                                      });
-                                      if (people.isNotEmpty) {
-                                        await _sendSMS(people);
-                                        people.clear();
-                                      }
-                                    },
-                                    child: const Text(
-                                      "Invite",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontFamily: 'RobotoBold'),
-                                    ),
-                                  )
+                                ? !invtedContact
+                                        .contains(_searchResult[index].number)
+                                    ? ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          onPrimary: Colors.white,
+                                          primary:
+                                              Theme.of(context).primaryColor,
+                                          minimumSize: const Size(88, 36),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 16),
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(30)),
+                                          ),
+                                        ),
+                                        onPressed: () async {
+                                          var number =
+                                              _searchResult[index].number;
+                                          setState(() {
+                                            people.add(number);
+                                          });
+                                          if (people.isNotEmpty) {
+                                            await _sendSMS(people);
+                                            people.clear();
+                                          }
+                                        },
+                                        child: const Text(
+                                          "Invite",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontFamily: 'RobotoBold'),
+                                        ),
+                                      )
+                                    : SizedBox(
+                                        width: 155,
+                                        child: Row(
+                                          children: [
+                                            ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                    shadowColor: Colors.black,
+                                                    primary: Colors.white,
+                                                    onPrimary: Theme.of(context)
+                                                        .primaryColor,
+                                                    minimumSize:
+                                                        const Size(88, 36),
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        horizontal: 16),
+                                                    shape:
+                                                        const RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  30)),
+                                                    )),
+                                                onPressed: () async {
+                                                  var number =
+                                                      _searchResult[index]
+                                                          .number;
+                                                  setState(() {
+                                                    people.add(number);
+                                                  });
+
+                                                  if (people.isNotEmpty) {
+                                                    await _sendSMS(people);
+                                                    people.clear();
+                                                  }
+                                                },
+                                                child: const Text(
+                                                  "Resend",
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 18,
+                                                      fontFamily: 'RobotoBold'),
+                                                )),
+                                            const SizedBox(width: 5),
+                                            const Text(
+                                              "Sent",
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 16,
+                                                  fontFamily: 'RobotoBold'),
+                                            ),
+                                            const Icon(Icons.check)
+                                          ],
+                                        ))
                                 : const Text(
                                     "Already on Waves",
                                     style: TextStyle(
@@ -217,7 +275,6 @@ class _ContactsPageState extends State<ContactsPage> {
                     // Contact? contact = _contacts.elementAt(index);
                     // print(contactNumbers.contains(contact.phones!.first.value));
                     // var vl = contact.phones!.first.value!.trim();
-
                     if (index == 0) {
                       return Container(
                         width: 300,
@@ -242,7 +299,7 @@ class _ContactsPageState extends State<ContactsPage> {
                                       _searchController.clear();
                                       onSearchTextChanged('');
                                     },
-                                    child: Icon(Icons.close))
+                                    child: const Icon(Icons.close))
                                 : null,
                             filled: true,
                             fillColor: Colors.white,
@@ -287,36 +344,96 @@ class _ContactsPageState extends State<ContactsPage> {
                             height: 40,
                             child: !contactNumbers
                                     .contains(alreadyContact[index].number)
-                                ? ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      onPrimary: Colors.white,
-                                      primary: Theme.of(context).primaryColor,
-                                      minimumSize: const Size(88, 36),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16),
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(30)),
-                                      ),
-                                    ),
-                                    onPressed: () async {
-                                      var number = alreadyContact[index].number;
-                                      setState(() {
-                                        people.add(number);
-                                      });
-                                      if (people.isNotEmpty) {
-                                        await _sendSMS(people);
-                                        people.clear();
-                                      }
-                                    },
-                                    child: const Text(
-                                      "Invite",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontFamily: 'RobotoBold'),
-                                    ),
-                                  )
+                                ? !invtedContact
+                                        .contains(alreadyContact[index].number)
+                                    ? ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          onPrimary: Colors.white,
+                                          primary:
+                                              Theme.of(context).primaryColor,
+                                          minimumSize: const Size(88, 36),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 16),
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(30)),
+                                          ),
+                                        ),
+                                        onPressed: () async {
+                                          var number =
+                                              alreadyContact[index].number;
+                                          setState(() {
+                                            print(number);
+                                            inviteContacts(number);
+                                            people.add(number);
+                                          });
+
+                                          if (people.isNotEmpty) {
+                                            await _sendSMS(people);
+                                            people.clear();
+                                          }
+                                        },
+                                        child: const Text(
+                                          "Invite",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontFamily: 'RobotoBold'),
+                                        ),
+                                      )
+                                    : SizedBox(
+                                        width: 155,
+                                        child: Row(
+                                          children: [
+                                            ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                    shadowColor: Colors.black,
+                                                    primary: Colors.white,
+                                                    onPrimary: Theme.of(context)
+                                                        .primaryColor,
+                                                    minimumSize:
+                                                        const Size(88, 36),
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        horizontal: 16),
+                                                    shape:
+                                                        const RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  30)),
+                                                    )),
+                                                onPressed: () async {
+                                                  var number =
+                                                      alreadyContact[index]
+                                                          .number;
+                                                  setState(() {
+                                                    people.add(number);
+                                                  });
+
+                                                  if (people.isNotEmpty) {
+                                                    await _sendSMS(people);
+                                                    people.clear();
+                                                  }
+                                                },
+                                                child: const Text(
+                                                  "Resend",
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 18,
+                                                      fontFamily: 'RobotoBold'),
+                                                )),
+                                            const SizedBox(width: 5),
+                                            const Text(
+                                              "Sent",
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 16,
+                                                  fontFamily: 'RobotoBold'),
+                                            ),
+                                            const Icon(Icons.check)
+                                          ],
+                                        ))
                                 : const Text(
                                     "Already on Waves",
                                     style: TextStyle(
@@ -330,15 +447,44 @@ class _ContactsPageState extends State<ContactsPage> {
     );
   }
 
-  Future<void> getContactsApi() async {
-    final response = await http.post(Uri.parse(MobileList));
+  Future<void> getContactInvited() async {
+    final response = await http
+        .post(Uri.parse(MobileInvitedList), body: {"user_id": user_id});
 
     String data = response.body;
     String status = jsonDecode(data)['status'].toString();
     if (status == "200") {
       setState(() {
+        invtedContact = jsonDecode(data)['MobileList'];
+      });
+    }
+  }
+
+  Future<void> getContactsApi() async {
+    final response =
+        await http.post(Uri.parse(MobileList), body: {"user_id": user_id});
+
+    String data = response.body;
+    String status = jsonDecode(data)['status'].toString();
+    print(data);
+    if (status == "200") {
+      setState(() {
         contactNumbers = jsonDecode(data)['MobileList'];
       });
+    }
+  }
+
+  Future<void> inviteContacts(String phoneNumber) async {
+    final response = await http.post(Uri.parse(MobileInvitePost),
+        body: {"user_id": user_id, "phone": phoneNumber});
+
+    String data = response.body;
+    print(data);
+    String status = jsonDecode(data)['status'].toString();
+    if (status == "200") {
+      // setState(() {
+      //   invtedContact = jsonDecode(data)['MobileList'];
+      // });
     }
   }
 

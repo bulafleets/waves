@@ -32,7 +32,12 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   TextEditingController nameController = TextEditingController(text: name);
   TextEditingController mobileController = TextEditingController(text: mobile);
-  TextEditingController ageController = TextEditingController(text: age);
+  TextEditingController ageController = TextEditingController(
+      text: int.parse(age) > 17 && int.parse(age) < 30
+          ? '18-30'
+          : int.parse(age) > 29 && int.parse(age) < 50
+              ? '30-50'
+              : '50 +');
   TextEditingController dobController =
       TextEditingController(text: dateOfBirth);
   TextEditingController emailController = TextEditingController(text: email);
@@ -65,6 +70,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         lastDate: DateTime.now());
     if (picked != null && picked != birthDate) {
       setState(() {
+        _isChange = true;
         isDateSelected = true;
         birthDate = picked;
         dobController.value = TextEditingValue(text: formatter.format(picked));
@@ -322,6 +328,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   return null;
                 },
                 onTap: () {
+                  setState(() {
+                    _isChange = true;
+                  });
+
                   _selectDate(context);
                 },
                 inputFormatters: [
@@ -545,6 +555,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         imageQuality: 50);
     setState(() {
       imageFile = pickedFile!;
+      _isChange = true;
       _load = true;
     });
   }
@@ -556,10 +567,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() {
       imageFile = pickedFile!;
       _load = true;
+      _isChange = true;
     });
   }
 
   Future<void> updateProfile() async {
+    print(longitude);
+    print(latitude);
     var headers = {HttpHeaders.authorizationHeader: "Bearer $authorization"};
     var request = http.MultipartRequest('POST', Uri.parse(UpdateProfile));
     request.headers.addAll(headers);
@@ -567,43 +581,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       request.files
           .add(await http.MultipartFile.fromPath('avatar', imageFile.path));
     }
+    request.fields['_id'] = user_id;
     request.fields['name'] = nameController.text;
     request.fields['biography'] = bioController.text;
-    request.fields['_id'] = user_id;
-    request.fields['age'] = ageController.text;
-    request.fields['dob'] = dobController.text;
+    request.fields['age'] =
+        differenceDOB != null ? differenceDOB.toString() : age;
+    request.fields['dob'] = dobController.text.toString();
     request.fields['address'] = addressController.text;
-    request.fields['latitude'] = lat.toString();
-    request.fields['longitude'] = log.toString();
+    request.fields['latitude'] = latitude.toString();
+    request.fields['longitude'] = longitude.toString();
 
     var res = await request.send();
     var response = await http.Response.fromStream(res);
     String data = response.body;
     print(data);
-    String status = jsonDecode(data)['status'].toString();
     EasyLoading.dismiss();
+
+    String status = jsonDecode(data)['status'].toString();
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     if (status == "200") {
       profileimg = jsonDecode(data)['user']['avatar'];
       bio = bioController.text;
       name = nameController.text;
       address = addressController.text;
-      age = differenceDOB.toString();
+      age = differenceDOB != null ? differenceDOB.toString() : age;
       dateOfBirth = dobController.text;
       _prefs.setString(Prefs.name, name);
       _prefs.setString(Prefs.address, address);
       _prefs.setString(Prefs.bio, bio);
       _prefs.setString(Prefs.avatar, profileimg);
       _prefs.setString(Prefs.age, age);
-      _prefs.setDouble(Prefs.latitude, lat);
-      _prefs.setDouble(Prefs.longitude, log);
+      _prefs.setDouble(Prefs.latitude, latitude);
+      _prefs.setDouble(Prefs.longitude, longitude);
       _prefs.setString(Prefs.dob, dateOfBirth);
       String message = jsonDecode(data)['message'];
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(message),
       ));
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const MainPage()));
+          MaterialPageRoute(builder: (context) => MainPage(0)));
     }
     if (status == "400") {
       String message = jsonDecode(data)['message'];

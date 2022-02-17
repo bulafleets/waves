@@ -10,32 +10,30 @@ class MapListingModel {
   MapListingModel({
     required this.status,
     required this.message,
-    required this.wavesListByLocation,
+    required this.wavesList,
   });
 
   int status;
   String message;
-  List<WavesListByLocation> wavesListByLocation;
+  List<WavesList> wavesList;
 
   factory MapListingModel.fromJson(Map<String, dynamic> json) =>
       MapListingModel(
         status: json["status"],
         message: json["message"],
-        wavesListByLocation: List<WavesListByLocation>.from(
-            json["WavesListByLocation"]
-                .map((x) => WavesListByLocation.fromJson(x))),
+        wavesList: List<WavesList>.from(
+            json["WavesList"].map((x) => WavesList.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "status": status,
         "message": message,
-        "WavesListByLocation":
-            List<dynamic>.from(wavesListByLocation.map((x) => x.toJson())),
+        "WavesList": List<dynamic>.from(wavesList.map((x) => x.toJson())),
       };
 }
 
-class WavesListByLocation {
-  WavesListByLocation({
+class WavesList {
+  WavesList({
     required this.id,
     required this.media,
     required this.inviteTags,
@@ -72,7 +70,7 @@ class WavesListByLocation {
   String id;
   List<Media> media;
   List<dynamic> inviteTags;
-  List<dynamic> friendTags;
+  List<String> friendTags;
   String userId;
   String userType;
   String eventId;
@@ -92,7 +90,7 @@ class WavesListByLocation {
   int v;
   UserInfo userInfo;
   EventInfo eventInfo;
-  List<WaveComment> waveComments;
+  List<dynamic> waveComments;
   int totalWaveCommentsCount;
   int waveRating;
   bool isFriendAdd;
@@ -101,12 +99,11 @@ class WavesListByLocation {
   String avatar;
   String username;
 
-  factory WavesListByLocation.fromJson(Map<String, dynamic> json) =>
-      WavesListByLocation(
+  factory WavesList.fromJson(Map<String, dynamic> json) => WavesList(
         id: json["_id"],
         media: List<Media>.from(json["media"].map((x) => Media.fromJson(x))),
         inviteTags: List<dynamic>.from(json["invite_tags"].map((x) => x)),
-        friendTags: List<dynamic>.from(json["friend_tags"].map((x) => x)),
+        friendTags: List<String>.from(json["friend_tags"].map((x) => x)),
         userId: json["user_id"],
         userType: json["user_type"],
         eventId: json["event_id"],
@@ -126,8 +123,7 @@ class WavesListByLocation {
         v: json["__v"],
         userInfo: UserInfo.fromJson(json["userInfo"]),
         eventInfo: EventInfo.fromJson(json["eventInfo"]),
-        waveComments: List<WaveComment>.from(
-            json["wave_comments"].map((x) => WaveComment.fromJson(x))),
+        waveComments: List<dynamic>.from(json["wave_comments"].map((x) => x)),
         totalWaveCommentsCount: json["totalWaveCommentsCount"],
         waveRating: json["waveRating"],
         isFriendAdd: json["isFriendAdd"],
@@ -161,8 +157,7 @@ class WavesListByLocation {
         "__v": v,
         "userInfo": userInfo.toJson(),
         "eventInfo": eventInfo.toJson(),
-        "wave_comments":
-            List<dynamic>.from(waveComments.map((x) => x.toJson())),
+        "wave_comments": List<dynamic>.from(waveComments.map((x) => x)),
         "totalWaveCommentsCount": totalWaveCommentsCount,
         "waveRating": waveRating,
         "isFriendAdd": isFriendAdd,
@@ -343,95 +338,5 @@ class UserInfo {
         "address": address,
         "location": location.toJson(),
         "__v": v,
-      };
-}
-
-class WaveComment {
-  WaveComment({
-    required this.id,
-    required this.commentLikes,
-    required this.commentReply,
-    required this.userId,
-    required this.waveId,
-    required this.comment,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.v,
-  });
-
-  String id;
-  List<String> commentLikes;
-  List<CommentReply> commentReply;
-  String userId;
-  String waveId;
-  String comment;
-  DateTime createdAt;
-  DateTime updatedAt;
-  int v;
-
-  factory WaveComment.fromJson(Map<String, dynamic> json) => WaveComment(
-        id: json["_id"],
-        commentLikes: List<String>.from(json["comment_likes"].map((x) => x)),
-        commentReply: List<CommentReply>.from(
-            json["comment_reply"].map((x) => CommentReply.fromJson(x))),
-        userId: json["user_id"],
-        waveId: json["wave_id"],
-        comment: json["comment"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        v: json["__v"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "_id": id,
-        "comment_likes": List<dynamic>.from(commentLikes.map((x) => x)),
-        "comment_reply":
-            List<dynamic>.from(commentReply.map((x) => x.toJson())),
-        "user_id": userId,
-        "wave_id": waveId,
-        "comment": comment,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "__v": v,
-      };
-}
-
-class CommentReply {
-  CommentReply({
-    required this.userId,
-    required this.waveId,
-    required this.comment,
-    required this.commentLikes,
-    required this.username,
-    required this.avatar,
-    required this.createdAt,
-  });
-
-  String userId;
-  String waveId;
-  String comment;
-  List<dynamic> commentLikes;
-  dynamic username;
-  dynamic avatar;
-  DateTime createdAt;
-
-  factory CommentReply.fromJson(Map<String, dynamic> json) => CommentReply(
-        userId: json["user_id"],
-        waveId: json["wave_id"],
-        comment: json["comment"],
-        commentLikes: List<dynamic>.from(json["comment_likes"].map((x) => x)),
-        username: json["username"],
-        avatar: json["avatar"],
-        createdAt: DateTime.parse(json["created_at"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "user_id": userId,
-        "wave_id": waveId,
-        "comment": comment,
-        "comment_likes": List<dynamic>.from(commentLikes.map((x) => x)),
-        "username": username,
-        "avatar": avatar,
-        "created_at": createdAt.toIso8601String(),
       };
 }

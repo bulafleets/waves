@@ -306,7 +306,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
               builder: (context) =>
-                  isSeen == 'true' ? const MainPage() : AboutUs(name, true)),
+                  isSeen == 'true' ? MainPage(0) : AboutUs(name, true)),
           (Route<dynamic> route) => false);
 
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(

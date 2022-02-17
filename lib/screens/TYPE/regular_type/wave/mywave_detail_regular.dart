@@ -53,7 +53,7 @@ class _MyWaveDetailRegularState extends State<MyWaveDetailRegular> {
 
   var customIcon;
   Future<SingleWaveModel> singleWavebyRegular() async {
-    BitmapDescriptor.fromAssetImage(
+    await BitmapDescriptor.fromAssetImage(
             const ImageConfiguration(
                 size: Size(150, 188), devicePixelRatio: 500.0),
             'assets/icons/pin.png')
@@ -204,12 +204,19 @@ class _MyWaveDetailRegularState extends State<MyWaveDetailRegular> {
                                                 fontWeight: FontWeight.w500),
                                           ),
                                           const SizedBox(width: 15),
-                                          if (AccountType == 'BUSINESS')
-                                            const FaIcon(
-                                              FontAwesomeIcons.shieldAlt,
-                                              color: Color.fromRGBO(
-                                                  0, 149, 242, 1),
-                                              size: 18,
+                                          if (AccountType != 'BUSINESS')
+                                            FaIcon(
+                                              FontAwesomeIcons.solidIdBadge,
+                                              color: data.userInfo.age > 17 &&
+                                                      data.userInfo.age < 30
+                                                  ? const Color.fromRGBO(
+                                                      0, 0, 255, 1)
+                                                  : data.userInfo.age > 29 &&
+                                                          data.userInfo.age < 50
+                                                      ? const Color.fromRGBO(
+                                                          255, 255, 0, 1)
+                                                      : const Color.fromRGBO(
+                                                          0, 255, 128, 1),
                                             ),
                                           const SizedBox(width: 30),
                                           Text(

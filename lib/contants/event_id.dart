@@ -68,7 +68,7 @@ class _EventListWidgetState extends State<EventListWidget> {
                         ),
                   isExpanded: true,
                   iconSize: 45.0,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontSize: 15,
                   ),
@@ -95,7 +95,7 @@ class _EventListWidgetState extends State<EventListWidget> {
                   },
                 ),
               );
-            } else
+            } else {
               return Container(
                   width: MediaQuery.of(context).size.width,
                   padding:
@@ -106,6 +106,7 @@ class _EventListWidgetState extends State<EventListWidget> {
                         color: Color.fromRGBO(145, 145, 145, 1),
                         fontFamily: 'RobotoRegular'),
                   ));
+            }
           }),
     );
   }

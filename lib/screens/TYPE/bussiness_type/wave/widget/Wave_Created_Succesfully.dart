@@ -42,7 +42,7 @@ class WaveCreatedSuccesfully extends StatelessWidget {
                   //     context: context, builder: (context) => SelectDateTime());
                   // _selectDate(context);
                   Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => const MainPage()),
+                      MaterialPageRoute(builder: (context) => MainPage(0)),
                       (Route<dynamic> route) => false);
                 },
                 child: Text(

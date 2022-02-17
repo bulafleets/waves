@@ -430,7 +430,7 @@ class _AddFriendsState extends State<AddFriends> {
         ),
         onPressed: () {
           Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const MainPage()),
+              MaterialPageRoute(builder: (context) => MainPage(0)),
               (Route<dynamic> route) => false);
           // Navigator.of(context).pushAndRemoveUntil(
           //     MaterialPageRoute(builder: (context) => const MyHomePage()),

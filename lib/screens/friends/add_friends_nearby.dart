@@ -226,15 +226,16 @@ class _AddFriendsNearByState extends State<AddFriendsNearBy> {
   Future<NearbyFriendsModel> findNearbyFriendsApi() async {
     var apiData;
     // try {
-    final response = await http.post(Uri.parse(find_nearBy_friends),
-        // headers: {HttpHeaders.authorizationHeader: "Bearer $authorization"},
-        body: {
-          'latitude': latitude.toString(),
-          'longitude': longitude.toString()
-        });
+    final response = await http.post(Uri.parse(find_nearBy_friends), headers: {
+      HttpHeaders.authorizationHeader: "Bearer $authorization"
+    }, body: {
+      'latitude': latitude.toString(),
+      'longitude': longitude.toString(),
+      'user_id': user_id
+    });
     // body: {'latitude': '26.838055', 'longitude': '75.7952836'});
-    print("dddk");
-    print(response.body);
+    // print("dddk");
+    // print(response.body);
     if (response.statusCode == 200) {
       String data = response.body;
       final jsonMap = jsonDecode(data);

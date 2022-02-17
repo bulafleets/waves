@@ -38,8 +38,6 @@ class _WaveDetailsBussinessScreenState
   @override
   void initState() {
     _future = singleWavebyRegular();
-    // TODO: implement initState
-
     super.initState();
   }
 
@@ -55,35 +53,46 @@ class _WaveDetailsBussinessScreenState
 
     // image = bytes;
     var data;
-    http.Response response = await http
-        .post(Uri.parse(SingleWaveView), body: {'wave_id': widget.waveId});
+    var customIcon;
+    http.Response response = await http.post(Uri.parse(SingleWaveView),
+        body: {'wave_id': widget.waveId, 'user_id': user_id});
     final jsonString = response.body;
     print(jsonString);
     final jsonMap = jsonDecode(jsonString);
     data = MyWaveDetailsBussinessModel.fromJson(jsonMap);
-    var imgu = MyWaveDetailsBussinessModel.fromJson(jsonMap).wave.first.avatar;
-    // print(imgurl);
-    String imgurl = "https://www.fluttercampus.com/img/car.png";
-    Uint8List bytes = (await NetworkAssetBundle(Uri.parse(imgurl)).load(imgurl))
-        .buffer
-        .asUint8List();
+    // var imgu = MyWaveDetailsBussinessModel.fromJson(jsonMap).wave.first.avatar;
+    // // print(imgurl);
+    // String imgurl = "https://www.fluttercampus.com/img/car.png";
+    // Uint8List bytes = (await NetworkAssetBundle(Uri.parse(imgurl)).load(imgurl))
+    //     .buffer
+    //     .asUint8List();
+    await BitmapDescriptor.fromAssetImage(
+            const ImageConfiguration(
+                size: Size(150, 188), devicePixelRatio: 500.0),
+            'assets/icons/pin.png')
+        .then((d) {
+      customIcon = d;
+    });
     markers.add(Marker(
-      //add start location marker
-      markerId: MarkerId(widget.lat.toString()),
-      position: LatLng(widget.lat, widget.log), //position of marker
-      infoWindow: InfoWindow(
-          //popup info
-          // title: 'Car Point ',
-          // snippet: 'Car Marker',
-          ),
-      icon: BitmapDescriptor.fromBytes(bytes),
-      //Icon for Marker
-    ));
+        //add start location marker
+        markerId: MarkerId(widget.lat.toString()),
+        position: LatLng(widget.lat, widget.log), //position of marker
+        infoWindow: InfoWindow(
+            //popup info
+            // title: 'Car Point ',
+            // snippet: 'Car Marker',
+            ),
+        // icon: BitmapDescriptor.fromBytes(bytes),
+        icon: customIcon
+        //Icon for Marker
+        ));
     return data;
   }
 
   @override
   Widget build(BuildContext context) {
+    print(user_id);
+    print(widget.waveId);
     return Scaffold(
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(80.0), // here the desired height
@@ -118,130 +127,141 @@ class _WaveDetailsBussinessScreenState
             if (snapshot.hasData) {
               var data = snapshot.data!.wave.first;
               var date = DateFormat('yyyy-MM-dd').format(data.date);
-              return ListView(
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  Container(
-                      height: 251,
-                      decoration: const BoxDecoration(
-                        color: Color.fromRGBO(188, 220, 243, 1),
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(60),
-                            bottomRight: Radius.circular(60)),
-                      ),
-                      child: Column(children: [
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                // width: 102,
-                                // color: Colors.black,
-                                margin:
-                                    const EdgeInsets.only(right: 20, left: 20),
-                                child: const CircleAvatar(
-                                    radius: 50,
-                                    backgroundColor: Colors.black,
-                                    child: CircleAvatar(
-                                      radius: 48,
-                                      backgroundImage: NetworkImage(
-                                          "https://i.pinimg.com/564x/bd/cd/4e/bdcd4e097d609543724874b01aa91c76.jpg"),
-                                    )),
-                              ),
-                              Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          data.waveName,
-                                          style: GoogleFonts.quicksand(
-                                              fontSize: 19,
-                                              fontWeight: FontWeight.w500),
-                                        ),
-                                        const SizedBox(width: 15),
-                                        const FaIcon(
-                                          FontAwesomeIcons.shieldAlt,
-                                          color: Color.fromRGBO(0, 149, 242, 1),
-                                          size: 18,
-                                        ),
-                                        const SizedBox(width: 30),
-                                        Text(
-                                          '2m',
-                                          style: GoogleFonts.quicksand(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w400),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      data.wavesLocation,
-                                      style: GoogleFonts.quicksand(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w300),
-                                    ),
-                                    const SizedBox(height: 15),
-                                    Text(
-                                      '${data.eventInfo.eventName}   $date  ${data.startTime} - ${data.endTime}',
-                                      style: GoogleFonts.quicksand(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w400),
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    )
-                                  ])
-                            ]),
-                        Container(
-                            height: 130,
-                            width: MediaQuery.of(context).size.width - 60,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50)),
-                            child: GoogleMap(
-                              myLocationEnabled: true,
-                              // onTap: _mapTapped,
-                              initialCameraPosition: CameraPosition(
-                                target: LatLng(data.lattitude, data.longitude),
-                                zoom: 17,
-                              ),
-                              onMapCreated:
-                                  (GoogleMapController mapController) {
-                                _mapController.complete(mapController);
-                              },
-                              zoomControlsEnabled: false,
-                              markers: markers,
-                            ))
-                      ])),
-                  const SizedBox(height: 5),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          'COMMENTS',
-                          style: GoogleFonts.quicksand(
-                              fontSize: 19, fontWeight: FontWeight.w300),
+              var time = DateTime.now().difference(data.createdAt).inMinutes;
+              String tt = time > 59
+                  ? time > 1440
+                      ? '${DateTime.now().difference(data.createdAt).inDays.toString()} d'
+                      : '${DateTime.now().difference(data.createdAt).inHours.toString()} h'
+                  : "${DateTime.now().difference(data.createdAt).inMinutes.toString()} m";
+              return RefreshIndicator(
+                onRefresh: _pullRefresh,
+                child: ListView(
+                  // physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    Container(
+                        height: 251,
+                        decoration: const BoxDecoration(
+                          color: Color.fromRGBO(188, 220, 243, 1),
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(60),
+                              bottomRight: Radius.circular(60)),
                         ),
-                        TextButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (_) =>
-                                      CheckInListing(widget.waveId));
-                            },
-                            child: Text(
-                              'Check-In List',
-                              style: GoogleFonts.quicksand(
-                                  fontSize: 13,
-                                  color: const Color.fromRGBO(42, 124, 202, 1),
-                                  fontWeight: FontWeight.w300),
-                            ))
-                      ]),
-                  const SizedBox(height: 5),
-                  CommentScreen(data.waveComments, data.id, data.userId)
-                ],
+                        child: Column(children: [
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  // width: 102,
+                                  // color: Colors.black,
+                                  margin: const EdgeInsets.only(
+                                      right: 20, left: 20),
+                                  child: CircleAvatar(
+                                      radius: 50,
+                                      backgroundColor: Colors.black,
+                                      child: CircleAvatar(
+                                        radius: 48,
+                                        backgroundImage: NetworkImage(
+                                            data.media.first.location),
+                                      )),
+                                ),
+                                Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      const SizedBox(height: 10),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            data.waveName,
+                                            style: GoogleFonts.quicksand(
+                                                fontSize: 19,
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                          const SizedBox(width: 15),
+                                          Image.asset(
+                                            'assets/icons/verified.png',
+                                            scale: .9,
+                                          ),
+                                          const SizedBox(width: 30),
+                                          Text(
+                                            tt,
+                                            style: GoogleFonts.quicksand(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        data.wavesLocation,
+                                        style: GoogleFonts.quicksand(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w300),
+                                      ),
+                                      const SizedBox(height: 15),
+                                      Text(
+                                        '${data.eventInfo.eventName}   $date  ${data.startTime} - ${data.endTime}',
+                                        style: GoogleFonts.quicksand(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                      const SizedBox(
+                                        height: 20,
+                                      )
+                                    ])
+                              ]),
+                          Container(
+                              height: 130,
+                              width: MediaQuery.of(context).size.width - 60,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50)),
+                              child: GoogleMap(
+                                myLocationEnabled: true,
+                                // onTap: _mapTapped,
+                                initialCameraPosition: CameraPosition(
+                                  target:
+                                      LatLng(data.lattitude, data.longitude),
+                                  zoom: 17,
+                                ),
+                                onMapCreated:
+                                    (GoogleMapController mapController) {
+                                  _mapController.complete(mapController);
+                                },
+                                zoomControlsEnabled: false,
+                                markers: markers,
+                              ))
+                        ])),
+                    const SizedBox(height: 5),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(
+                            'COMMENTS',
+                            style: GoogleFonts.quicksand(
+                                fontSize: 19, fontWeight: FontWeight.w300),
+                          ),
+                          TextButton(
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (_) =>
+                                        CheckInListing(widget.waveId));
+                              },
+                              child: Text(
+                                'Check-In List',
+                                style: GoogleFonts.quicksand(
+                                    fontSize: 13,
+                                    color:
+                                        const Color.fromRGBO(42, 124, 202, 1),
+                                    fontWeight: FontWeight.w300),
+                              ))
+                        ]),
+                    const SizedBox(height: 5),
+                    CommentScreen(data.waveComments, data.id, data.userId)
+                  ],
+                ),
               );
             } else {
               return const Center(child: CircularProgressIndicator());

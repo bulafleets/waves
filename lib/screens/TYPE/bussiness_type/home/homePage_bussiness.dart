@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
+import 'package:waves/models/get_following_data_model.dart';
 import 'package:waves/models/mywave_model.dart';
 import 'package:waves/screens/TYPE/bussiness_type/wave/create_wave_bussiness.dart';
 import 'package:waves/screens/TYPE/bussiness_type/wave/wave_details_bussiness.dart';
@@ -19,11 +21,12 @@ class HomeBussiness extends StatefulWidget {
 }
 
 class _HomeBussinessState extends State<HomeBussiness> {
-  late Future<MyWaveModel> _future;
+  late Future<MyHomeBussinessModel> _future;
 
   @override
   void initState() {
     _future = myWaveList();
+    getfollowingNumber();
     // TODO: implement initState
     super.initState();
   }
@@ -69,7 +72,7 @@ class _HomeBussinessState extends State<HomeBussiness> {
                   )),
               centerTitle: true,
             )),
-        body: FutureBuilder<MyWaveModel>(
+        body: FutureBuilder<MyHomeBussinessModel>(
             future: _future,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
@@ -82,6 +85,16 @@ class _HomeBussinessState extends State<HomeBussiness> {
                             var data = snapshot.data!.waves[index];
                             var date =
                                 DateFormat('yyyy-MM-dd').format(data.date);
+                            // DateTime tempDate = DateFormat("yyyy-MM-dd hh:mm:ss")
+                            //     .parse(data.createdAt);
+                            var time = DateTime.now()
+                                .difference(data.createdAt)
+                                .inMinutes;
+                            String tt = time > 59
+                                ? time > 1440
+                                    ? '${DateTime.now().difference(data.createdAt).inDays.toString()} d'
+                                    : '${DateTime.now().difference(data.createdAt).inHours.toString()} h'
+                                : "${DateTime.now().difference(data.createdAt).inMinutes.toString()} m";
                             // if (index == 0) {
                             //   return const SizedBox(height: 15);
                             // }
@@ -96,7 +109,6 @@ class _HomeBussinessState extends State<HomeBussiness> {
                               },
                               child: Container(
                                 height: 102,
-                                // padding: const EdgeInsets.all(8),
                                 margin: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(50),
@@ -107,15 +119,14 @@ class _HomeBussinessState extends State<HomeBussiness> {
                                   children: [
                                     Container(
                                       width: 102,
-                                      // color: Colors.black,
                                       margin: const EdgeInsets.only(right: 20),
-                                      child: const CircleAvatar(
+                                      child: CircleAvatar(
                                         radius: 60,
                                         backgroundColor: Colors.black,
                                         child: CircleAvatar(
                                           radius: 48,
                                           backgroundImage: NetworkImage(
-                                              "https://i.pinimg.com/564x/bd/cd/4e/bdcd4e097d609543724874b01aa91c76.jpg"),
+                                              data.media.first.location),
                                         ),
                                       ),
                                     ),
@@ -138,7 +149,7 @@ class _HomeBussinessState extends State<HomeBussiness> {
                                               ),
                                               const SizedBox(width: 50),
                                               Text(
-                                                '2m',
+                                                tt,
                                                 style: GoogleFonts.quicksand(
                                                     fontSize: 12,
                                                     fontWeight:
@@ -171,19 +182,30 @@ class _HomeBussinessState extends State<HomeBussiness> {
             }));
   }
 
-  Future<MyWaveModel> myWaveList() async {
+  Future<MyHomeBussinessModel> myWaveList() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     var userId = _prefs.getString('user_id');
-    print(userId);
     var data;
     http.Response response = await http.post(
       Uri.parse(MyWaveListing),
       body: {'user_id': userId},
     );
     final jsonString = response.body;
-    print(jsonString);
     final jsonMap = jsonDecode(jsonString);
-    data = MyWaveModel.fromJson(jsonMap);
+    data = MyHomeBussinessModel.fromJson(jsonMap);
+    return data;
+  }
+
+  Future<GetFollowingDataModel> getfollowingNumber() async {
+    GetFollowingDataModel data;
+    http.Response response = await http.post(Uri.parse(MyFollows),
+        body: {'followingId': user_id},
+        headers: {HttpHeaders.authorizationHeader: "Bearer $authorization"});
+    final jsonString = response.body;
+
+    final jsonMap = jsonDecode(jsonString);
+    data = GetFollowingDataModel.fromJson(jsonMap);
+    totalFollowing = GetFollowingDataModel.fromJson(jsonMap).followers.length;
     return data;
   }
 }

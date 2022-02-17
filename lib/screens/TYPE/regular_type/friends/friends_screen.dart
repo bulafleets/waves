@@ -8,7 +8,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:waves/contants/common_params.dart';
 import 'package:waves/models/my_friends_model.dart';
 import 'package:waves/models/myallfriends_request_model.dart';
-import 'package:waves/screens/TYPE/regular_type/friends/add_friends.dart';
 import 'package:waves/screens/TYPE/regular_type/friends/widget/show_dialog.dart';
 import 'package:waves/screens/friends/add_friends.dart';
 import 'package:http/http.dart' as http;

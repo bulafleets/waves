@@ -1,12 +1,13 @@
 import 'dart:convert';
 
-MyWaveModel myWaveModelFromJson(String str) =>
-    MyWaveModel.fromJson(json.decode(str));
+MyHomeBussinessModel myHomeBussinessModelFromJson(String str) =>
+    MyHomeBussinessModel.fromJson(json.decode(str));
 
-String myWaveModelToJson(MyWaveModel data) => json.encode(data.toJson());
+String myHomeBussinessModelToJson(MyHomeBussinessModel data) =>
+    json.encode(data.toJson());
 
-class MyWaveModel {
-  MyWaveModel({
+class MyHomeBussinessModel {
+  MyHomeBussinessModel({
     required this.status,
     required this.message,
     required this.waves,
@@ -16,7 +17,8 @@ class MyWaveModel {
   String message;
   List<Wave> waves;
 
-  factory MyWaveModel.fromJson(Map<String, dynamic> json) => MyWaveModel(
+  factory MyHomeBussinessModel.fromJson(Map<String, dynamic> json) =>
+      MyHomeBussinessModel(
         status: json["status"],
         message: json["message"],
         waves: List<Wave>.from(json["waves"].map((x) => Wave.fromJson(x))),
@@ -61,7 +63,7 @@ class Wave {
   });
 
   String id;
-  List<dynamic> media;
+  List<Media> media;
   List<dynamic> inviteTags;
   List<dynamic> friendTags;
   String userId;
@@ -79,7 +81,7 @@ class Wave {
   String discountDetail;
   bool isAdult;
   bool isSendFollower;
-  int radius;
+  double radius;
   String additionalDetail;
   String startTime;
   String endTime;
@@ -90,7 +92,7 @@ class Wave {
 
   factory Wave.fromJson(Map<String, dynamic> json) => Wave(
         id: json["_id"],
-        media: List<dynamic>.from(json["media"].map((x) => x)),
+        media: List<Media>.from(json["media"].map((x) => Media.fromJson(x))),
         inviteTags: List<dynamic>.from(json["invite_tags"].map((x) => x)),
         friendTags: List<dynamic>.from(json["friend_tags"].map((x) => x)),
         userId: json["user_id"],
@@ -108,7 +110,7 @@ class Wave {
         discountDetail: json["discount_detail"],
         isAdult: json["isAdult"],
         isSendFollower: json["isSendFollower"],
-        radius: json["radius"],
+        radius: json["radius"].toDouble(),
         additionalDetail: json["additional_detail"],
         startTime: json["start_time"],
         endTime: json["end_time"],
@@ -121,13 +123,12 @@ class Wave {
 
   Map<String, dynamic> toJson() => {
         "_id": id,
-        "media": List<dynamic>.from(media.map((x) => x)),
+        "media": List<dynamic>.from(media.map((x) => x.toJson())),
         "invite_tags": List<dynamic>.from(inviteTags.map((x) => x)),
         "friend_tags": List<dynamic>.from(friendTags.map((x) => x)),
         "user_id": userId,
         "event_id": eventId,
-        "date":
-            "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+        "date": date.toIso8601String(),
         "lattitude": lattitude,
         "longitude": longitude,
         "waves_location": wavesLocation,
@@ -205,5 +206,21 @@ class Location {
         "type": type,
         "coordinates": List<dynamic>.from(coordinates.map((x) => x)),
         "_id": id,
+      };
+}
+
+class Media {
+  Media({
+    required this.location,
+  });
+
+  String location;
+
+  factory Media.fromJson(Map<String, dynamic> json) => Media(
+        location: json["location"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "location": location,
       };
 }

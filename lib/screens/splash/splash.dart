@@ -21,14 +21,12 @@ class SplashScreen extends StatefulWidget {
 class SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   var _visible = true;
-  late double _height;
-  late double _width;
   late AnimationController _controller;
   late Animation<double> _animation;
 
   startTime() async {
-    var _duration = new Duration(seconds: 1);
-    return new Timer(_duration, navigationPage);
+    var _duration = const Duration(seconds: 1);
+    return Timer(_duration, navigationPage);
   }
 
   Future<void> navigationPage() async {
@@ -67,7 +65,7 @@ class SplashScreenState extends State<SplashScreen>
         // print(faceId);
         if (isAuthenticated && isBiometricSupported) {
           Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const MainPage()));
+              MaterialPageRoute(builder: (context) => MainPage(0)));
         } else if (!isBiometricSupported) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -121,8 +119,6 @@ class SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    _height = MediaQuery.of(context).size.height;
-    _width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Stack(
         // fit: StackFit.expand,

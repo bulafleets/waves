@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -48,7 +47,7 @@ class _InviteScreenState extends State<InviteScreen> {
   TextEditingController searchController = TextEditingController();
   bool haveFriends = false;
   bool _isAdded = false;
-  var _inviteIdData = [];
+  List<UserId> _inviteIdData = [];
   @override
   void initState() {
     seeAllFriends();
@@ -63,7 +62,7 @@ class _InviteScreenState extends State<InviteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(_inviteIdData.toString());
+    // print(_inviteIdData.map((e) => e.id));
     bool keyboardIsOpened = MediaQuery.of(context).viewInsets.bottom != 0.0;
     return Scaffold(
       appBar: PreferredSize(
@@ -142,7 +141,7 @@ class _InviteScreenState extends State<InviteScreen> {
                           fontFamily: 'RobotoRegular'),
                       border: const OutlineInputBorder()),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 if (_data.isNotEmpty)
                   Flexible(
                     child: GridView.builder(
@@ -167,10 +166,15 @@ class _InviteScreenState extends State<InviteScreen> {
                                     _data[index].profileUrl,
                                   )),
                               const SizedBox(width: 15),
-                              Text(
-                                _data[index].firstName,
-                                style: GoogleFonts.quicksand(
-                                    fontSize: 10, fontWeight: FontWeight.w400),
+                              SizedBox(
+                                width: 68,
+                                child: Text(
+                                  _data[index].firstName,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.quicksand(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w400),
+                                ),
                               ),
                               const SizedBox(width: 15),
                               GestureDetector(
@@ -219,15 +223,16 @@ class _InviteScreenState extends State<InviteScreen> {
                                     setState(() {
                                       if (!_data
                                           .map((e) => e.id)
-                                          .contains(_userDetails[i].id)) {
+                                          .contains(_searchResult[i].id)) {
                                         _data.add(UserDetails(
-                                            id: _userDetails[i].id,
+                                            id: _searchResult[i].id,
                                             firstName:
-                                                _userDetails[i].firstName,
+                                                _searchResult[i].firstName,
                                             profileUrl:
-                                                _userDetails[i].profileUrl));
+                                                _searchResult[i].profileUrl));
 
-                                        _inviteIdData.add(_userDetails[i].id);
+                                        _inviteIdData.add(
+                                            UserId(id: _userDetails[i].id));
                                       }
                                     });
                                   },
@@ -244,42 +249,44 @@ class _InviteScreenState extends State<InviteScreen> {
                           },
                         )
                       // : Container()
-                      : ListView.builder(
-                          itemCount: _userDetails.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Card(
-                                child: ListTile(
-                                  onTap: () {
-                                    setState(() {
-                                      if (!_data
-                                          .map((e) => e.id)
-                                          .contains(_userDetails[index].id)) {
-                                        _data.add(UserDetails(
-                                            id: _userDetails[index].id,
-                                            firstName:
-                                                _userDetails[index].firstName,
-                                            profileUrl: _userDetails[index]
-                                                .profileUrl));
-                                        print(_inviteIdData.toString());
-                                        _inviteIdData
-                                            .add(_userDetails[index].id);
-                                      }
-                                    });
-                                  },
-                                  leading: CircleAvatar(
-                                    backgroundImage: NetworkImage(
-                                      _userDetails[index].profileUrl,
+                      : _userDetails.isNotEmpty
+                          ? ListView.builder(
+                              itemCount: _userDetails.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Card(
+                                    child: ListTile(
+                                      onTap: () {
+                                        setState(() {
+                                          if (!_data.map((e) => e.id).contains(
+                                              _userDetails[index].id)) {
+                                            _data.add(UserDetails(
+                                                id: _userDetails[index].id,
+                                                firstName: _userDetails[index]
+                                                    .firstName,
+                                                profileUrl: _userDetails[index]
+                                                    .profileUrl));
+
+                                            _inviteIdData.add(UserId(
+                                                id: _userDetails[index].id));
+                                          }
+                                        });
+                                      },
+                                      leading: CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                          _userDetails[index].profileUrl,
+                                        ),
+                                      ),
+                                      title:
+                                          Text(_userDetails[index].firstName),
                                     ),
+                                    margin: const EdgeInsets.all(0.0),
                                   ),
-                                  title: Text(_userDetails[index].firstName),
-                                ),
-                                margin: const EdgeInsets.all(0.0),
-                              ),
-                            );
-                          },
-                        ),
+                                );
+                              },
+                            )
+                          : const Center(child: CircularProgressIndicator()),
                 ),
               ])),
       floatingActionButton: keyboardIsOpened ? null : confirm(),
@@ -392,8 +399,10 @@ class _InviteScreenState extends State<InviteScreen> {
     request.fields['isInvite'] = widget.isInviteOnly.toString();
     request.fields['start_time'] = widget.startTime;
     request.fields['end_time'] = widget.endTime;
-    request.fields['invite_tags'] = _inviteIdData.toString();
-
+    request.fields['invite_tags'] =
+        jsonEncode(_inviteIdData.map((e) => e.toJson()).toList());
+    // _inviteIdData.toString();
+    print(jsonEncode(_inviteIdData.map((e) => e.toJson()).toList()));
     // invite_tags[0] see it later
 
     var res = await request.send();
@@ -402,11 +411,11 @@ class _InviteScreenState extends State<InviteScreen> {
     var response = await http.Response.fromStream(res);
     String data = response.body;
     String status = jsonDecode(data)['status'].toString();
-    print(data);
+    // print(data);
 
     if (status == "200") {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => WaveCreatedSuccesfully()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => const WaveCreatedSuccesfully()));
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       //   content: Text('successfully'),
       // ));
@@ -438,4 +447,12 @@ class UserDetails {
   //   );
   // }
 
+}
+
+class UserId {
+  final String id;
+  UserId({required this.id});
+  Map<String, dynamic> toJson() => {
+        'id': id,
+      };
 }

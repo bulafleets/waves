@@ -1,3 +1,4 @@
+import 'package:waves/models/notification_model.dart';
 import 'package:waves/models/singlewave_model.dart';
 
 String AccountType = '';
@@ -22,6 +23,9 @@ var isReqData = [];
 String aboutdata = '';
 String termContiondata = '';
 String privacyPolicyData = '';
+List<NotificationLocalModel> notificationData = [];
+var isNotification = false;
+int totalFollowing = 0;
 
 final String BASE = "http://54.167.80.99/api/";
 final String URL_Login = BASE + "user/login";
@@ -38,6 +42,8 @@ final String MyFriendREquests = BASE + 'my-all-friends-requests';
 final String AceeptFriendsRequest = BASE + 'accept-friend-request';
 final String RemoveFriend = BASE + 'remove-friend';
 final String MobileList = BASE + 'register/mobileList';
+final String MobileInvitedList = BASE + 'request/mobileList';
+final String MobileInvitePost = BASE + 'request/mobile';
 final String WaveCreate = BASE + 'waves/create';
 final String EventList = BASE + 'get/event-list';
 final String waveListing = BASE + 'home/waves/lists';
@@ -52,3 +58,9 @@ final String LikeComment = BASE + 'comment/likes';
 final String ReplyComment = BASE + 'wave/comment/reply';
 final String Comment = BASE + 'wave/comment';
 final String MapListing = BASE + 'wave-list/by-location';
+final String ReviewBussines = BASE + 'create/wave/review';
+final String ViewProfile = BASE + 'user/getprofile';
+final String Follow = BASE + 'follow';
+final String UnFollow = BASE + 'unfollow';
+final String MyFollows = BASE + "myfollowers";
+final String GetReviews = BASE + "get/review";

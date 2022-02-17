@@ -8,12 +8,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
 import 'package:waves/contants/share_pref.dart';
 import 'package:waves/models/waveListing_regular_model.dart';
+import 'package:waves/screens/Main/main_page.dart';
 import 'package:waves/screens/TYPE/regular_type/wave/create_wave.dart';
 import 'package:waves/screens/TYPE/regular_type/wave/mywave_detail_regular.dart';
 import 'package:waves/screens/TYPE/regular_type/wave/wave_details_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:waves/screens/notification/notification_screen.dart';
+import 'package:waves/screens/profile/view_profile.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -24,7 +26,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Future<WaveListingRegularModel> _future;
-  var userID;
 
   @override
   void initState() {
@@ -42,7 +43,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print(userID);
+    // print(user_id);
     return Scaffold(
         appBar: PreferredSize(
             preferredSize: const Size.fromHeight(80.0),
@@ -53,7 +54,35 @@ class _HomePageState extends State<HomePage> {
                 child: IconButton(
                   iconSize: 24,
                   alignment: Alignment.bottomLeft,
-                  icon: const FaIcon(FontAwesomeIcons.solidBell),
+                  icon: notificationData.isNotEmpty
+                      ? Stack(
+                          children: <Widget>[
+                            const FaIcon(FontAwesomeIcons.solidBell),
+                            Positioned(
+                              right: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(1),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                constraints: const BoxConstraints(
+                                  minWidth: 12,
+                                  minHeight: 12,
+                                ),
+                                child: Text(
+                                  '${notificationData.length}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 8,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                      : const FaIcon(FontAwesomeIcons.solidBell),
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => const NotificationScreen()));
@@ -100,7 +129,6 @@ class _HomePageState extends State<HomePage> {
                           var date = DateFormat('yyyy/MM/dd').format(data.date);
                           // DateTime tempDate = DateFormat("yyyy-MM-dd hh:mm:ss")
                           //     .parse(data.createdAt);
-                          print(data.isBusinessUser);
                           var time = DateTime.now()
                               .difference(data.createdAt)
                               .inMinutes;
@@ -115,14 +143,14 @@ class _HomePageState extends State<HomePage> {
                           return InkWell(
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => data.userId == userID
+                                  builder: (context) => data.userId == user_id
                                       ? MyWaveDetailRegular(
                                           data.id,
                                           data.userInfo.age,
                                           data.lattitude,
                                           data.longitude)
-                                      : WaveDetailsScreen(
-                                          data.id, data.userInfo.age)));
+                                      : WaveDetailsScreen(data.id,
+                                          data.userInfo.age, data.userId)));
                             },
                             child: Container(
                               height: 102,
@@ -141,38 +169,55 @@ class _HomePageState extends State<HomePage> {
                                     width: 102,
                                     // color: Colors.black,
                                     margin: const EdgeInsets.only(right: 20),
-                                    child: Stack(
-                                      alignment: Alignment.bottomRight,
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 60,
-                                          backgroundColor: Colors.black,
-                                          child: CircleAvatar(
-                                            radius: 48,
-                                            backgroundImage: NetworkImage(
-                                                data.media.first.location),
+                                    child: InkWell(
+                                      onTap: () {
+                                        if (data.userId != user_id) {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ViewProfleScreen(
+                                                          profileId:
+                                                              data.userId)));
+                                        } else {
+                                          Navigator.of(context).pushReplacement(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const MainPage(3)));
+                                        }
+                                      },
+                                      child: Stack(
+                                        alignment: Alignment.bottomRight,
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 60,
+                                            backgroundColor: Colors.black,
+                                            child: CircleAvatar(
+                                              radius: 48,
+                                              backgroundImage: NetworkImage(
+                                                  data.media.first.location),
+                                            ),
                                           ),
-                                        ),
-                                        CircleAvatar(
-                                          radius: 17,
-                                          backgroundColor:
-                                              data.userInfo.age > 17 &&
-                                                      data.userInfo.age < 30
-                                                  ? const Color.fromRGBO(
-                                                      0, 0, 255, 1)
-                                                  : data.userInfo.age > 29 &&
-                                                          data.userInfo.age < 50
-                                                      ? const Color.fromRGBO(
-                                                          255, 255, 0, 1)
-                                                      : const Color.fromRGBO(
-                                                          0, 255, 128, 1),
-                                          child: CircleAvatar(
-                                            radius: 15,
-                                            backgroundImage:
-                                                NetworkImage(data.avatar),
+                                          CircleAvatar(
+                                            radius: 17,
+                                            backgroundColor: data.userInfo.age >
+                                                        17 &&
+                                                    data.userInfo.age < 30
+                                                ? const Color.fromRGBO(
+                                                    0, 0, 255, 1)
+                                                : data.userInfo.age > 29 &&
+                                                        data.userInfo.age < 50
+                                                    ? const Color.fromRGBO(
+                                                        255, 255, 0, 1)
+                                                    : const Color.fromRGBO(
+                                                        0, 255, 128, 1),
+                                            child: CircleAvatar(
+                                              radius: 15,
+                                              backgroundImage:
+                                                  NetworkImage(data.avatar),
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                   Column(
@@ -189,16 +234,38 @@ class _HomePageState extends State<HomePage> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Flexible(
-                                                child: Text(
-                                                  data.userType != 'BUSINESS'
-                                                      ? data.username
-                                                      : data.waveName,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: GoogleFonts.quicksand(
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.w500),
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    if (data.userId !=
+                                                        user_id) {
+                                                      Navigator.of(context).push(
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  ViewProfleScreen(
+                                                                      profileId:
+                                                                          data.userId)));
+                                                    } else {
+                                                      Navigator.of(context)
+                                                          .pushReplacement(
+                                                              MaterialPageRoute(
+                                                                  builder: (context) =>
+                                                                      const MainPage(
+                                                                          3)));
+                                                    }
+                                                  },
+                                                  child: Text(
+                                                    data.userType != 'BUSINESS'
+                                                        ? data.username
+                                                        : data.waveName,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style:
+                                                        GoogleFonts.quicksand(
+                                                            fontSize: 17,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
+                                                  ),
                                                 ),
                                               ),
                                               if (data.userType != 'BUSINESS')
@@ -264,15 +331,20 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                         ),
                                         const SizedBox(height: 5),
-                                        Text(
-                                          data.userType != 'BUSINESS'
-                                              ? data.isCheckedIn
-                                                  ? 'Checked into  ${data.eventInfo.eventName}'
-                                                  : 'Wave at ${data.waveName}'
-                                              : data.username,
-                                          style: GoogleFonts.quicksand(
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w400),
+                                        Flexible(
+                                          child: SizedBox(
+                                            width: 200,
+                                            child: Text(
+                                              data.userType != 'BUSINESS'
+                                                  ? data.isCheckedIn
+                                                      ? 'Checked into  ${data.eventInfo.eventName}'
+                                                      : 'Wave at ${data.waveName}'
+                                                  : data.username,
+                                              style: GoogleFonts.quicksand(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.w400),
+                                            ),
+                                          ),
                                         ),
                                         const SizedBox(height: 5),
                                         Text(
@@ -304,14 +376,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<WaveListingRegularModel> waveListingRegular() async {
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
-    var token = _prefs.getString(Prefs.token);
-    var userId = _prefs.getString(Prefs.userId);
-    userID = userId;
     var data;
     http.Response response = await http.post(Uri.parse(waveListing),
-        body: {'user_id': userId},
-        headers: {HttpHeaders.authorizationHeader: "Bearer $token"});
+        body: {'user_id': user_id},
+        headers: {HttpHeaders.authorizationHeader: "Bearer $authorization"});
     final jsonString = response.body;
 
     final jsonMap = jsonDecode(jsonString);

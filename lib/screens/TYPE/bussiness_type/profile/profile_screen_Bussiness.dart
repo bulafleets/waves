@@ -6,33 +6,24 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
-import 'package:waves/contants/map_pop_screen.dart';
 import 'package:waves/models/get_following_data_model.dart';
-import 'package:waves/screens/TYPE/regular_type/friends/friends_screen.dart';
-import 'package:waves/screens/TYPE/regular_type/wave/invite_screen.dart';
+import 'package:waves/screens/TYPE/bussiness_type/reviews/review_screen.dart';
+
 import 'package:waves/screens/auth/login_page.dart';
-import 'package:waves/screens/friends/add_friends.dart';
-import 'package:waves/screens/notification/notification_screen.dart';
+
 import 'package:waves/screens/profile/edit_profile.dart';
 import 'package:waves/screens/setting/setting_screen.dart';
 import 'package:http/http.dart' as http;
 
-class MyProfileScreen extends StatefulWidget {
-  const MyProfileScreen({Key? key}) : super(key: key);
+class MyProfileBussinessScreen extends StatefulWidget {
+  const MyProfileBussinessScreen({Key? key}) : super(key: key);
 
   @override
-  _MyProfileScreenState createState() => _MyProfileScreenState();
+  _MyProfileBussinessScreenState createState() =>
+      _MyProfileBussinessScreenState();
 }
 
-class _MyProfileScreenState extends State<MyProfileScreen> {
-  late int totalFollowing = 0;
-
-  @override
-  void initState() {
-    getfollowingNumber();
-    super.initState();
-  }
-
+class _MyProfileBussinessScreenState extends State<MyProfileBussinessScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +45,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
           )),
       body: SingleChildScrollView(
         child: Container(
-          height: MediaQuery.of(context).size.height,
+          height: MediaQuery.of(context).size.height - 100,
           width: MediaQuery.of(context).size.width,
           padding: const EdgeInsets.all(30),
           child: Column(
@@ -77,10 +68,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       fontSize: 19, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(width: 10),
-                const FaIcon(
-                  FontAwesomeIcons.solidIdBadge,
-                  color: Color.fromRGBO(38, 125, 213, 1),
-                  size: 22,
+                Image.asset(
+                  'assets/icons/verified.png',
+                  scale: .9,
                 ),
               ]),
               Text(
@@ -88,8 +78,59 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 style: GoogleFonts.quicksand(
                     fontSize: 15, fontWeight: FontWeight.w300),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                FaIcon(
+                  FontAwesomeIcons.solidStar,
+                  color: Theme.of(context).primaryColor,
+                  size: 18,
+                ),
+                FaIcon(
+                  FontAwesomeIcons.solidStar,
+                  color: Theme.of(context).primaryColor,
+                  size: 18,
+                ),
+                FaIcon(
+                  FontAwesomeIcons.solidStar,
+                  color: Theme.of(context).primaryColor,
+                  size: 18,
+                ),
+                FaIcon(
+                  FontAwesomeIcons.solidStar,
+                  color: Theme.of(context).primaryColor,
+                  size: 18,
+                ),
+                FaIcon(
+                  FontAwesomeIcons.solidStar,
+                  color: Theme.of(context).primaryColor,
+                  size: 18,
+                ),
+              ]),
+              SizedBox(
+                height: 32,
+                child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const ReviewScreen()));
+                    },
+                    child: const Text(
+                      'Reviews',
+                      style: TextStyle(
+                        color: Colors.black,
+                        decoration: TextDecoration.underline,
+                      ),
+                    )),
+              ),
 
+              const SizedBox(height: 8),
+              Text(
+                '$totalFollowing Followers',
+                style: GoogleFonts.quicksand(
+                    color: Colors.blue,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 8),
               Flexible(
                 child: Padding(
                   padding: const EdgeInsets.all(3.0),
@@ -104,7 +145,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               ),
               const SizedBox(height: 8),
               ListTile(
-                title: Text('Edit Profile',
+                title: Text('Edit Bussiness Info',
                     style: GoogleFonts.quicksand(
                         fontSize: 19, fontWeight: FontWeight.w300)),
                 trailing: const Icon(Icons.arrow_forward_ios),
@@ -113,33 +154,25 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       builder: (context) => const EditProfileScreen()));
                 },
               ),
+
+              // ListTile(
+              //   title: Text('Notification',
+              //       style: GoogleFonts.quicksand(
+              //           fontSize: 19, fontWeight: FontWeight.w300)),
+              //   trailing: const Icon(Icons.arrow_forward_ios),
+              //   onTap: () {
+              //     Navigator.of(context).push(MaterialPageRoute(
+              //         builder: (context) => const NotificationScreen()));
+              //   },
+              // ),
               ListTile(
-                title: Text('Privacy Settings',
+                title: Text('Followers',
                     style: GoogleFonts.quicksand(
                         fontSize: 19, fontWeight: FontWeight.w300)),
                 trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: () {
-                  // showDialog(context: context, builder: (_) => MapPopScreen());
-                },
-              ),
-              ListTile(
-                title: Text('Notification',
-                    style: GoogleFonts.quicksand(
-                        fontSize: 19, fontWeight: FontWeight.w300)),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const NotificationScreen()));
-                },
-              ),
-              ListTile(
-                title: Text('Friends',
-                    style: GoogleFonts.quicksand(
-                        fontSize: 19, fontWeight: FontWeight.w300)),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const FriendsScreen()));
+                  // Navigator.of(context).push(MaterialPageRoute(
+                  //     builder: (context) ));
                 },
               ),
               ListTile(
@@ -204,18 +237,5 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
         ),
       ),
     );
-  }
-
-  Future<GetFollowingDataModel> getfollowingNumber() async {
-    GetFollowingDataModel data;
-    http.Response response = await http.post(Uri.parse(MyFollows),
-        body: {'followingId': user_id},
-        headers: {HttpHeaders.authorizationHeader: "Bearer $authorization"});
-    final jsonString = response.body;
-
-    final jsonMap = jsonDecode(jsonString);
-    data = GetFollowingDataModel.fromJson(jsonMap);
-    totalFollowing = GetFollowingDataModel.fromJson(jsonMap).followers.length;
-    return data;
   }
 }

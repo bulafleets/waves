@@ -353,7 +353,6 @@ class WaveComment {
     required this.comment,
     required this.createdAt,
     required this.updatedAt,
-    required this.v,
     required this.avatar,
     required this.username,
   });
@@ -366,7 +365,6 @@ class WaveComment {
   String comment;
   DateTime createdAt;
   DateTime updatedAt;
-  int v;
   String avatar;
   String username;
 
@@ -380,7 +378,6 @@ class WaveComment {
         comment: json["comment"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        v: json["__v"],
         avatar: json["avatar"],
         username: json["username"],
       );
@@ -389,13 +386,12 @@ class WaveComment {
         "_id": id,
         "comment_likes": List<dynamic>.from(commentLikes.map((x) => x)),
         "comment_reply":
-            List<dynamic>.from(commentReply.map((x) => x.toJson())),
+            List<CommentReply>.from(commentReply.map((x) => x.toJson())),
         "user_id": userId,
         "wave_id": waveId,
         "comment": comment,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
-        "__v": v,
         "avatar": avatar,
         "username": username,
       };
