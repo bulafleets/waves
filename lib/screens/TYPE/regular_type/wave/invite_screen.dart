@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -161,10 +162,29 @@ class _InviteScreenState extends State<InviteScreen> {
                             child: Row(children: [
                               const SizedBox(width: 15),
                               CircleAvatar(
-                                  radius: 15,
-                                  backgroundImage: NetworkImage(
-                                    _data[index].profileUrl,
-                                  )),
+                                radius: 15,
+                                child: CachedNetworkImage(
+                                  imageUrl: _data[index].profileUrl,
+                                  imageBuilder: (context, imageProvider) =>
+                                      Container(
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover),
+                                    ),
+                                  ),
+                                  placeholder: (context, url) =>
+                                      const CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
+                                ),
+                                // backgroundImage: NetworkImage(
+                                //   _data[index].profileUrl,
+                                // )
+                              ),
                               const SizedBox(width: 15),
                               SizedBox(
                                 width: 68,
@@ -237,9 +257,27 @@ class _InviteScreenState extends State<InviteScreen> {
                                     });
                                   },
                                   leading: CircleAvatar(
-                                    backgroundImage: NetworkImage(
-                                      _searchResult[i].profileUrl,
+                                    child: CachedNetworkImage(
+                                      imageUrl: _searchResult[i].profileUrl,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                              image: imageProvider,
+                                              fit: BoxFit.cover),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) =>
+                                          const CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.error),
                                     ),
+                                    // backgroundImage: NetworkImage(
+                                    //   _searchResult[i].profileUrl,
+                                    // ),
                                   ),
                                   title: Text(_searchResult[i].firstName),
                                 ),
@@ -274,9 +312,29 @@ class _InviteScreenState extends State<InviteScreen> {
                                         });
                                       },
                                       leading: CircleAvatar(
-                                        backgroundImage: NetworkImage(
-                                          _userDetails[index].profileUrl,
+                                        child: CachedNetworkImage(
+                                          imageUrl:
+                                              _userDetails[index].profileUrl,
+                                          imageBuilder:
+                                              (context, imageProvider) =>
+                                                  Container(
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              image: DecorationImage(
+                                                  image: imageProvider,
+                                                  fit: BoxFit.cover),
+                                            ),
+                                          ),
+                                          placeholder: (context, url) =>
+                                              const CircularProgressIndicator(),
+                                          errorWidget: (context, url, error) =>
+                                              const Icon(Icons.error),
                                         ),
+                                        // backgroundImage: NetworkImage(
+                                        //   _userDetails[index].profileUrl,
+                                        // ),
                                       ),
                                       title:
                                           Text(_userDetails[index].firstName),

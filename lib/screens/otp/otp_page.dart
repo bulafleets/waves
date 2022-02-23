@@ -9,7 +9,8 @@ import 'package:waves/contants/common_params.dart';
 import 'package:waves/screens/about_us/about_us.dart';
 import 'package:waves/screens/forgetPassword/change_password.dart';
 import 'package:http/http.dart' as http;
-import 'package:waves/screens/profile/create_profile.dart';
+import 'package:waves/screens/TYPE/regular_type/profile/create_profile.dart';
+import 'package:waves/screens/TYPE/bussiness_type/profile/create_profile_business.dart';
 
 class OtpPage extends StatefulWidget {
   final String emailid;
@@ -88,8 +89,8 @@ class _OtpPageState extends State<OtpPage> {
                           fontSize: 14, color: Colors.white))),
               const SizedBox(height: 100),
               OtpPinField(),
-              SizedBox(height: 10),
-              ResendText()
+              const SizedBox(height: 10),
+              resendText()
             ])),
       ),
       floatingActionButton: keyboardIsOpened ? null : nextbutton(),
@@ -132,7 +133,7 @@ class _OtpPageState extends State<OtpPage> {
           inactiveFillColor: Colors.white,
           errorBorderColor: Colors.red,
         ),
-        animationDuration: Duration(milliseconds: 300),
+        animationDuration: const Duration(milliseconds: 300),
         // backgroundColor: Colors.blue.shade50,
         enableActiveFill: true,
         //errorAnimationController: errorController,
@@ -216,22 +217,14 @@ class _OtpPageState extends State<OtpPage> {
           onPressed: () {
             if (_formkey.currentState!.validate()) {
               if (isSignUp == 'true') {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => CreateProfile()));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => AccountType == 'REGULAR'
+                        ? const CreateProfile()
+                        : const CreateProfileForBusiness()));
               } else {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => ChangePassword()));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const ChangePassword()));
               }
-              // showDialog(
-              //   context: context,
-              //   builder: (_) ,
-              // );
-              //  EasyLoading.show(status: 'Please Wait ...');
-              //sendRESENT();
-              //CircularProgressIndicator();
-              //  EasyLoading.show(status: 'Please Wait ...');
-
-              //print("Routing to your account");
             }
           },
           child: const Text(
@@ -280,7 +273,7 @@ class _OtpPageState extends State<OtpPage> {
     }
   }
 
-  Widget ResendText() {
+  Widget resendText() {
     return Container(
       alignment: Alignment.center,
       //margin: EdgeInsets.only(left: _width / 10.0),
@@ -299,7 +292,7 @@ class _OtpPageState extends State<OtpPage> {
             },
             child: Text(
               _start == 0 ? "RESEND OTP" : "Wait | " + _start.toString(),
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontFamily: 'RobotoBold',
                 fontWeight: FontWeight.w400,

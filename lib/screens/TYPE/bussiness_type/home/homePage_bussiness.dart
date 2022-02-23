@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,6 +28,7 @@ class _HomeBussinessState extends State<HomeBussiness> {
   void initState() {
     _future = myWaveList();
     getfollowingNumber();
+    getAverageReviews();
     // TODO: implement initState
     super.initState();
   }
@@ -40,6 +42,7 @@ class _HomeBussinessState extends State<HomeBussiness> {
 
   @override
   Widget build(BuildContext context) {
+    print(user_id);
     return Scaffold(
         appBar: PreferredSize(
             preferredSize: const Size.fromHeight(80.0),
@@ -119,16 +122,34 @@ class _HomeBussinessState extends State<HomeBussiness> {
                                   children: [
                                     Container(
                                       width: 102,
-                                      margin: const EdgeInsets.only(right: 20),
+                                      margin: const EdgeInsets.only(right: 5),
                                       child: CircleAvatar(
-                                        radius: 60,
-                                        backgroundColor: Colors.black,
-                                        child: CircleAvatar(
-                                          radius: 48,
-                                          backgroundImage: NetworkImage(
-                                              data.media.first.location),
-                                        ),
-                                      ),
+                                          radius: 60,
+                                          backgroundColor: Colors.black,
+                                          child: CircleAvatar(
+                                            radius: 48,
+                                            child: CachedNetworkImage(
+                                              imageUrl:
+                                                  data.media.first.location,
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
+                                                      Container(
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.cover),
+                                                ),
+                                              ),
+                                              placeholder: (context, url) =>
+                                                  const CircularProgressIndicator(),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                            ),
+                                          )),
                                     ),
                                     Column(
                                         crossAxisAlignment:
@@ -138,16 +159,27 @@ class _HomeBussinessState extends State<HomeBussiness> {
                                         children: [
                                           Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                                MainAxisAlignment.spaceAround,
                                             children: [
-                                              Text(
-                                                data.waveName,
-                                                style: GoogleFonts.quicksand(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w500),
+                                              const SizedBox(width: 10),
+                                              SizedBox(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    2,
+                                                child: Expanded(
+                                                  child: Text(
+                                                    data.waveName,
+                                                    style:
+                                                        GoogleFonts.quicksand(
+                                                            fontSize: 17,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
+                                                  ),
+                                                ),
                                               ),
-                                              const SizedBox(width: 50),
+                                              // const SizedBox(width: 10),
                                               Text(
                                                 tt,
                                                 style: GoogleFonts.quicksand(
@@ -158,14 +190,47 @@ class _HomeBussinessState extends State<HomeBussiness> {
                                             ],
                                           ),
                                           const SizedBox(height: 20),
-                                          Text(
-                                            '$date       '
-                                            '     ${data.startTime}  '
-                                            '${data.endTime}',
-                                            style: GoogleFonts.quicksand(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w400),
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width -
+                                                130,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              children: [
+                                                Text(
+                                                  date,
+                                                  style: GoogleFonts.quicksand(
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w400),
+                                                ),
+                                                Text(
+                                                  data.startTime,
+                                                  style: GoogleFonts.quicksand(
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w400),
+                                                ),
+                                                Text(
+                                                  data.endTime,
+                                                  style: GoogleFonts.quicksand(
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w400),
+                                                ),
+                                              ],
+                                            ),
                                           ),
+                                          // Text(
+                                          //   '$date       '
+                                          //   '     ${data.startTime}  '
+                                          //   '${data.endTime}',
+                                          //   style: GoogleFonts.quicksand(
+                                          //       fontSize: 12,
+                                          //       fontWeight: FontWeight.w400),
+                                          // ),
                                           const SizedBox(height: 5),
                                         ])
                                   ],
@@ -207,5 +272,13 @@ class _HomeBussinessState extends State<HomeBussiness> {
     data = GetFollowingDataModel.fromJson(jsonMap);
     totalFollowing = GetFollowingDataModel.fromJson(jsonMap).followers.length;
     return data;
+  }
+
+  Future<void> getAverageReviews() async {
+    http.Response response = await http.post(Uri.parse(GetAverageReview),
+        body: {'user_id': user_id},
+        headers: {HttpHeaders.authorizationHeader: "Bearer $authorization"});
+    final jsonString = response.body;
+    averageReviews = jsonDecode(jsonString)['getReviewTotal'];
   }
 }

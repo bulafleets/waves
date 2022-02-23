@@ -75,8 +75,8 @@ class WavesList {
   String userType;
   String eventId;
   DateTime date;
-  bool isFriend;
-  bool isInvite;
+  var isFriend;
+  var isInvite;
   double lattitude;
   double longitude;
   String wavesLocation;
@@ -92,7 +92,7 @@ class WavesList {
   EventInfo eventInfo;
   List<dynamic> waveComments;
   int totalWaveCommentsCount;
-  int waveRating;
+  var waveRating;
   bool isFriendAdd;
   bool isCheckedIn;
   bool isBusinessUser;
@@ -282,9 +282,9 @@ class UserInfo {
   String roles;
   String username;
   String biography;
-  int age;
+  var age;
   double latitude;
-  String dob;
+  var dob;
   double longitude;
   String address;
   Location location;

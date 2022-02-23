@@ -52,8 +52,10 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
     super.initState();
   }
 
-  TimeOfDay startSelectedTime = const TimeOfDay(hour: 00, minute: 00);
-  TimeOfDay endSelectedTime = const TimeOfDay(hour: 00, minute: 00);
+  TimeOfDay startSelectedTime =
+      TimeOfDay(hour: DateTime.now().hour, minute: DateTime.now().minute);
+  TimeOfDay endSelectedTime =
+      TimeOfDay(hour: DateTime.now().hour, minute: DateTime.now().minute);
 //  final DateFormat formatter = DateFormat('yyyy-MM-dd');
 //   final String formatted = formatter.format(now);
   var _setTime, _setDate;
@@ -100,8 +102,12 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
       });
   }
 
+// var diffTime=startSelectedTime.period;
   @override
   Widget build(BuildContext context) {
+    // print((endSelectedTime.hour - startSelectedTime.hour) > -1
+    //     ? endSelectedTime.hour - startSelectedTime.hour
+    //     : 24 + (endSelectedTime.hour - startSelectedTime.hour));
     return Scaffold(
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(80.0), // here the desired height
@@ -267,6 +273,10 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
                             ),
                           )
                         ])),
+                // Text(((endSelectedTime.hour - startSelectedTime.hour) > -1
+                //         ? endSelectedTime.hour - startSelectedTime.hour
+                //         : 24 + (endSelectedTime.hour - startSelectedTime.hour))
+                //     .toString()),
                 confirm()
               ])),
     );

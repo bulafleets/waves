@@ -1,3 +1,8 @@
+// To parse this JSON data, do
+//
+//     final getAllUsersModel = getAllUsersModelFromJson(jsonString);
+
+import 'package:meta/meta.dart';
 import 'dart:convert';
 
 GetAllUsersModel getAllUsersModelFromJson(String str) =>
@@ -33,77 +38,69 @@ class NearbyUser {
     required this.id,
     required this.avatar,
     required this.userStatus,
-    required this.firebaseToken,
-    // required this.lastLoginTime,
     required this.isFaceId,
     required this.email,
-    // required this.roles,
+    required this.mobileNumber,
+    required this.roles,
     required this.username,
     required this.biography,
-    required this.age,
     required this.latitude,
-    // required this.dob,
     required this.longitude,
     required this.address,
-    //  required this.mobileNumber,
+    required this.age,
+    required this.dob,
     required this.isFriend,
   });
 
   String id;
-  var avatar;
+  String avatar;
   bool userStatus;
-  dynamic firebaseToken;
-  // DateTime lastLoginTime;
   bool isFaceId;
   String email;
-  // Roles roles;
+  String mobileNumber;
+  String roles;
   String username;
   String biography;
-  int age;
   double latitude;
-  // String dob;
   double longitude;
   String address;
-  // String mobileNumber;
+  var age;
+  var dob;
   bool isFriend;
 
   factory NearbyUser.fromJson(Map<String, dynamic> json) => NearbyUser(
         id: json["_id"],
-        avatar: json["avatar"] == null ? null : json["avatar"],
+        avatar: json["avatar"],
         userStatus: json["user_status"],
-        firebaseToken: json["firebase_token"],
-        // lastLoginTime: json["last_login_time"] == null ? null : DateTime.parse(json["last_login_time"]),
         isFaceId: json["isFaceId"],
         email: json["email"],
-        // roles: rolesValues.map[json["roles"]],
+        mobileNumber: json["mobile_number"],
+        roles: json["roles"],
         username: json["username"],
         biography: json["biography"],
-        age: json["age"],
         latitude: json["latitude"].toDouble(),
-        // dob: json["dob"] == null ? null : json["dob"],
         longitude: json["longitude"].toDouble(),
         address: json["address"],
-        //  mobileNumber: json["mobile_number"],
+        age: json["age"] == null ? null : json["age"],
+        dob: json["dob"] == null ? null : json["dob"],
         isFriend: json["isFriend"],
       );
 
   Map<String, dynamic> toJson() => {
         "_id": id,
-        "avatar": avatar == null ? null : avatar,
+        "avatar": avatar,
         "user_status": userStatus,
-        "firebase_token": firebaseToken,
-        // "last_login_time": lastLoginTime == null ? null : lastLoginTime.toIso8601String(),
         "isFaceId": isFaceId,
         "email": email,
-        // "roles": rolesValues.reverse[roles],
+        "mobile_number": mobileNumber,
+        "roles": roles,
         "username": username,
         "biography": biography,
-        "age": age,
         "latitude": latitude,
-        // "dob": dob == null ? null : dob,
         "longitude": longitude,
         "address": address,
-        //  "mobile_number": mobileNumber,
+        "age": age == null ? null : age,
+        "dob": dob == null ? null : dob,
         "isFriend": isFriend,
       };
 }

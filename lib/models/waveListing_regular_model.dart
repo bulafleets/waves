@@ -1,8 +1,3 @@
-// To parse this JSON data, do
-//
-//     final waveListingRegularModel = waveListingRegularModelFromJson(jsonString);
-
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 WaveListingRegularModel waveListingRegularModelFromJson(String str) =>
@@ -47,8 +42,8 @@ class WavesList {
     required this.userType,
     required this.eventId,
     required this.date,
-    // required this.isFriend,
-    // required this.isInvite,
+    required this.isFriend,
+    required this.isInvite,
     required this.lattitude,
     required this.longitude,
     required this.wavesLocation,
@@ -70,18 +65,25 @@ class WavesList {
     required this.isBusinessUser,
     required this.avatar,
     required this.username,
+    required this.isDiscountFollower,
+    required this.isDiscountAll,
+    required this.discountDetail,
+    required this.isAdult,
+    required this.isSendFollower,
+    required this.radius,
+    required this.additionalDetail,
   });
 
   String id;
   List<Media> media;
-  List<dynamic> inviteTags;
-  List<dynamic> friendTags;
+  List<String> inviteTags;
+  List<String> friendTags;
   String userId;
-  String userType;
-  String eventId;
+  var userType;
+  var eventId;
   DateTime date;
-  // bool isFriend;
-  // bool isInvite;
+  var isFriend;
+  var isInvite;
   double lattitude;
   double longitude;
   String wavesLocation;
@@ -95,26 +97,33 @@ class WavesList {
   int v;
   UserInfo userInfo;
   EventInfo eventInfo;
-  List<dynamic> waveComments;
+  List<WaveComment> waveComments;
   int totalWaveCommentsCount;
-  int waveRating;
+  var waveRating;
   bool isFriendAdd;
   bool isCheckedIn;
   bool isBusinessUser;
   String avatar;
   String username;
+  var isDiscountFollower;
+  var isDiscountAll;
+  var discountDetail;
+  var isAdult;
+  var isSendFollower;
+  var radius;
+  var additionalDetail;
 
   factory WavesList.fromJson(Map<String, dynamic> json) => WavesList(
         id: json["_id"],
         media: List<Media>.from(json["media"].map((x) => Media.fromJson(x))),
-        inviteTags: List<dynamic>.from(json["invite_tags"].map((x) => x)),
-        friendTags: List<dynamic>.from(json["friend_tags"].map((x) => x)),
+        inviteTags: List<String>.from(json["invite_tags"].map((x) => x)),
+        friendTags: List<String>.from(json["friend_tags"].map((x) => x)),
         userId: json["user_id"],
         userType: json["user_type"],
         eventId: json["event_id"],
         date: DateTime.parse(json["date"]),
-        // isFriend: json["isFriend"],
-        // isInvite: json["isInvite"],
+        isFriend: json["isFriend"] == null ? null : json["isFriend"],
+        isInvite: json["isInvite"] == null ? null : json["isInvite"],
         lattitude: json["lattitude"].toDouble(),
         longitude: json["longitude"].toDouble(),
         wavesLocation: json["waves_location"],
@@ -128,7 +137,8 @@ class WavesList {
         v: json["__v"],
         userInfo: UserInfo.fromJson(json["userInfo"]),
         eventInfo: EventInfo.fromJson(json["eventInfo"]),
-        waveComments: List<dynamic>.from(json["wave_comments"].map((x) => x)),
+        waveComments: List<WaveComment>.from(
+            json["wave_comments"].map((x) => WaveComment.fromJson(x))),
         totalWaveCommentsCount: json["totalWaveCommentsCount"],
         waveRating: json["waveRating"],
         isFriendAdd: json["isFriendAdd"],
@@ -136,6 +146,20 @@ class WavesList {
         isBusinessUser: json["isBusinessUser"],
         avatar: json["avatar"],
         username: json["username"],
+        isDiscountFollower: json["isDiscountFollower"] == null
+            ? null
+            : json["isDiscountFollower"],
+        isDiscountAll:
+            json["isDiscountAll"] == null ? null : json["isDiscountAll"],
+        discountDetail:
+            json["discount_detail"] == null ? null : json["discount_detail"],
+        isAdult: json["isAdult"] == null ? null : json["isAdult"],
+        isSendFollower:
+            json["isSendFollower"] == null ? null : json["isSendFollower"],
+        radius: json["radius"] == null ? null : json["radius"].toDouble(),
+        additionalDetail: json["additional_detail"] == null
+            ? null
+            : json["additional_detail"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -147,8 +171,8 @@ class WavesList {
         "user_type": userType,
         "event_id": eventId,
         "date": date.toIso8601String(),
-        // "isFriend": isFriend,
-        // "isInvite": isInvite,
+        "isFriend": isFriend == null ? null : isFriend,
+        "isInvite": isInvite == null ? null : isInvite,
         "lattitude": lattitude,
         "longitude": longitude,
         "waves_location": wavesLocation,
@@ -162,7 +186,8 @@ class WavesList {
         "__v": v,
         "userInfo": userInfo.toJson(),
         "eventInfo": eventInfo.toJson(),
-        "wave_comments": List<dynamic>.from(waveComments.map((x) => x)),
+        "wave_comments":
+            List<dynamic>.from(waveComments.map((x) => x.toJson())),
         "totalWaveCommentsCount": totalWaveCommentsCount,
         "waveRating": waveRating,
         "isFriendAdd": isFriendAdd,
@@ -170,6 +195,14 @@ class WavesList {
         "isBusinessUser": isBusinessUser,
         "avatar": avatar,
         "username": username,
+        "isDiscountFollower":
+            isDiscountFollower == null ? null : isDiscountFollower,
+        "isDiscountAll": isDiscountAll == null ? null : isDiscountAll,
+        "discount_detail": discountDetail == null ? null : discountDetail,
+        "isAdult": isAdult == null ? null : isAdult,
+        "isSendFollower": isSendFollower == null ? null : isSendFollower,
+        "radius": radius == null ? null : radius,
+        "additional_detail": additionalDetail == null ? null : additionalDetail,
       };
 }
 
@@ -182,8 +215,8 @@ class EventInfo {
     required this.v,
   });
 
-  String id;
-  String eventName;
+  var id;
+  var eventName;
   DateTime createdAt;
   DateTime updatedAt;
   int v;
@@ -284,14 +317,14 @@ class UserInfo {
   String email;
   String password;
   String mobileNumber;
-  String roles;
+  var roles;
   String username;
   String biography;
-  int age;
+  var age;
   double latitude;
-  String dob;
+  var dob;
   double longitude;
-  String address;
+  var address;
   Location location;
   int v;
 
@@ -301,7 +334,7 @@ class UserInfo {
         otp: json["otp"],
         isEmailVerified: json["isEmailVerified"],
         userStatus: json["user_status"],
-        // firebaseToken: json["firebase_token"],
+        //  firebaseToken: json["firebase_token"],
         noOfLoggedin: json["no_of_loggedin"],
         lastLoginTime: json["last_login_time"],
         isFaceId: json["isFaceId"],
@@ -326,7 +359,7 @@ class UserInfo {
         "otp": otp,
         "isEmailVerified": isEmailVerified,
         "user_status": userStatus,
-        // "firebase_token": firebaseToken,
+        //  "firebase_token": firebaseToken,
         "no_of_loggedin": noOfLoggedin,
         "last_login_time": lastLoginTime,
         "isFaceId": isFaceId,
@@ -343,5 +376,95 @@ class UserInfo {
         "address": address,
         "location": location.toJson(),
         "__v": v,
+      };
+}
+
+class WaveComment {
+  WaveComment({
+    required this.id,
+    required this.commentLikes,
+    required this.commentReply,
+    required this.userId,
+    required this.waveId,
+    required this.comment,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.v,
+  });
+
+  String id;
+  List<String> commentLikes;
+  List<CommentReply> commentReply;
+  var userId;
+  String waveId;
+  String comment;
+  DateTime createdAt;
+  DateTime updatedAt;
+  int v;
+
+  factory WaveComment.fromJson(Map<String, dynamic> json) => WaveComment(
+        id: json["_id"],
+        commentLikes: List<String>.from(json["comment_likes"].map((x) => x)),
+        commentReply: List<CommentReply>.from(
+            json["comment_reply"].map((x) => CommentReply.fromJson(x))),
+        userId: json["user_id"],
+        waveId: json["wave_id"],
+        comment: json["comment"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+        v: json["__v"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "_id": id,
+        "comment_likes": List<dynamic>.from(commentLikes.map((x) => x)),
+        "comment_reply":
+            List<dynamic>.from(commentReply.map((x) => x.toJson())),
+        "user_id": userId,
+        "wave_id": waveId,
+        "comment": comment,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+        "__v": v,
+      };
+}
+
+class CommentReply {
+  CommentReply({
+    required this.userId,
+    required this.waveId,
+    required this.comment,
+    required this.commentLikes,
+    required this.username,
+    required this.avatar,
+    required this.createdAt,
+  });
+
+  var userId;
+  String waveId;
+  String comment;
+  List<dynamic> commentLikes;
+  var username;
+  String avatar;
+  DateTime createdAt;
+
+  factory CommentReply.fromJson(Map<String, dynamic> json) => CommentReply(
+        userId: json["user_id"],
+        waveId: json["wave_id"],
+        comment: json["comment"],
+        commentLikes: List<dynamic>.from(json["comment_likes"].map((x) => x)),
+        username: json["username"],
+        avatar: json["avatar"],
+        createdAt: DateTime.parse(json["created_at"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "user_id": userId,
+        "wave_id": waveId,
+        "comment": comment,
+        "comment_likes": List<dynamic>.from(commentLikes.map((x) => x)),
+        "username": username,
+        "avatar": avatar,
+        "created_at": createdAt.toIso8601String(),
       };
 }

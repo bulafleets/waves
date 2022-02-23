@@ -280,11 +280,13 @@ class _LoginScreenState extends State<LoginScreen> {
       profileimg = jsonDecode(data)['user']['avatar'];
       isBiometric = jsonDecode(data)['user']['isFaceId'].toString();
       bio = jsonDecode(data)['user']['biography'];
-      age = jsonDecode(data)['user']['age'].toString();
       address = jsonDecode(data)['user']['address'];
       latitude = jsonDecode(data)['user']['latitude'];
       longitude = jsonDecode(data)['user']['longitude'];
-      dateOfBirth = jsonDecode(data)['user']['dob'];
+      if (AccountType == 'REGULAR') {
+        age = jsonDecode(data)['user']['age'].toString();
+        dateOfBirth = jsonDecode(data)['user']['dob'];
+      }
       _prefs.setString(Prefs.email, email);
       _prefs.setString(Prefs.userId, user_id);
       _prefs.setString(Prefs.roleType, AccountType);
@@ -292,13 +294,15 @@ class _LoginScreenState extends State<LoginScreen> {
       _prefs.setString(Prefs.accessToken, authorization);
       _prefs.setString(Prefs.mobile, mobile);
       _prefs.setString(Prefs.avatar, profileimg);
-      _prefs.setString(Prefs.age, age.toString());
       _prefs.setString(Prefs.faceId, isBiometric.toString());
       _prefs.setString(Prefs.bio, bio);
       _prefs.setString(Prefs.address, address);
       _prefs.setDouble(Prefs.latitude, latitude);
       _prefs.setDouble(Prefs.longitude, longitude);
-      _prefs.setString(Prefs.dob, dateOfBirth);
+      if (AccountType == 'REGULAR') {
+        _prefs.setString(Prefs.dob, dateOfBirth);
+        _prefs.setString(Prefs.age, age.toString());
+      }
       // _prefs.setString('lat', lat);
       //   _prefs.setString('log', log);
 
@@ -306,7 +310,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
               builder: (context) =>
-                  isSeen == 'true' ? MainPage(0) : AboutUs(name, true)),
+                  isSeen == 'true' ? const MainPage(0) : AboutUs(name, true)),
           (Route<dynamic> route) => false);
 
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(

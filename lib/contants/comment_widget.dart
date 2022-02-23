@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -44,8 +45,8 @@ class _CommentScreenState extends State<CommentScreen> {
   }
 
   final List<String> _list = [];
-  final List<CommentReply> _commentReplyNull = [];
   void _replyData(String text, String waveId, int index, String commentId) {
+    // _reply = List.filled(_commentData.length + 1, false);
     print(index);
     setState(() {
       _commentData[index].commentReply.add(CommentReply(
@@ -65,7 +66,7 @@ class _CommentScreenState extends State<CommentScreen> {
       _commentData.add(WaveComment(
           id: id,
           commentLikes: _list,
-          commentReply: _commentReplyNull,
+          commentReply: [],
           userId: user_id,
           waveId: widget.waveId,
           comment: commentText,
@@ -120,9 +121,7 @@ class _CommentScreenState extends State<CommentScreen> {
     } else {
       return Container(
         margin: const EdgeInsets.only(bottom: 15),
-        height: double.maxFinite,
-        child:
-            ListView(physics: const NeverScrollableScrollPhysics(), children: [
+        child: Column(children: [
           if (widget.userid != user_id)
             Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
               Text(
@@ -158,7 +157,8 @@ class _CommentScreenState extends State<CommentScreen> {
                         ? '${DateTime.now().difference(_commentData[index].createdAt).inDays.toString()} d'
                         : '${DateTime.now().difference(_commentData[index].createdAt).inHours.toString()} h'
                     : "${DateTime.now().difference(_commentData[index].createdAt).inMinutes.toString()} m";
-
+                // print(
+                //     _commentData[index].commentReply.isNotEmpty ? index : 'd');
                 return Container(
                   // height: 200,
                   // width: MediaQuery.of(context).size.width - 50,
@@ -168,9 +168,26 @@ class _CommentScreenState extends State<CommentScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CircleAvatar(
-                          radius: 30,
-                          backgroundImage:
-                              NetworkImage(_commentData[index].avatar)),
+                        radius: 30,
+                        child: CachedNetworkImage(
+                          imageUrl: _commentData[index].avatar,
+                          imageBuilder: (context, imageProvider) => Container(
+                            width: double.infinity,
+                            height: double.infinity,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                  image: imageProvider, fit: BoxFit.cover),
+                            ),
+                          ),
+                          placeholder: (context, url) =>
+                              const CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        ),
+                        // backgroundImage:
+                        //     NetworkImage(_commentData[index].avatar)
+                      ),
                       const SizedBox(width: 15),
                       Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -183,8 +200,7 @@ class _CommentScreenState extends State<CommentScreen> {
                             SizedBox(
                               width: MediaQuery.of(context).size.width - 150,
                               child: Text(_commentData[index].comment,
-                                  maxLines: 4,
-                                  overflow: TextOverflow.ellipsis,
+                                  // overflow: TextOverflow.ellipsis,
                                   style: GoogleFonts.quicksand(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w300)),

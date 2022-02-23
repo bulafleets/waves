@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -165,8 +166,29 @@ class _MyWaveDetailRegularState extends State<MyWaveDetailRegular> {
                                           backgroundColor: Colors.black,
                                           child: CircleAvatar(
                                             radius: 48,
-                                            backgroundImage: NetworkImage(
-                                                data.media.first.location),
+                                            child: CachedNetworkImage(
+                                              imageUrl:
+                                                  data.media.first.location,
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
+                                                      Container(
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.cover),
+                                                ),
+                                              ),
+                                              placeholder: (context, url) =>
+                                                  const CircularProgressIndicator(),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                            ),
+                                            // backgroundImage: NetworkImage(
+                                            //     data.media.first.location),
                                           )),
                                       CircleAvatar(
                                           radius: 19,
@@ -182,8 +204,28 @@ class _MyWaveDetailRegularState extends State<MyWaveDetailRegular> {
                                                           0, 255, 128, 1),
                                           child: CircleAvatar(
                                             radius: 17,
-                                            backgroundImage:
-                                                NetworkImage(data.avatar),
+                                            child: CachedNetworkImage(
+                                              imageUrl: data.avatar,
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
+                                                      Container(
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.cover),
+                                                ),
+                                              ),
+                                              placeholder: (context, url) =>
+                                                  const CircularProgressIndicator(),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                            ),
+                                            // backgroundImage:
+                                            //     NetworkImage(data.avatar),
                                           ))
                                     ],
                                   ),

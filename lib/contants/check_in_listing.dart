@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -111,8 +112,28 @@ class CheckInListingState extends State<CheckInListing>
                                         // }
                                         return ListTile(
                                           leading: CircleAvatar(
-                                            backgroundImage:
-                                                NetworkImage(data.avatar),
+                                            child: CachedNetworkImage(
+                                              imageUrl: data.avatar,
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
+                                                      Container(
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.cover),
+                                                ),
+                                              ),
+                                              placeholder: (context, url) =>
+                                                  const CircularProgressIndicator(),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                            ),
+                                            // backgroundImage:
+                                            //     NetworkImage(data.avatar),
                                           ),
                                           title: Text(
                                             '${data.name} checked in for this event',

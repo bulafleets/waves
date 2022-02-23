@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,6 +25,13 @@ class _AddFriendsNearByState extends State<AddFriendsNearBy> {
   void initState() {
     _future = findNearbyFriendsApi();
     super.initState();
+  }
+
+  Future<void> _pullRefresh() async {
+    await Future.delayed(const Duration(seconds: 2));
+    setState(() {
+      _future = findNearbyFriendsApi();
+    });
   }
 
   @override
@@ -54,92 +62,117 @@ class _AddFriendsNearByState extends State<AddFriendsNearBy> {
                 return SizedBox(
                   // color: Theme.of(context).primaryColor,
                   width: MediaQuery.of(context).size.width,
-                  child: ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: snapshot.data!.nearbyUsers.length,
-                    itemBuilder: (context, index) {
-                      var data = snapshot.data!.nearbyUsers[index];
-                      // int age = data.age;
-                      int age = data.age;
-                      // if (index == snapshot.data!.nearbyUsers.length - 1) {
-                      //   return const SizedBox(height: 90);
-                      // }
-                      return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 11.0, horizontal: 15),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                      // margin: const EdgeInsets.only(right: 5),
-                                      padding: const EdgeInsets.all(3),
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: age > 17 && age < 30
-                                              ? const Color.fromRGBO(
-                                                  0, 0, 255, 1)
-                                              : age > 29 && age < 50
-                                                  ? const Color.fromRGBO(
-                                                      255, 255, 0, 1)
-                                                  : const Color.fromRGBO(
-                                                      0, 255, 128, 1)),
-                                      child: CircleAvatar(
-                                        radius: 25,
-                                        backgroundImage: data.avatar != null
-                                            ? NetworkImage(data.avatar)
-                                            : null,
-                                      )),
-                                  SizedBox(width: 15),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(data.username,
-                                          style: GoogleFonts.quicksand(
-                                              color: Colors.black,
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w400)),
-                                      SizedBox(height: 5),
-                                      const Text('0.1 mile away'),
-                                    ],
-                                  )
-                                ],
-                              ),
-                              add(data.id, data.isFriend),
-                            ],
-                          ));
-                      // Padding(
-                      //   padding: const EdgeInsets.all(8.0),
-                      //   child: ListTile(
-                      //     leading: Container(
-                      //         padding: const EdgeInsets.all(3),
-                      //         decoration: BoxDecoration(
-                      //             shape: BoxShape.circle,
-                      //             color: age > 17 && age < 30
-                      //                 ? const Color.fromRGBO(0, 0, 255, 1)
-                      //                 : age > 29 && age < 50
-                      //                     ? const Color.fromRGBO(255, 255, 0, 1)
-                      //                     : const Color.fromRGBO(
-                      //                         0, 255, 128, 1)),
-                      //         child: CircleAvatar(
-                      //           radius: 50,
-                      //           backgroundImage: data.avatar != 'null'
-                      //               ? NetworkImage(data.avatar)
-                      //               : null,
-                      //         )),
-                      // title: Text(data.username,
-                      //     style: GoogleFonts.quicksand(
-                      //         color: Colors.black,
-                      //         fontSize: 17,
-                      //         fontWeight: FontWeight.w400)),
-                      // subtitle: const Text('0.1 mile away'),
-                      //     trailing: add(data.id, data.isFriend),
-                      //   ),
-                      // );
-                    },
+                  child: RefreshIndicator(
+                    onRefresh: _pullRefresh,
+                    child: ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: snapshot.data!.nearbyUsers.length,
+                      itemBuilder: (context, index) {
+                        var data = snapshot.data!.nearbyUsers[index];
+                        // int data.age = data.age;
+                        // if (index == snapshot.data!.nearbyUsers.length - 1) {
+                        //   return const SizedBox(height: 90);
+                        // }
+                        return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 11.0, horizontal: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                        // margin: const EdgeInsets.only(right: 5),
+                                        padding: const EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: data.roles == 'REGULAR'
+                                                ? data.age > 17 && data.age < 30
+                                                    ? const Color.fromRGBO(
+                                                        0, 0, 255, 1)
+                                                    : data.age > 29 &&
+                                                            data.age < 50
+                                                        ? const Color.fromRGBO(
+                                                            255, 255, 0, 1)
+                                                        : const Color.fromRGBO(
+                                                            0, 255, 128, 1)
+                                                : Colors.white),
+                                        child: CircleAvatar(
+                                          radius: 25,
+                                          child: CachedNetworkImage(
+                                            imageUrl: data.avatar,
+                                            imageBuilder:
+                                                (context, imageProvider) =>
+                                                    Container(
+                                              width: double.infinity,
+                                              height: double.infinity,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                image: DecorationImage(
+                                                    image: imageProvider,
+                                                    fit: BoxFit.cover),
+                                              ),
+                                            ),
+                                            placeholder: (context, url) =>
+                                                const CircularProgressIndicator(),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(Icons.error),
+                                          ),
+                                          // backgroundImage: data.avatar != null
+                                          //     ? NetworkImage(data.avatar)
+                                          //     : null,
+                                        )),
+                                    SizedBox(width: 15),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(data.username,
+                                            style: GoogleFonts.quicksand(
+                                                color: Colors.black,
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.w400)),
+                                        SizedBox(height: 5),
+                                        const Text('0.1 mile away'),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                add(data.id, data.isFriend),
+                              ],
+                            ));
+                        // Padding(
+                        //   padding: const EdgeInsets.all(8.0),
+                        //   child: ListTile(
+                        //     leading: Container(
+                        //         padding: const EdgeInsets.all(3),
+                        //         decoration: BoxDecoration(
+                        //             shape: BoxShape.circle,
+                        //             color: data.age > 17 && data.age < 30
+                        //                 ? const Color.fromRGBO(0, 0, 255, 1)
+                        //                 : data.age > 29 && data.age < 50
+                        //                     ? const Color.fromRGBO(255, 255, 0, 1)
+                        //                     : const Color.fromRGBO(
+                        //                         0, 255, 128, 1)),
+                        //         child: CircleAvatar(
+                        //           radius: 50,
+                        //           backgroundImage: data.avatar != 'null'
+                        //               ? NetworkImage(data.avatar)
+                        //               : null,
+                        //         )),
+                        // title: Text(data.username,
+                        //     style: GoogleFonts.quicksand(
+                        //         color: Colors.black,
+                        //         fontSize: 17,
+                        //         fontWeight: FontWeight.w400)),
+                        // subtitle: const Text('0.1 mile away'),
+                        //     trailing: add(data.id, data.isFriend),
+                        //   ),
+                        // );
+                      },
+                    ),
                   ),
                 );
               } else {

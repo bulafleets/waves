@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -43,7 +44,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // print(user_id);
+    print(user_id);
     return Scaffold(
         appBar: PreferredSize(
             preferredSize: const Size.fromHeight(80.0),
@@ -149,8 +150,10 @@ class _HomePageState extends State<HomePage> {
                                           data.userInfo.age,
                                           data.lattitude,
                                           data.longitude)
-                                      : WaveDetailsScreen(data.id,
-                                          data.userInfo.age, data.userId)));
+                                      : WaveDetailsScreen(
+                                          data.id,
+                                          data.userInfo.age ?? 0,
+                                          data.userId)));
                             },
                             child: Container(
                               height: 102,
@@ -193,27 +196,71 @@ class _HomePageState extends State<HomePage> {
                                             backgroundColor: Colors.black,
                                             child: CircleAvatar(
                                               radius: 48,
-                                              backgroundImage: NetworkImage(
-                                                  data.media.first.location),
+                                              child: CachedNetworkImage(
+                                                imageUrl:
+                                                    data.media.first.location,
+                                                imageBuilder:
+                                                    (context, imageProvider) =>
+                                                        Container(
+                                                  width: double.infinity,
+                                                  height: double.infinity,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    image: DecorationImage(
+                                                        image: imageProvider,
+                                                        fit: BoxFit.cover),
+                                                  ),
+                                                ),
+                                                placeholder: (context, url) =>
+                                                    const CircularProgressIndicator(),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        const Icon(Icons.error),
+                                              ),
+                                              // backgroundImage: NetworkImage(
+                                              //     data.media.first.location),
                                             ),
                                           ),
                                           CircleAvatar(
                                             radius: 17,
-                                            backgroundColor: data.userInfo.age >
-                                                        17 &&
-                                                    data.userInfo.age < 30
-                                                ? const Color.fromRGBO(
-                                                    0, 0, 255, 1)
-                                                : data.userInfo.age > 29 &&
-                                                        data.userInfo.age < 50
+                                            backgroundColor: !data
+                                                    .isBusinessUser
+                                                ? data.userInfo.age > 17 &&
+                                                        data.userInfo.age < 30
                                                     ? const Color.fromRGBO(
-                                                        255, 255, 0, 1)
-                                                    : const Color.fromRGBO(
-                                                        0, 255, 128, 1),
+                                                        0, 0, 255, 1)
+                                                    : data.userInfo.age > 29 &&
+                                                            data.userInfo.age <
+                                                                50
+                                                        ? const Color.fromRGBO(
+                                                            255, 255, 0, 1)
+                                                        : const Color.fromRGBO(
+                                                            0, 255, 128, 1)
+                                                : Colors.white,
                                             child: CircleAvatar(
                                               radius: 15,
-                                              backgroundImage:
-                                                  NetworkImage(data.avatar),
+                                              child: CachedNetworkImage(
+                                                imageUrl: data.avatar,
+                                                imageBuilder:
+                                                    (context, imageProvider) =>
+                                                        Container(
+                                                  width: double.infinity,
+                                                  height: double.infinity,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    image: DecorationImage(
+                                                        image: imageProvider,
+                                                        fit: BoxFit.cover),
+                                                  ),
+                                                ),
+                                                placeholder: (context, url) =>
+                                                    const CircularProgressIndicator(),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        const Icon(Icons.error),
+                                              ),
+                                              // backgroundImage:
+                                              //     NetworkImage(data.avatar),
                                             ),
                                           ),
                                         ],
@@ -347,14 +394,72 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                         ),
                                         const SizedBox(height: 5),
-                                        Text(
-                                          '$date'
-                                          '     ${data.startTime}  '
-                                          '${data.endTime}',
-                                          style: GoogleFonts.quicksand(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.w400),
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              2,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                date,
+                                                style: GoogleFonts.quicksand(
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.w400),
+                                              ),
+                                              const Spacer(),
+                                              Text(
+                                                data.startTime,
+                                                style: GoogleFonts.quicksand(
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.w400),
+                                              ),
+                                              const Spacer(),
+                                              Text(
+                                                data.endTime,
+                                                style: GoogleFonts.quicksand(
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.w400),
+                                              ),
+                                              const Spacer(),
+                                              if (data.userType == 'BUSINESS' &&
+                                                  data.isDiscountFollower)
+                                                FaIcon(
+                                                    FontAwesomeIcons.dollarSign,
+                                                    size: 15,
+                                                    color: Colors.grey[700])
+                                            ],
+                                          ),
                                         ),
+                                        // SizedBox(
+                                        //     // width: MediaQuery.of(context)
+                                        //     //         .size
+                                        //     //         .width -
+                                        //     //     100,
+                                        //     child: Row(
+                                        //   children: [
+                                        //     Text(
+                                        //       '$date'
+                                        //       '     ${data.startTime}  '
+                                        //       '${data.endTime} ',
+                                        //       style: GoogleFonts.quicksand(
+                                        //           fontSize: 10,
+                                        //           fontWeight: FontWeight.w400),
+                                        //     ),
+                                        //     const SizedBox(width: 10),
+                                        //     if (data.userType == 'BUSINESS' &&
+                                        //         data.isDiscountFollower)
+                                        //       FaIcon(
+                                        //           FontAwesomeIcons.dollarSign,
+                                        //           size: 15,
+                                        //           color: Colors.grey[700])
+                                        //   ],
+                                        // )),
                                         const SizedBox(height: 5),
                                       ])
                                 ],
@@ -364,11 +469,8 @@ class _HomePageState extends State<HomePage> {
                         }),
                   );
                 } else {
-                  return const Center(child: Text('Please add any wave'));
+                  return const Center(child: Text('Please add wave'));
                 }
-              } else if (snapshot.connectionState == ConnectionState.done &&
-                  snapshot.data == null) {
-                return const Center(child: Text('Please add any wave'));
               } else {
                 return const Center(child: CircularProgressIndicator());
               }

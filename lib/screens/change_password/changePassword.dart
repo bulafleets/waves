@@ -287,7 +287,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       // ));
       // Navigator.of(context).pushNamed(OTP_SCREEN);
     }
-    if (status == 'false' || status == '403' || status == '403') {
+    if (status == 'false' || status == '403' || status == '400') {
       String message = jsonDecode(data)['message'];
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(message),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -20,7 +21,7 @@ import 'package:intl/intl.dart';
 import 'package:waves/screens/map/map.dart';
 import 'package:waves/screens/map/widget/permission_denied.dart';
 
-import '../friends/add_friends.dart';
+import '../../../friends/add_friends.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -148,7 +149,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   CircleAvatar(
                     radius: 60,
                     foregroundColor: Colors.blue.withOpacity(0.1),
-                    backgroundImage: NetworkImage(profileimg),
+                    child: CachedNetworkImage(
+                      imageUrl: profileimg,
+                      imageBuilder: (context, imageProvider) => Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              image: imageProvider, fit: BoxFit.cover),
+                        ),
+                      ),
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
+                    // backgroundImage: NetworkImage(profileimg),
                   ),
                 InkWell(
                   onTap: () {
@@ -269,7 +286,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   prefixIcon:
                       const Icon(Icons.phone, color: Colors.grey, size: 20),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Colors.white70,
                   enabledBorder: UnderlineInputBorder(
                     borderSide: const BorderSide(color: Colors.white),
                     borderRadius: BorderRadius.circular(8),
@@ -298,7 +315,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   prefixIcon:
                       const Icon(Icons.email, color: Colors.grey, size: 20),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Colors.white70,
                   enabledBorder: UnderlineInputBorder(
                     borderSide: const BorderSide(color: Colors.white),
                     borderRadius: BorderRadius.circular(8),
@@ -618,8 +635,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(message),
       ));
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => MainPage(0)));
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const MainPage(0)),
+          (Route<dynamic> route) => false);
     }
     if (status == "400") {
       String message = jsonDecode(data)['message'];

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,7 +14,7 @@ import 'package:waves/screens/TYPE/regular_type/wave/invite_screen.dart';
 import 'package:waves/screens/auth/login_page.dart';
 import 'package:waves/screens/friends/add_friends.dart';
 import 'package:waves/screens/notification/notification_screen.dart';
-import 'package:waves/screens/profile/edit_profile.dart';
+import 'package:waves/screens/TYPE/regular_type/profile/edit_profile.dart';
 import 'package:waves/screens/setting/setting_screen.dart';
 import 'package:http/http.dart' as http;
 
@@ -65,7 +66,25 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 alignment: AlignmentDirectional.bottomCenter,
                 children: [
                   CircleAvatar(
-                      radius: 57, backgroundImage: NetworkImage(profileimg)),
+                    radius: 57,
+                    // backgroundImage: NetworkImage(profileimg)
+                    child: CachedNetworkImage(
+                      imageUrl: profileimg,
+                      imageBuilder: (context, imageProvider) => Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              image: imageProvider, fit: BoxFit.cover),
+                        ),
+                      ),
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
+                  ),
                   // signOut()
                 ],
               ),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -121,17 +122,62 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                                 backgroundColor: Colors.black,
                                                 child: CircleAvatar(
                                                   radius: 48,
-                                                  backgroundImage: NetworkImage(
-                                                      data.waveImage.first
-                                                          .location),
+                                                  child: CachedNetworkImage(
+                                                    imageUrl: data.waveImage
+                                                        .first.location,
+                                                    imageBuilder: (context,
+                                                            imageProvider) =>
+                                                        Container(
+                                                      width: double.infinity,
+                                                      height: double.infinity,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        image: DecorationImage(
+                                                            image:
+                                                                imageProvider,
+                                                            fit: BoxFit.cover),
+                                                      ),
+                                                    ),
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        const CircularProgressIndicator(),
+                                                    errorWidget: (context, url,
+                                                            error) =>
+                                                        const Icon(Icons.error),
+                                                  ),
+                                                  // backgroundImage: NetworkImage(
+                                                  //     data.waveImage.first
+                                                  //         .location),
                                                 ),
                                               ),
                                               CircleAvatar(
                                                 radius: 17,
                                                 child: CircleAvatar(
                                                   radius: 15,
-                                                  backgroundImage: NetworkImage(
-                                                      data.profileImage),
+                                                  child: CachedNetworkImage(
+                                                    imageUrl: data.profileImage,
+                                                    imageBuilder: (context,
+                                                            imageProvider) =>
+                                                        Container(
+                                                      width: double.infinity,
+                                                      height: double.infinity,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        image: DecorationImage(
+                                                            image:
+                                                                imageProvider,
+                                                            fit: BoxFit.cover),
+                                                      ),
+                                                    ),
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        const CircularProgressIndicator(),
+                                                    errorWidget: (context, url,
+                                                            error) =>
+                                                        const Icon(Icons.error),
+                                                  ),
+                                                  // backgroundImage: NetworkImage(
+                                                  //     data.profileImage),
                                                 ),
                                               ),
                                             ],

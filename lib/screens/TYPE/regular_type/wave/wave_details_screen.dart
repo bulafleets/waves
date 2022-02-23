@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -38,7 +39,7 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
     });
   }
 
-  void _starData(int countStart) {
+  void _starData(double countStart) {
     setState(() {
       _countStar = countStart;
     });
@@ -94,7 +95,6 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               var data = snapshot.data!.wave.first;
-
               var date = DateFormat('yyyy/MM/dd').format(data.date);
               var time = DateTime.now().difference(data.createdAt).inMinutes;
               String tt = time > 59
@@ -119,40 +119,88 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Container(
-                                    // width: 102,
-                                    // color: Colors.black,
-                                    margin: const EdgeInsets.only(
-                                        right: 20, left: 20),
-                                    child: Stack(
-                                      alignment: Alignment.bottomRight,
-                                      children: [
-                                        CircleAvatar(
-                                            radius: 50,
-                                            backgroundColor: Colors.black,
-                                            child: CircleAvatar(
-                                              radius: 48,
-                                              backgroundImage: NetworkImage(
-                                                  data.media.first.location),
-                                            )),
-                                        CircleAvatar(
-                                            radius: 19,
-                                            backgroundColor: widget.age > 17 &&
-                                                    widget.age < 30
-                                                ? const Color.fromRGBO(
-                                                    0, 0, 255, 1)
-                                                : widget.age > 29 &&
-                                                        widget.age < 50
-                                                    ? const Color.fromRGBO(
-                                                        255, 255, 0, 1)
-                                                    : const Color.fromRGBO(
-                                                        0, 255, 128, 1),
-                                            child: CircleAvatar(
-                                              radius: 17,
-                                              backgroundImage:
-                                                  NetworkImage(data.avatar),
-                                            ))
-                                      ],
+                                  Flexible(
+                                    child: Container(
+                                      // width: 102,
+                                      // color: Colors.black,
+                                      margin: const EdgeInsets.only(
+                                          right: 20, left: 20),
+                                      child: Stack(
+                                        alignment: Alignment.bottomRight,
+                                        children: [
+                                          CircleAvatar(
+                                              radius: 50,
+                                              backgroundColor: Colors.black,
+                                              child: CircleAvatar(
+                                                radius: 48,
+                                                child: CachedNetworkImage(
+                                                  imageUrl:
+                                                      data.media.first.location,
+                                                  imageBuilder: (context,
+                                                          imageProvider) =>
+                                                      Container(
+                                                    width: double.infinity,
+                                                    height: double.infinity,
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      image: DecorationImage(
+                                                          image: imageProvider,
+                                                          fit: BoxFit.cover),
+                                                    ),
+                                                  ),
+                                                  placeholder: (context, url) =>
+                                                      const CircularProgressIndicator(),
+                                                  errorWidget: (context, url,
+                                                          error) =>
+                                                      const Icon(Icons.error),
+                                                ),
+                                                // backgroundImage: NetworkImage(
+                                                //     data.media.first.location),
+                                              )),
+                                          CircleAvatar(
+                                              radius: 19,
+                                              backgroundColor: !data
+                                                      .isBusinessUser
+                                                  ? widget.age > 17 &&
+                                                          widget.age < 30
+                                                      ? const Color.fromRGBO(
+                                                          0, 0, 255, 1)
+                                                      : widget.age > 29 &&
+                                                              widget.age < 50
+                                                          ? const Color
+                                                                  .fromRGBO(
+                                                              255, 255, 0, 1)
+                                                          : const Color
+                                                                  .fromRGBO(
+                                                              0, 255, 128, 1)
+                                                  : Colors.white,
+                                              child: CircleAvatar(
+                                                radius: 17,
+                                                child: CachedNetworkImage(
+                                                  imageUrl: data.avatar,
+                                                  imageBuilder: (context,
+                                                          imageProvider) =>
+                                                      Container(
+                                                    width: double.infinity,
+                                                    height: double.infinity,
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      image: DecorationImage(
+                                                          image: imageProvider,
+                                                          fit: BoxFit.cover),
+                                                    ),
+                                                  ),
+                                                  placeholder: (context, url) =>
+                                                      const CircularProgressIndicator(),
+                                                  errorWidget: (context, url,
+                                                          error) =>
+                                                      const Icon(Icons.error),
+                                                ),
+                                                // backgroundImage:
+                                                //     NetworkImage(data.avatar),
+                                              ))
+                                        ],
+                                      ),
                                     ),
                                   ),
                                   Column(
@@ -176,14 +224,7 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
                                                 'assets/icons/verified.png',
                                                 scale: .9,
                                               ),
-                                            if (data.userType == 'BUSINESS')
-                                              isFollow
-                                                  ? _unfollowButon()
-                                                  : _getFollowingData
-                                                          .map((e) => e.user.id)
-                                                          .contains(user_id)
-                                                      ? _unfollowButon()
-                                                      : _followButon(),
+
                                             // const FaIcon(
                                             //   FontAwesomeIcons.shieldAlt,
                                             //   color: Color.fromRGBO(
@@ -222,48 +263,69 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
                                       ])
                                 ]),
                             const SizedBox(height: 15),
-                            Row(children: [
-                              if (data.userType == 'BUSINESS')
-                                const SizedBox(width: 30),
-                              if (data.userType == 'BUSINESS')
-                                Column(children: [
-                                  Row(children: [
-                                    Text(
-                                        '${_countStar ?? data.waveRating.toString()} '),
-                                    const Icon(Icons.star, color: Colors.yellow)
-                                  ]),
-                                  Row(children: [
-                                    TextButton.icon(
-                                      onPressed: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (_) => ReviewComment(
-                                                  bussinessName: data.username,
-                                                  waveId: data.id,
-                                                  image:
-                                                      data.media.first.location,
-                                                  starData: _starData,
-                                                ));
-                                      },
-                                      label: const Icon(Icons.edit_location_alt,
-                                          size: 20, color: Colors.black),
-                                      icon: Text('Review',
+                            Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (data.userType == 'BUSINESS')
+                                    const SizedBox(width: 15),
+                                  if (data.userType == 'BUSINESS')
+                                    Column(children: [
+                                      if (data.userType == 'BUSINESS')
+                                        isFollow
+                                            ? _unfollowButton()
+                                            : _getFollowingData
+                                                    .map((e) => e.user.id)
+                                                    .contains(user_id)
+                                                ? _unfollowButton()
+                                                : _followButton(),
+                                      SizedBox(height: 10),
+                                      Row(children: [
+                                        Text(
+                                            '${_countStar ?? data.waveRating.toString()} '),
+                                        const Icon(Icons.star,
+                                            color: Colors.yellow)
+                                      ]),
+                                      Row(children: [
+                                        TextButton.icon(
+                                          onPressed: () {
+                                            showDialog(
+                                                context: context,
+                                                builder: (_) => ReviewComment(
+                                                      bussinessName:
+                                                          data.username,
+                                                      waveId: data.id,
+                                                      image: data
+                                                          .media.first.location,
+                                                      star: data.waveRating
+                                                          .toString(),
+                                                      starData: _starData,
+                                                    ));
+                                          },
+                                          label: const Icon(
+                                              Icons.edit_location_alt,
+                                              size: 20,
+                                              color: Colors.black),
+                                          icon: Text('Review',
+                                              style: GoogleFonts.quicksand(
+                                                  color: Colors.black,
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w300)),
+                                        )
+                                      ]),
+                                      if (data.isBusinessUser)
+                                        Text(data.isDiscountFollower
+                                            ? data.discountDetail
+                                            : '')
+                                    ]),
+                                  const SizedBox(width: 30),
+                                  Expanded(
+                                      child: Text(data.eventDetail,
+                                          textAlign: TextAlign.start,
+                                          overflow: TextOverflow.fade,
                                           style: GoogleFonts.quicksand(
-                                              color: Colors.black,
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w300)),
-                                    )
-                                  ]),
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500)))
                                 ]),
-                              const SizedBox(width: 50),
-                              Expanded(
-                                  child: Text(data.eventDetail,
-                                      textAlign: TextAlign.start,
-                                      overflow: TextOverflow.fade,
-                                      style: GoogleFonts.quicksand(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500)))
-                            ]),
                             const SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -361,7 +423,7 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
     return data;
   }
 
-  _followButon() {
+  _followButton() {
     return Container(
       margin: const EdgeInsets.only(left: 15.0),
       height: 40,
@@ -416,7 +478,7 @@ class _WaveDetailsScreenState extends State<WaveDetailsScreen> {
     }
   }
 
-  _unfollowButon() {
+  _unfollowButton() {
     return Container(
       margin: const EdgeInsets.only(left: 15.0),
       height: 40,

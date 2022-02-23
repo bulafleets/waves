@@ -289,6 +289,7 @@ class _CreateWaveScreenState extends State<CreateWaveScreen> {
                                   value: friendsOnly,
                                   onToggle: (value) {
                                     setState(() {
+                                      inviteOnly = false;
                                       friendsOnly = value;
                                     });
                                   })
@@ -321,6 +322,7 @@ class _CreateWaveScreenState extends State<CreateWaveScreen> {
                                   value: inviteOnly,
                                   onToggle: (value) {
                                     setState(() {
+                                      friendsOnly = false;
                                       inviteOnly = value;
                                     });
                                   })

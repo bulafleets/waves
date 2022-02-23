@@ -3,9 +3,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waves/contants/common_params.dart';
 import 'package:waves/screens/Main/main_page.dart';
 import 'package:waves/screens/friends/add_friends.dart';
-import '../profile/create_profile.dart';
+import '../TYPE/regular_type/profile/create_profile.dart';
 
 class AboutUs extends StatefulWidget {
   final String name;
@@ -21,7 +22,7 @@ class _AboutUsState extends State<AboutUs> {
   final CarouselController _controller = CarouselController();
   final List<Widget> dummyText = const [
     Text(
-        'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
+        'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
         style: TextStyle(color: Colors.white, fontSize: 16, height: 1.3),
         maxLines: 8,
         textAlign: TextAlign.center),
@@ -65,7 +66,7 @@ class _AboutUsState extends State<AboutUs> {
                       color: Colors.white,
                       fontSize: 22,
                       fontWeight: FontWeight.bold)),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               CarouselSlider(
                 items: dummyText,
                 carouselController: _controller,
@@ -88,7 +89,7 @@ class _AboutUsState extends State<AboutUs> {
                       child: Container(
                           width: 11.0,
                           height: 11.0,
-                          margin: EdgeInsets.symmetric(
+                          margin: const EdgeInsets.symmetric(
                               vertical: 8.0, horizontal: 4.0),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
@@ -111,7 +112,7 @@ class _AboutUsState extends State<AboutUs> {
                           ),
                     );
                   }).toList()),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               nextbutton(),
             ])),
       ),
@@ -139,24 +140,18 @@ class _AboutUsState extends State<AboutUs> {
         onPressed: () async {
           SharedPreferences _prefs = await SharedPreferences.getInstance();
           _prefs.setString('seen', 'true');
-
-          Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                  builder: (context) =>
-                      widget.isLogin ? MainPage(0) : const AddFriends(false)),
-              (Route<dynamic> route) => false);
-          // if (_formkey.currentState.validate()) {
-          // showDialog(
-          //   context: context,
-          //   builder: (_) ,
-          // );
-          //  EasyLoading.show(status: 'Please Wait ...');
-          //sendRESENT();
-          //CircularProgressIndicator();
-          //  EasyLoading.show(status: 'Please Wait ...');
-
-          //print("Routing to your account");
-          // }
+          if (AccountType == 'REGULAR') {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                    builder: (context) => widget.isLogin
+                        ? const MainPage(0)
+                        : const AddFriends(false)),
+                (Route<dynamic> route) => false);
+          } else {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const MainPage(0)),
+                (Route<dynamic> route) => false);
+          }
         },
         child: const Text(
           "Continue",

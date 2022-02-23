@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -70,9 +71,28 @@ class MapPopScreenState extends State<MapPopScreen>
                                   radius: 46,
                                   backgroundColor: Colors.black,
                                   child: CircleAvatar(
-                                      radius: 45,
-                                      backgroundImage:
-                                          NetworkImage(widget.image))),
+                                    radius: 45,
+                                    child: CachedNetworkImage(
+                                      imageUrl: widget.image,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                              image: imageProvider,
+                                              fit: BoxFit.cover),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) =>
+                                          const CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.error),
+                                    ),
+                                    // backgroundImage:
+                                    //     NetworkImage(widget.image)
+                                  )),
                             ),
                             SizedBox(
                               height: 100,

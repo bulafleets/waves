@@ -1,8 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:waves/contants/common_widgets.dart';
-import 'package:waves/contants/leave_comment.dart';
 import 'package:waves/models/singlewave_model.dart';
 
 class ReplyScreen extends StatefulWidget {
@@ -18,10 +16,7 @@ class _ReplyScreenState extends State<ReplyScreen> {
   bool _like = false;
   @override
   Widget build(BuildContext context) {
-    double vv = widget.reply.length.toDouble();
     return SizedBox(
-      // height: double.maxFinite,
-      height: 70 * vv,
       width: 240,
       child: ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
@@ -45,7 +40,23 @@ class _ReplyScreenState extends State<ReplyScreen> {
                 children: [
                   CircleAvatar(
                     radius: 20,
-                    backgroundImage: NetworkImage(widget.reply[index].avatar),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.reply[index].avatar,
+                      imageBuilder: (context, imageProvider) => Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              image: imageProvider, fit: BoxFit.cover),
+                        ),
+                      ),
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
+                    // backgroundImage: NetworkImage(widget.reply[index].avatar),
                   ),
                   const SizedBox(width: 15),
                   Column(
@@ -59,8 +70,7 @@ class _ReplyScreenState extends State<ReplyScreen> {
                         SizedBox(
                           width: 140,
                           child: Text(widget.reply[index].comment,
-                              maxLines: 4,
-                              overflow: TextOverflow.ellipsis,
+                              // overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.quicksand(
                                   fontSize: 12, fontWeight: FontWeight.w300)),
                         ),

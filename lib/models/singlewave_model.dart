@@ -43,19 +43,24 @@ class Wave {
     required this.inviteTags,
     required this.friendTags,
     required this.userId,
-    required this.userType,
     required this.eventId,
     required this.date,
-    // required this.isFriend,
-    // required this.isInvite,
     required this.lattitude,
     required this.longitude,
     required this.wavesLocation,
     required this.eventDetail,
     required this.location,
+    required this.userType,
+    required this.waveName,
+    required this.isDiscountFollower,
+    required this.isDiscountAll,
+    required this.discountDetail,
+    required this.isAdult,
+    required this.isSendFollower,
+    required this.radius,
+    required this.additionalDetail,
     required this.startTime,
     required this.endTime,
-    required this.waveName,
     required this.createdAt,
     required this.updatedAt,
     required this.v,
@@ -65,29 +70,35 @@ class Wave {
     required this.totalWaveCommentsCount,
     required this.isCheckedIn,
     required this.waveRating,
+    required this.isFriend,
     required this.isBusinessUser,
     required this.avatar,
     required this.username,
   });
 
-  String id;
+  var id;
   List<Media> media;
   List<dynamic> inviteTags;
   List<dynamic> friendTags;
   String userId;
-  String userType;
   String eventId;
   DateTime date;
-  // bool isFriend;
-  // bool isInvite;
   double lattitude;
   double longitude;
   String wavesLocation;
   String eventDetail;
   Location location;
+  String userType;
+  String waveName;
+  var isDiscountFollower;
+  var isDiscountAll;
+  var discountDetail;
+  var isAdult;
+  var isSendFollower;
+  var radius;
+  var additionalDetail;
   String startTime;
   String endTime;
-  String waveName;
   DateTime createdAt;
   DateTime updatedAt;
   int v;
@@ -96,7 +107,8 @@ class Wave {
   EventInfo eventInfo;
   int totalWaveCommentsCount;
   bool isCheckedIn;
-  int waveRating;
+  var waveRating;
+  var isFriend;
   bool isBusinessUser;
   String avatar;
   String username;
@@ -107,19 +119,24 @@ class Wave {
         inviteTags: List<dynamic>.from(json["invite_tags"].map((x) => x)),
         friendTags: List<dynamic>.from(json["friend_tags"].map((x) => x)),
         userId: json["user_id"],
-        userType: json["user_type"],
         eventId: json["event_id"],
         date: DateTime.parse(json["date"]),
-        // isFriend: json["isFriend"],
-        // isInvite: json["isInvite"],
         lattitude: json["lattitude"].toDouble(),
         longitude: json["longitude"].toDouble(),
         wavesLocation: json["waves_location"],
         eventDetail: json["event_detail"],
         location: Location.fromJson(json["location"]),
+        userType: json["user_type"],
+        waveName: json["wave_name"],
+        isDiscountFollower: json["isDiscountFollower"],
+        isDiscountAll: json["isDiscountAll"],
+        discountDetail: json["discount_detail"],
+        isAdult: json["isAdult"],
+        isSendFollower: json["isSendFollower"],
+        radius: json["radius"],
+        additionalDetail: json["additional_detail"],
         startTime: json["start_time"],
         endTime: json["end_time"],
-        waveName: json["wave_name"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
         v: json["__v"],
@@ -130,6 +147,7 @@ class Wave {
         totalWaveCommentsCount: json["totalWaveCommentsCount"],
         isCheckedIn: json["isCheckedIn"],
         waveRating: json["waveRating"],
+        isFriend: json["isFriend"],
         isBusinessUser: json["isBusinessUser"],
         avatar: json["avatar"],
         username: json["username"],
@@ -141,19 +159,24 @@ class Wave {
         "invite_tags": List<dynamic>.from(inviteTags.map((x) => x)),
         "friend_tags": List<dynamic>.from(friendTags.map((x) => x)),
         "user_id": userId,
-        "user_type": userType,
         "event_id": eventId,
         "date": date.toIso8601String(),
-        // "isFriend": isFriend,
-        // "isInvite": isInvite,
         "lattitude": lattitude,
         "longitude": longitude,
         "waves_location": wavesLocation,
         "event_detail": eventDetail,
         "location": location.toJson(),
+        "user_type": userType,
+        "wave_name": waveName,
+        "isDiscountFollower": isDiscountFollower,
+        "isDiscountAll": isDiscountAll,
+        "discount_detail": discountDetail,
+        "isAdult": isAdult,
+        "isSendFollower": isSendFollower,
+        "radius": radius,
+        "additional_detail": additionalDetail,
         "start_time": startTime,
         "end_time": endTime,
-        "wave_name": waveName,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
         "__v": v,
@@ -164,6 +187,7 @@ class Wave {
         "totalWaveCommentsCount": totalWaveCommentsCount,
         "isCheckedIn": isCheckedIn,
         "waveRating": waveRating,
+        "isFriend": isFriend,
         "isBusinessUser": isBusinessUser,
         "avatar": avatar,
         "username": username,
@@ -250,7 +274,6 @@ class UserInfo {
     required this.otp,
     required this.isEmailVerified,
     required this.userStatus,
-    // required this.firebaseToken,
     required this.noOfLoggedin,
     required this.lastLoginTime,
     required this.isFaceId,
@@ -274,7 +297,6 @@ class UserInfo {
   String otp;
   bool isEmailVerified;
   bool userStatus;
-  // String firebaseToken;
   int noOfLoggedin;
   dynamic lastLoginTime;
   bool isFaceId;
@@ -284,9 +306,9 @@ class UserInfo {
   String roles;
   String username;
   String biography;
-  int age;
+  var age;
   double latitude;
-  String dob;
+  var dob;
   double longitude;
   String address;
   Location location;
@@ -298,7 +320,6 @@ class UserInfo {
         otp: json["otp"],
         isEmailVerified: json["isEmailVerified"],
         userStatus: json["user_status"],
-        // firebaseToken: json["firebase_token"],
         noOfLoggedin: json["no_of_loggedin"],
         lastLoginTime: json["last_login_time"],
         isFaceId: json["isFaceId"],
@@ -323,7 +344,6 @@ class UserInfo {
         "otp": otp,
         "isEmailVerified": isEmailVerified,
         "user_status": userStatus,
-        // "firebase_token": firebaseToken,
         "no_of_loggedin": noOfLoggedin,
         "last_login_time": lastLoginTime,
         "isFaceId": isFaceId,

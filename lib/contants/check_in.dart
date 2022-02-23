@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -73,7 +74,25 @@ class CheckInState extends State<CheckIn> with SingleTickerProviderStateMixin {
                             backgroundColor: Colors.black,
                             child: CircleAvatar(
                               radius: 36,
-                              backgroundImage: NetworkImage(widget.image),
+                              child: CachedNetworkImage(
+                                imageUrl: widget.image,
+                                imageBuilder: (context, imageProvider) =>
+                                    Container(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover),
+                                  ),
+                                ),
+                                placeholder: (context, url) =>
+                                    const CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                              ),
+                              // backgroundImage: NetworkImage(widget.image),
                             ),
                           ),
                           const SizedBox(height: 8),

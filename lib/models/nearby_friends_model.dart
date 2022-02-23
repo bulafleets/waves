@@ -58,9 +58,9 @@ class NearbyUser {
   String roles;
   String username;
   String biography;
-  int age;
+  var age;
   double latitude;
-  String dob;
+  var dob;
   double longitude;
   String address;
   bool isFriend;

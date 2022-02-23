@@ -9,52 +9,81 @@ class MyReviewModel {
   MyReviewModel({
     required this.status,
     required this.message,
-    required this.review,
+    required this.waves,
   });
 
   int status;
   String message;
-  List<Review> review;
+  List<Wave> waves;
 
   factory MyReviewModel.fromJson(Map<String, dynamic> json) => MyReviewModel(
         status: json["status"],
         message: json["message"],
-        review:
-            List<Review>.from(json["review"].map((x) => Review.fromJson(x))),
+        waves: List<Wave>.from(json["waves"].map((x) => Wave.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "status": status,
         "message": message,
-        "review": List<dynamic>.from(review.map((x) => x.toJson())),
+        "waves": List<dynamic>.from(waves.map((x) => x.toJson())),
       };
 }
 
-class Review {
-  Review({
+class Wave {
+  Wave({
+    required this.id,
+    required this.waveName,
+    required this.reviewData,
+  });
+
+  String id;
+  String waveName;
+  List<ReviewDatum> reviewData;
+
+  factory Wave.fromJson(Map<String, dynamic> json) => Wave(
+        id: json["_id"],
+        waveName: json["wave_name"],
+        reviewData: List<ReviewDatum>.from(
+            json["reviewData"].map((x) => ReviewDatum.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "_id": id,
+        "wave_name": waveName,
+        "reviewData": List<dynamic>.from(reviewData.map((x) => x.toJson())),
+      };
+}
+
+class ReviewDatum {
+  ReviewDatum({
     required this.id,
     required this.rating,
+    required this.userId,
     required this.reviewComment,
-    required this.user,
+    required this.userData,
   });
 
   String id;
   Rating rating;
+  String userId;
   String reviewComment;
-  User user;
+  List<UserDatum> userData;
 
-  factory Review.fromJson(Map<String, dynamic> json) => Review(
+  factory ReviewDatum.fromJson(Map<String, dynamic> json) => ReviewDatum(
         id: json["_id"],
         rating: Rating.fromJson(json["rating"]),
+        userId: json["user_id"],
         reviewComment: json["review_comment"],
-        user: User.fromJson(json["user"]),
+        userData: List<UserDatum>.from(
+            json["userData"].map((x) => UserDatum.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "_id": id,
         "rating": rating.toJson(),
+        "user_id": userId,
         "review_comment": reviewComment,
-        "user": user.toJson(),
+        "userData": List<dynamic>.from(userData.map((x) => x.toJson())),
       };
 }
 
@@ -74,8 +103,8 @@ class Rating {
       };
 }
 
-class User {
-  User({
+class UserDatum {
+  UserDatum({
     required this.id,
     required this.avatar,
     required this.username,
@@ -87,7 +116,7 @@ class User {
   String username;
   int age;
 
-  factory User.fromJson(Map<String, dynamic> json) => User(
+  factory UserDatum.fromJson(Map<String, dynamic> json) => UserDatum(
         id: json["_id"],
         avatar: json["avatar"],
         username: json["username"],

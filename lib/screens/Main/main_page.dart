@@ -8,7 +8,7 @@ import 'package:waves/screens/TYPE/regular_type/activity/activity_screen.dart';
 import 'package:waves/screens/TYPE/regular_type/home/home.dart';
 import 'package:waves/screens/TYPE/regular_type/map/map_screen.dart';
 import 'package:waves/screens/notification/notification_screen.dart';
-import 'package:waves/screens/profile/profile.dart';
+import 'package:waves/screens/TYPE/regular_type/profile/profile.dart';
 
 class MainPage extends StatefulWidget {
   final int selectPage;

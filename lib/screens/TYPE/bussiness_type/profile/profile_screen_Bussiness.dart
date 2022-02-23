@@ -1,17 +1,21 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
 import 'package:waves/models/get_following_data_model.dart';
+import 'package:waves/screens/TYPE/bussiness_type/followers/followers_screen.dart';
+import 'package:waves/screens/TYPE/bussiness_type/profile/edit_profile_business.dart';
 import 'package:waves/screens/TYPE/bussiness_type/reviews/review_screen.dart';
 
 import 'package:waves/screens/auth/login_page.dart';
 
-import 'package:waves/screens/profile/edit_profile.dart';
+import 'package:waves/screens/TYPE/regular_type/profile/edit_profile.dart';
 import 'package:waves/screens/setting/setting_screen.dart';
 import 'package:http/http.dart' as http;
 
@@ -56,7 +60,24 @@ class _MyProfileBussinessScreenState extends State<MyProfileBussinessScreen> {
                 alignment: AlignmentDirectional.bottomCenter,
                 children: [
                   CircleAvatar(
-                      radius: 57, backgroundImage: NetworkImage(profileimg)),
+                    child: CachedNetworkImage(
+                      imageUrl: profileimg,
+                      imageBuilder: (context, imageProvider) => Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              image: imageProvider, fit: BoxFit.cover),
+                        ),
+                      ),
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
+                    radius: 57,
+                  ),
                   // signOut()
                 ],
               ),
@@ -79,33 +100,43 @@ class _MyProfileBussinessScreenState extends State<MyProfileBussinessScreen> {
                     fontSize: 15, fontWeight: FontWeight.w300),
               ),
               const SizedBox(height: 15),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                FaIcon(
-                  FontAwesomeIcons.solidStar,
-                  color: Theme.of(context).primaryColor,
-                  size: 18,
-                ),
-                FaIcon(
-                  FontAwesomeIcons.solidStar,
-                  color: Theme.of(context).primaryColor,
-                  size: 18,
-                ),
-                FaIcon(
-                  FontAwesomeIcons.solidStar,
-                  color: Theme.of(context).primaryColor,
-                  size: 18,
-                ),
-                FaIcon(
-                  FontAwesomeIcons.solidStar,
-                  color: Theme.of(context).primaryColor,
-                  size: 18,
-                ),
-                FaIcon(
-                  FontAwesomeIcons.solidStar,
-                  color: Theme.of(context).primaryColor,
-                  size: 18,
-                ),
-              ]),
+              RatingBarIndicator(
+                rating: averageReviews,
+                itemBuilder: (context, index) => FaIcon(
+                    FontAwesomeIcons.solidStar,
+                    color: Theme.of(context).primaryColor,
+                    size: 18),
+                itemCount: 5,
+                itemSize: 25.0,
+                direction: Axis.horizontal,
+              ),
+              // Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              //   FaIcon(
+              //     FontAwesomeIcons.solidStar,
+              //     color: Theme.of(context).primaryColor,
+              //     size: 18,
+              //   ),
+              //   FaIcon(
+              //     FontAwesomeIcons.solidStar,
+              //     color: Theme.of(context).primaryColor,
+              //     size: 18,
+              //   ),
+              //   FaIcon(
+              //     FontAwesomeIcons.solidStar,
+              //     color: Theme.of(context).primaryColor,
+              //     size: 18,
+              //   ),
+              //   FaIcon(
+              //     FontAwesomeIcons.solidStar,
+              //     color: Theme.of(context).primaryColor,
+              //     size: 18,
+              //   ),
+              //   FaIcon(
+              //     FontAwesomeIcons.solidStar,
+              //     color: Theme.of(context).primaryColor,
+              //     size: 18,
+              //   ),
+              // ]),
               SizedBox(
                 height: 32,
                 child: TextButton(
@@ -151,7 +182,7 @@ class _MyProfileBussinessScreenState extends State<MyProfileBussinessScreen> {
                 trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const EditProfileScreen()));
+                      builder: (context) => const EditProfileScreenBusiness()));
                 },
               ),
 
@@ -171,8 +202,8 @@ class _MyProfileBussinessScreenState extends State<MyProfileBussinessScreen> {
                         fontSize: 19, fontWeight: FontWeight.w300)),
                 trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: () {
-                  // Navigator.of(context).push(MaterialPageRoute(
-                  //     builder: (context) ));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const FollowersScreen()));
                 },
               ),
               ListTile(

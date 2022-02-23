@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -79,7 +80,25 @@ class _ViewProfleScreenState extends State<ViewProfleScreen> {
                           children: [
                             CircleAvatar(
                                 radius: 57,
-                                backgroundImage: NetworkImage(data.avatar)),
+                                child: CachedNetworkImage(
+                                  imageUrl: data.avatar,
+                                  imageBuilder: (context, imageProvider) =>
+                                      Container(
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover),
+                                    ),
+                                  ),
+                                  placeholder: (context, url) =>
+                                      const CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
+                                ))
+                            // backgroundImage: NetworkImage(data.avatar)),
                             // signOut()
                           ],
                         ),

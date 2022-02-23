@@ -26,6 +26,7 @@ String privacyPolicyData = '';
 List<NotificationLocalModel> notificationData = [];
 var isNotification = false;
 int totalFollowing = 0;
+var averageReviews;
 
 final String BASE = "http://54.167.80.99/api/";
 final String URL_Login = BASE + "user/login";
@@ -64,3 +65,4 @@ final String Follow = BASE + 'follow';
 final String UnFollow = BASE + 'unfollow';
 final String MyFollows = BASE + "myfollowers";
 final String GetReviews = BASE + "get/review";
+final String GetAverageReview = BASE + 'get/user/review';

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -12,12 +13,14 @@ class ReviewComment extends StatefulWidget {
   final String bussinessName;
   final String waveId;
   final String image;
-  final Function(int stars) starData;
+  final String star;
+  final Function(double stars) starData;
   const ReviewComment(
       {required this.bussinessName,
       required this.waveId,
       required this.image,
       required this.starData,
+      required this.star,
       Key? key})
       : super(key: key);
 
@@ -29,7 +32,7 @@ class ReviewCommentState extends State<ReviewComment>
     with SingleTickerProviderStateMixin {
   late AnimationController controller;
   late Animation<double> scaleAnimation;
-  int _star = 0;
+  double _star = 0;
   TextEditingController _reviewController = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey();
 
@@ -97,8 +100,27 @@ class ReviewCommentState extends State<ReviewComment>
                               radius: 37,
                               backgroundColor: Colors.black,
                               child: CircleAvatar(
-                                  radius: 36,
-                                  backgroundImage: NetworkImage(widget.image)),
+                                radius: 36,
+                                child: CachedNetworkImage(
+                                  imageUrl: widget.image,
+                                  imageBuilder: (context, imageProvider) =>
+                                      Container(
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover),
+                                    ),
+                                  ),
+                                  placeholder: (context, url) =>
+                                      const CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
+                                ),
+                                // backgroundImage: NetworkImage(widget.image)
+                              ),
                             ),
                             const SizedBox(height: 8),
                             Text(widget.bussinessName,
@@ -325,7 +347,7 @@ class ReviewCommentState extends State<ReviewComment>
       "wave_id": widget.waveId,
       "user_id": user_id,
       "rating": _star.toString(),
-      "review_comment": _reviewController,
+      "review_comment": _reviewController.text.toString(),
     });
 
     String data = response.body;
@@ -340,7 +362,8 @@ class ReviewCommentState extends State<ReviewComment>
         content: Text(message),
       ));
       Navigator.of(context).pop();
-      widget.starData(_star);
+      var star = double.parse(widget.star);
+      widget.starData((_star + star) / 2);
     }
     if (status == "400") {
       String message = jsonDecode(data)['message'];

@@ -1,10 +1,8 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:waves/contants/common_params.dart';
 import 'package:waves/contants/share_pref.dart';
 import 'package:waves/models/notification_model.dart';
-import 'package:waves/screens/notification/notification_screen.dart';
 import 'package:waves/screens/splash/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';

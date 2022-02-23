@@ -84,8 +84,10 @@ class _AddFriendsState extends State<AddFriends> {
             onPressed: () async {
               final PermissionStatus permissionStatus = await _getPermission();
               if (permissionStatus == PermissionStatus.granted) {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ContactsPage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ContactsPage()));
               } else {
                 //If permissions have been denied show standard cupertino alert dialog
                 showDialog(
@@ -171,7 +173,7 @@ class _AddFriendsState extends State<AddFriends> {
             InkWell(
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => AddFriendsNearBy()));
+                    builder: (context) => const AddFriendsNearBy()));
               },
               child: const Text('Find Nearby users',
                   style: TextStyle(
@@ -190,7 +192,7 @@ class _AddFriendsState extends State<AddFriends> {
                         itemCount: _searchResult.length,
                         itemBuilder: (context, index) {
                           var data = _searchResult[index];
-                          int age = data.age;
+                          // int age = data.age;
 
                           return Container(
                               width: MediaQuery.of(context).size.width,
@@ -207,19 +209,24 @@ class _AddFriendsState extends State<AddFriends> {
                                           padding: const EdgeInsets.all(3),
                                           decoration: BoxDecoration(
                                               shape: BoxShape.circle,
-                                              color: age > 17 && age < 30
-                                                  ? const Color.fromRGBO(
-                                                      0, 0, 255, 1)
-                                                  : age > 29 && age < 50
+                                              color: data.roles == 'REGULAR'
+                                                  ? data.age > 17 &&
+                                                          data.age < 30
                                                       ? const Color.fromRGBO(
-                                                          255, 255, 0, 1)
-                                                      : const Color.fromRGBO(
-                                                          0, 255, 128, 1)),
+                                                          0, 0, 255, 1)
+                                                      : data.age > 29 &&
+                                                              data.age < 50
+                                                          ? const Color
+                                                                  .fromRGBO(
+                                                              255, 255, 0, 1)
+                                                          : const Color
+                                                                  .fromRGBO(
+                                                              0, 255, 128, 1)
+                                                  : Colors.white),
                                           child: CircleAvatar(
                                             radius: 25,
                                             child: CachedNetworkImage(
-                                              imageUrl: data.avatar ??
-                                                  'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Gnome-stock_person.svg/1024px-Gnome-stock_person.svg.png',
+                                              imageUrl: data.avatar,
                                               imageBuilder:
                                                   (context, imageProvider) =>
                                                       Container(
@@ -239,7 +246,7 @@ class _AddFriendsState extends State<AddFriends> {
                                                       const Icon(Icons.error),
                                             ),
                                           )),
-                                      SizedBox(width: 15),
+                                      const SizedBox(width: 15),
                                       Text(data.username,
                                           style: GoogleFonts.quicksand(
                                               color: Colors.white)),
@@ -260,7 +267,7 @@ class _AddFriendsState extends State<AddFriends> {
                                 itemCount: snapshot.data!.nearbyUsers.length,
                                 itemBuilder: (context, index) {
                                   var data = snapshot.data!.nearbyUsers[index];
-                                  int age = data.age;
+                                  //   int data.age = data.age;
                                   print(snapshot.data!.nearbyUsers.length);
 
                                   return Container(
@@ -279,29 +286,32 @@ class _AddFriendsState extends State<AddFriends> {
                                                       const EdgeInsets.all(3),
                                                   decoration: BoxDecoration(
                                                       shape: BoxShape.circle,
-                                                      color: age > 17 &&
-                                                              age < 30
-                                                          ? const Color
-                                                                  .fromRGBO(
-                                                              0, 0, 255, 1)
-                                                          : age > 29 && age < 50
-                                                              ? const Color
-                                                                      .fromRGBO(
-                                                                  255,
-                                                                  255,
-                                                                  0,
-                                                                  1)
-                                                              : const Color
-                                                                      .fromRGBO(
-                                                                  0,
-                                                                  255,
-                                                                  128,
-                                                                  1)),
+                                                      color: data.roles ==
+                                                              'REGULAR'
+                                                          ? data.age > 17 &&
+                                                                  data.age < 30
+                                                              ? const Color.fromRGBO(
+                                                                  0, 0, 255, 1)
+                                                              : data.age > 29 &&
+                                                                      data.age <
+                                                                          50
+                                                                  ? const Color
+                                                                          .fromRGBO(
+                                                                      255,
+                                                                      255,
+                                                                      0,
+                                                                      1)
+                                                                  : const Color
+                                                                          .fromRGBO(
+                                                                      0,
+                                                                      255,
+                                                                      128,
+                                                                      1)
+                                                          : Colors.white),
                                                   child: CircleAvatar(
                                                     radius: 25,
                                                     child: CachedNetworkImage(
-                                                      imageUrl: data.avatar ??
-                                                          'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Gnome-stock_person.svg/1024px-Gnome-stock_person.svg.png',
+                                                      imageUrl: data.avatar,
                                                       imageBuilder: (context,
                                                               imageProvider) =>
                                                           Container(
@@ -327,7 +337,7 @@ class _AddFriendsState extends State<AddFriends> {
                                                               Icons.error),
                                                     ),
                                                   )),
-                                              SizedBox(width: 15),
+                                              const SizedBox(width: 15),
                                               Text(data.username,
                                                   style: GoogleFonts.quicksand(
                                                       color: Colors.white)),
@@ -344,7 +354,7 @@ class _AddFriendsState extends State<AddFriends> {
                                 child: Center(
                                     child: Text('No Users Found',
                                         style: GoogleFonts.quicksand(
-                                            color: Colors.black,
+                                            color: Colors.white,
                                             fontSize: 17,
                                             fontWeight: FontWeight.w400))),
                               );
@@ -430,7 +440,7 @@ class _AddFriendsState extends State<AddFriends> {
         ),
         onPressed: () {
           Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => MainPage(0)),
+              MaterialPageRoute(builder: (context) => const MainPage(0)),
               (Route<dynamic> route) => false);
           // Navigator.of(context).pushAndRemoveUntil(
           //     MaterialPageRoute(builder: (context) => const MyHomePage()),

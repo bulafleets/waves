@@ -109,7 +109,7 @@ class Wave {
   EventInfo eventInfo;
   int totalWaveCommentsCount;
   bool isCheckedIn;
-  int waveRating;
+  var waveRating;
   bool isFriend;
   bool isBusinessUser;
   String avatar;
@@ -276,7 +276,6 @@ class UserInfo {
     required this.otp,
     required this.isEmailVerified,
     required this.userStatus,
-    required this.firebaseToken,
     required this.noOfLoggedin,
     required this.lastLoginTime,
     required this.isFaceId,
@@ -286,9 +285,7 @@ class UserInfo {
     required this.roles,
     required this.username,
     required this.biography,
-    required this.age,
     required this.latitude,
-    required this.dob,
     required this.longitude,
     required this.address,
     required this.location,
@@ -300,7 +297,6 @@ class UserInfo {
   String otp;
   bool isEmailVerified;
   bool userStatus;
-  String firebaseToken;
   int noOfLoggedin;
   dynamic lastLoginTime;
   bool isFaceId;
@@ -310,9 +306,7 @@ class UserInfo {
   String roles;
   String username;
   String biography;
-  int age;
   double latitude;
-  String dob;
   double longitude;
   String address;
   Location location;
@@ -324,7 +318,6 @@ class UserInfo {
         otp: json["otp"],
         isEmailVerified: json["isEmailVerified"],
         userStatus: json["user_status"],
-        firebaseToken: json["firebase_token"],
         noOfLoggedin: json["no_of_loggedin"],
         lastLoginTime: json["last_login_time"],
         isFaceId: json["isFaceId"],
@@ -334,9 +327,7 @@ class UserInfo {
         roles: json["roles"],
         username: json["username"],
         biography: json["biography"],
-        age: json["age"],
         latitude: json["latitude"].toDouble(),
-        dob: json["dob"],
         longitude: json["longitude"].toDouble(),
         address: json["address"],
         location: Location.fromJson(json["location"]),
@@ -349,7 +340,6 @@ class UserInfo {
         "otp": otp,
         "isEmailVerified": isEmailVerified,
         "user_status": userStatus,
-        "firebase_token": firebaseToken,
         "no_of_loggedin": noOfLoggedin,
         "last_login_time": lastLoginTime,
         "isFaceId": isFaceId,
@@ -359,9 +349,7 @@ class UserInfo {
         "roles": roles,
         "username": username,
         "biography": biography,
-        "age": age,
         "latitude": latitude,
-        "dob": dob,
         "longitude": longitude,
         "address": address,
         "location": location.toJson(),
