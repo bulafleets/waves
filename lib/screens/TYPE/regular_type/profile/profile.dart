@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
 import 'package:waves/contants/map_pop_screen.dart';
+import 'package:waves/contants/show_dialog_forSignOut.dart';
 import 'package:waves/models/get_following_data_model.dart';
 import 'package:waves/screens/TYPE/regular_type/friends/friends_screen.dart';
 import 'package:waves/screens/TYPE/regular_type/wave/invite_screen.dart';
@@ -172,15 +173,10 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 },
               ),
               ListTile(
-                  onTap: () async {
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    prefs.remove('email');
-                    // prefs.clear();
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext ctx) => const LoginPage()));
+                  onTap: () {
+                    showDialog(
+                        context: context,
+                        builder: (_) => ShowDialogSignOutScreen());
                   },
                   title: Text('Sign out',
                       style: GoogleFonts.quicksand(
@@ -208,14 +204,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
             borderRadius: BorderRadius.all(Radius.circular(30)),
           ),
         ),
-        onPressed: () async {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.remove('email');
-          prefs.clear();
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext ctx) => const LoginPage()));
+        onPressed: () {
+          showDialog(
+              context: context, builder: (_) => ShowDialogSignOutScreen());
         },
         child: const Text(
           "Sign Out",

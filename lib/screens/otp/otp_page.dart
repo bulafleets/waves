@@ -109,16 +109,17 @@ class _OtpPageState extends State<OtpPage> {
         animationType: AnimationType.fade,
         validator: (val) {
           if (val!.isEmpty) {
-            return 'Please Enter OTP';
+            return '    Please Enter OTP';
           }
           if (OTP.isNotEmpty && val != OTP) {
-            return 'OTP is incorrect';
+            return '    OTP is incorrect';
           }
           if (OTP.isEmpty && val != widget.otp) {
-            return 'OTP is incorrect';
+            return '    OTP is incorrect';
           }
           return null;
         },
+
         textStyle: const TextStyle(color: Colors.black),
         pinTheme: PinTheme(
           shape: PinCodeFieldShape.box,

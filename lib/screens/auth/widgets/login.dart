@@ -33,11 +33,18 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isObscureText = true;
   var isalldone = false;
   bool value = false;
+  bool isLoading = false;
 
   @override
   void dispose() {
     EasyLoading.dismiss();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    aboutdataApi();
+    super.initState();
   }
 
   @override
@@ -56,6 +63,9 @@ class _LoginScreenState extends State<LoginScreen> {
               FilteringTextInputFormatter.deny(' ')
             ],
             decoration: InputDecoration(
+              errorStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromRGBO(98, 8, 15, 1)),
               filled: true,
               fillColor: Colors.white,
               enabledBorder: UnderlineInputBorder(
@@ -69,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
               prefixIcon: const Icon(Icons.email, color: Colors.grey, size: 20),
               hintText: "Email",
               contentPadding:
-                  EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
               hintStyle: TextStyle(
                   color: const Color(0xFFb6b3c6).withOpacity(0.8),
                   fontFamily: 'RobotoRegular'),
@@ -80,9 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
           TextFormField(
               validator: (val) {
                 if (val!.isEmpty) return 'Please Enter Password';
-                if (val.length < 8) {
-                  return 'Please enter Minimum 8 char Password';
-                }
+
                 return null;
               },
               style: const TextStyle(color: Colors.black),
@@ -106,6 +114,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 });
               },
               decoration: InputDecoration(
+                errorStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromRGBO(98, 8, 15, 1)),
+
                 suffixIcon: IconButton(
                     icon: Icon(
                       // Based on passwordVisible state choose the icon
@@ -198,48 +210,14 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.all(Radius.circular(30)),
           ),
         ),
-        // onPressed: () {
-        onPressed: () async {
-          final LocalAuthentication localAuthentication = LocalAuthentication();
-          bool isBiometricSupported =
-              await localAuthentication.isDeviceSupported();
-          // if (value) {
-          //   bool isAuthenticated =
-          //       await Authentication.authenticateWithBiometrics();
-          //   print(isAuthenticated);
-
-          //   if (isAuthenticated) {
-          //     Navigator.of(context)
-          //         .push(MaterialPageRoute(builder: (context) => AboutUs()));
-          //   } else {
-          //     ScaffoldMessenger.of(context).showSnackBar(
-          //       const SnackBar(
-          //         content: Text('Error authenticating using Biometrics.'),
-          //       ),
-          //     );
-          //   }
-          // } else {
-          if (_formkey.currentState!.validate()) {
-            EasyLoading.show(status: 'Please Wait ...');
-            loginPage();
-          }
-          // }
-        },
-        // Navigator.of(context)
-        //     .push(MaterialPageRoute(builder: (context) => AboutUs()));
-        // if (_formkey.currentState.validate()) {
-        // showDialog(
-        //   context: context,
-        //   builder: (_) ,
-        // );
-        //
-        //sendRESENT();
-        //CircularProgressIndicator();
-        //  EasyLoading.show(status: 'Please Wait ...');
-
-        //print("Routing to your account");
-        // }
-
+        onPressed: isLoading
+            ? null
+            : () {
+                if (_formkey.currentState!.validate()) {
+                  EasyLoading.show(status: 'Please Wait ...');
+                  loginPage();
+                }
+              },
         child: const Text(
           "LOGIN",
           style: TextStyle(
@@ -250,6 +228,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> loginPage() async {
+    setState(() {
+      isLoading = true;
+    });
+
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     var token = _prefs.getString(Prefs.firebasetoken);
     print(token);
@@ -307,6 +289,10 @@ class _LoginScreenState extends State<LoginScreen> {
       //   _prefs.setString('log', log);
 
       var isSeen = _prefs.getString('seen');
+      setState(() {
+        isLoading = false;
+      });
+
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
               builder: (context) =>
@@ -323,9 +309,25 @@ class _LoginScreenState extends State<LoginScreen> {
       // Navigator.of(context).pushNamed(OTP_SCREEN);
     }
     if (status == "400") {
+      setState(() {
+        isLoading = false;
+      });
       String message = jsonDecode(data)['message'];
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message), backgroundColor: Colors.red));
+    }
+  }
+
+  Future<void> aboutdataApi() async {
+    http.Response response =
+        await http.post(Uri.parse(AboutData), body: {"slug": "about_us"});
+    final jsonString = response.body;
+
+    String status = jsonDecode(jsonString)['status'].toString();
+    if (status == '200') {
+      setState(() {
+        aboutdata = jsonDecode(jsonString)['data']['description'].toString();
+      });
     }
   }
 }

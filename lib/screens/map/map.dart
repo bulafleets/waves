@@ -16,6 +16,7 @@ class MapSample extends StatefulWidget {
 
 class MapSampleState extends State<MapSample> {
   // late GoogleMapController _mapController;
+  var initialPosition = latitude != null ? true : false;
   late CameraPosition _cameraPosition;
   late LatLng _initialPosition;
   Completer<GoogleMapController> _mapController = Completer();
@@ -43,9 +44,41 @@ class MapSampleState extends State<MapSample> {
 
   @override
   void initState() {
-    _mapTapped(LatLng(latitude, longitude));
+    determinePosition(context);
     super.initState();
   }
+
+  void determinePosition(BuildContext context) async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+    if (permission == LocationPermission.denied) {
+      // showCustomSnackBar('you_have_to_allow'.tr);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content:
+            Text('you have to grant permission for an app to access location'),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.red,
+      ));
+    } else if (permission == LocationPermission.deniedForever) {
+      showDialog(context: context, builder: (context) => PermissionDialog());
+    } else {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      setState(() {
+        initialPosition = true;
+      });
+      latitude = position.latitude;
+      longitude = position.longitude;
+      _mapTapped(LatLng(latitude, longitude));
+
+      print(position.latitude);
+      print(position.longitude);
+    }
+  }
+
+  final List<Marker> _markers = [];
 
   @override
   Widget build(BuildContext context) {
@@ -56,70 +89,105 @@ class MapSampleState extends State<MapSample> {
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child: Stack(children: [
-              GoogleMap(
-                myLocationEnabled: true,
-                onTap: _mapTapped,
-                initialCameraPosition: CameraPosition(
-                  target: LatLng(latitude, longitude),
-                  zoom: 17,
-                ),
-                onMapCreated: (GoogleMapController mapController) {
-                  _mapController.complete(mapController);
-                },
-                zoomControlsEnabled: false,
-                onCameraMove: (position) {
-                  // _cameraPosition = cameraPosition;
-                  _mapTapped(LatLng(
-                      position.target.latitude, position.target.longitude));
-                },
-                onCameraMoveStarted: () {
-                  setState(() {
-                    isLoading = true;
-                  });
-                },
-                onCameraIdle: () {
-                  setState(() {
-                    isLoading = false;
-                  });
-                },
-              ),
-              Center(
-                  child: Image.asset('assets/pick_marker.png',
-                      height: 50, width: 50)),
-              Positioned(
-                top: 20.0,
-                left: 10.0,
-                right: 10.0,
-                child: Container(
-                  height: 50,
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(5)),
-                  child: TextField(
-                    // onTap: () {
-                    //   _textEditingController.text = '';
-                    // },
-                    controller: _textEditingController,
-                    decoration: InputDecoration(
-                      hintText: 'Enter Address..',
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.only(left: 15, top: 15),
-                      prefixIcon: Icon(Icons.location_on,
-                          size: 25, color: Theme.of(context).primaryColor),
-                      suffixIcon: IconButton(
-                          onPressed: () => searchNavigator(),
-                          icon: const Icon(Icons.search),
-                          iconSize: 30),
+              initialPosition
+                  ? GoogleMap(
+                      markers: _markers.toSet(),
+                      // myLocationEnabled: true,
+                      onTap: _mapTapped,
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(latitude, longitude),
+                        zoom: 17,
+                      ),
+                      onMapCreated: (GoogleMapController mapController) {
+                        _mapController.complete(mapController);
+                        final marker = Marker(
+                          markerId: MarkerId('0'),
+                          position: LatLng(latitude, longitude),
+                        );
+
+                        _markers.add(marker);
+                      },
+                      zoomControlsEnabled: false,
+                      onCameraMove: (position) {
+                        // _cameraPosition = cameraPosition;
+                        final marker = Marker(
+                          markerId: MarkerId('0'),
+                          position: LatLng(position.target.latitude,
+                              position.target.longitude),
+                        );
+
+                        _markers.add(marker);
+                        _mapTapped(LatLng(position.target.latitude,
+                            position.target.longitude));
+                      },
+                      onCameraMoveStarted: () {
+                        setState(() {
+                          isLoading = true;
+                        });
+                      },
+                      onCameraIdle: () {
+                        setState(() {
+                          isLoading = false;
+                        });
+                      },
+                    )
+                  : Center(
+                      child: TextButton(
+                          onPressed: () {
+                            determinePosition(context);
+                          },
+                          child: const Text('Permission Denied tap to allow')),
                     ),
-                    onChanged: (val) {
-                      setState(() {
-                        searchAddr = val;
-                      });
-                    },
+              // Center(
+              //     child: Image.asset('assets/pick_marker.png',
+              //         height: 50, width: 50)),
+              if (initialPosition)
+                Positioned(
+                  top: 20.0,
+                  left: 10.0,
+                  right: 10.0,
+                  child: Container(
+                    height: 50,
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(5)),
+                    child: TextField(
+                      onSubmitted: (val) {
+                        if (val.isNotEmpty) {
+                          searchNavigator();
+                        }
+                      },
+                      // onTap: () {
+                      //   _textEditingController.text = '';
+                      // },
+                      controller: _textEditingController,
+                      decoration: InputDecoration(
+                        errorStyle: const TextStyle(
+                            color: Color.fromRGBO(98, 8, 15, 1)),
+                        hintText: 'Enter Address..',
+                        border: InputBorder.none,
+                        contentPadding:
+                            const EdgeInsets.only(left: 15, top: 15),
+                        prefixIcon: Icon(Icons.location_on,
+                            size: 25, color: Theme.of(context).primaryColor),
+                        suffixIcon: _textEditingController.text.isNotEmpty
+                            ? IconButton(
+                                onPressed: () {
+                                  _textEditingController.text = '';
+                                },
+                                icon: const Icon(Icons.close),
+                                iconSize: 30)
+                            : null,
+                      ),
+                      onChanged: (val) {
+                        setState(() {
+                          searchAddr = val;
+                        });
+                      },
+                    ),
                   ),
                 ),
-              ),
               Positioned(
                 bottom: 80,
                 right: 10,
@@ -184,7 +252,8 @@ class MapSampleState extends State<MapSample> {
     if (permission == LocationPermission.denied) {
       // showCustomSnackBar('you_have_to_allow'.tr);
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('you_have_to_allow'),
+        content:
+            Text('you have to grant permission for an app to access location'),
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.red,
       ));
@@ -214,6 +283,12 @@ class MapSampleState extends State<MapSample> {
         target: LatLng(locations[0].latitude, locations[0].longitude),
         // tilt: 59.440717697143555,
         zoom: 19.151926040649414);
+    final marker = Marker(
+      markerId: MarkerId('0'),
+      position: LatLng(locations[0].latitude, locations[0].longitude),
+    );
+
+    _markers.add(marker);
     final GoogleMapController controller = await _mapController.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }

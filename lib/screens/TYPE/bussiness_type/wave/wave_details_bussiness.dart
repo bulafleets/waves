@@ -139,179 +139,164 @@ class _WaveDetailsBussinessScreenState
                 child: ListView(
                   // physics: const NeverScrollableScrollPhysics(),
                   children: [
-                    Flexible(
-                      child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          padding: const EdgeInsets.only(bottom: 12),
-                          decoration: const BoxDecoration(
-                            color: Color.fromRGBO(188, 220, 243, 1),
-                            borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(60),
-                                bottomRight: Radius.circular(60)),
-                          ),
-                          child: Column(children: [
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              child: Expanded(
-                                child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        // width: 102,
-                                        // color: Colors.black,
-                                        margin: const EdgeInsets.only(
-                                            right: 10, left: 10),
+                    Container(
+                        width: MediaQuery.of(context).size.width,
+                        padding: const EdgeInsets.only(bottom: 12),
+                        decoration: const BoxDecoration(
+                          color: Color.fromRGBO(188, 220, 243, 1),
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(60),
+                              bottomRight: Radius.circular(60)),
+                        ),
+                        child: Column(children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    // width: 102,
+                                    // color: Colors.black,
+                                    margin: const EdgeInsets.only(
+                                        right: 10, left: 10),
+                                    child: CircleAvatar(
+                                        radius: 50,
+                                        backgroundColor: Colors.black,
                                         child: CircleAvatar(
-                                            radius: 50,
-                                            backgroundColor: Colors.black,
-                                            child: CircleAvatar(
-                                              radius: 48,
-                                              child: CachedNetworkImage(
-                                                imageUrl:
-                                                    data.media.first.location,
-                                                imageBuilder:
-                                                    (context, imageProvider) =>
-                                                        Container(
-                                                  width: double.infinity,
-                                                  height: double.infinity,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    image: DecorationImage(
-                                                        image: imageProvider,
-                                                        fit: BoxFit.cover),
-                                                  ),
-                                                ),
-                                                placeholder: (context, url) =>
-                                                    const CircularProgressIndicator(),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        const Icon(Icons.error),
+                                          radius: 48,
+                                          child: CachedNetworkImage(
+                                            imageUrl: data.media.first.location,
+                                            imageBuilder:
+                                                (context, imageProvider) =>
+                                                    Container(
+                                              width: double.infinity,
+                                              height: double.infinity,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                image: DecorationImage(
+                                                    image: imageProvider,
+                                                    fit: BoxFit.cover),
                                               ),
-                                              // backgroundImage: NetworkImage(
-                                              //     data.media.first.location),
-                                            )),
-                                      ),
-                                      Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: [
-                                            const SizedBox(height: 10),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  data.waveName,
-                                                  style: GoogleFonts.quicksand(
-                                                      fontSize: 19,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                                const SizedBox(width: 15),
-                                                Image.asset(
-                                                  'assets/icons/verified.png',
-                                                  scale: .9,
-                                                ),
-                                                const SizedBox(width: 30),
-                                                Text(
-                                                  tt,
-                                                  style: GoogleFonts.quicksand(
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w400),
-                                                ),
-                                              ],
                                             ),
-                                            const SizedBox(height: 10),
-                                            SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                  150,
-                                              child: Text(
-                                                data.wavesLocation,
+                                            placeholder: (context, url) =>
+                                                const CircularProgressIndicator(),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(Icons.error),
+                                          ),
+                                          // backgroundImage: NetworkImage(
+                                          //     data.media.first.location),
+                                        )),
+                                  ),
+                                  Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              data.waveName,
+                                              style: GoogleFonts.quicksand(
+                                                  fontSize: 19,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                            const SizedBox(width: 15),
+                                            Image.asset(
+                                              'assets/icons/verified.png',
+                                              scale: .9,
+                                            ),
+                                            const SizedBox(width: 30),
+                                            Text(
+                                              tt,
+                                              style: GoogleFonts.quicksand(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w400),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width -
+                                              150,
+                                          child: Text(
+                                            data.wavesLocation,
+                                            style: GoogleFonts.quicksand(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w300),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 15),
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width -
+                                              130,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Text(
+                                                date,
                                                 style: GoogleFonts.quicksand(
                                                     fontSize: 12,
                                                     fontWeight:
-                                                        FontWeight.w300),
+                                                        FontWeight.w400),
                                               ),
-                                            ),
-                                            const SizedBox(height: 15),
-                                            SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                  130,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceAround,
-                                                children: [
-                                                  Text(
-                                                    date,
-                                                    style:
-                                                        GoogleFonts.quicksand(
-                                                            fontSize: 12,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w400),
-                                                  ),
-                                                  Text(
-                                                    data.startTime,
-                                                    style:
-                                                        GoogleFonts.quicksand(
-                                                            fontSize: 12,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w400),
-                                                  ),
-                                                  Text(
-                                                    data.endTime,
-                                                    style:
-                                                        GoogleFonts.quicksand(
-                                                            fontSize: 12,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w400),
-                                                  ),
-                                                ],
+                                              Text(
+                                                data.startTime,
+                                                style: GoogleFonts.quicksand(
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.w400),
                                               ),
-                                            ),
-                                            // Text(
-                                            //   '${data.eventInfo.eventName}   $date  ${data.startTime} - ${data.endTime}',
-                                            //   style: GoogleFonts.quicksand(
-                                            //       fontSize: 10,
-                                            //       fontWeight: FontWeight.w400),
-                                            // ),
-                                            const SizedBox(
-                                              height: 20,
-                                            )
-                                          ])
-                                    ]),
-                              ),
-                            ),
-                            Container(
-                                height: 130,
-                                width: MediaQuery.of(context).size.width - 60,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50)),
-                                child: GoogleMap(
-                                  myLocationEnabled: true,
-                                  // onTap: _mapTapped,
-                                  initialCameraPosition: CameraPosition(
-                                    target:
-                                        LatLng(data.lattitude, data.longitude),
-                                    zoom: 17,
-                                  ),
-                                  onMapCreated:
-                                      (GoogleMapController mapController) {
-                                    _mapController.complete(mapController);
-                                  },
-                                  zoomControlsEnabled: false,
-                                  markers: markers,
-                                ))
-                          ])),
-                    ),
+                                              Text(
+                                                data.endTime,
+                                                style: GoogleFonts.quicksand(
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.w400),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        // Text(
+                                        //   '${data.eventInfo.eventName}   $date  ${data.startTime} - ${data.endTime}',
+                                        //   style: GoogleFonts.quicksand(
+                                        //       fontSize: 10,
+                                        //       fontWeight: FontWeight.w400),
+                                        // ),
+                                        const SizedBox(
+                                          height: 20,
+                                        )
+                                      ])
+                                ]),
+                          ),
+                          Container(
+                              height: 130,
+                              width: MediaQuery.of(context).size.width - 60,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50)),
+                              child: GoogleMap(
+                                myLocationEnabled: true,
+                                // onTap: _mapTapped,
+                                initialCameraPosition: CameraPosition(
+                                  target:
+                                      LatLng(data.lattitude, data.longitude),
+                                  zoom: 17,
+                                ),
+                                onMapCreated:
+                                    (GoogleMapController mapController) {
+                                  _mapController.complete(mapController);
+                                },
+                                zoomControlsEnabled: false,
+                                markers: markers,
+                              ))
+                        ])),
                     const SizedBox(height: 5),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,

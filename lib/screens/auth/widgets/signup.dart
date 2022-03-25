@@ -3,10 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
+import 'package:waves/contants/common_widgets.dart';
 import 'package:waves/screens/otp/otp_page.dart';
 import 'package:http/http.dart' as http;
 
@@ -27,12 +28,13 @@ class _SignUpPageState extends State<SignUpPage> {
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  TextEditingController confirmpasswordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
   bool isObscureText = true;
   bool isObscureTextc = true;
   var isalldone = false;
   String OTP = "";
   bool _isLoading = false;
+  var _userType = ["REGULAR", "BUSINESS"];
 
   @override
   void dispose() {
@@ -46,6 +48,61 @@ class _SignUpPageState extends State<SignUpPage> {
       key: _formkey,
       child: Column(
         children: [
+          Stack(children: <Widget>[
+            Container(
+              padding: EdgeInsets.only(left: 44.0),
+              height: 50,
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(8)),
+              // padding: const EdgeInsets.all(15),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton(
+                    hint: Text(
+                      AccountType,
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                    isExpanded: true,
+                    icon: const Padding(
+                      padding: EdgeInsets.only(right: 8.0),
+                      child: Icon(Icons.arrow_drop_down,
+                          color: Colors.black, size: 30),
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.normal,
+                      fontSize: 15,
+                    ),
+                    items: List.generate(
+                        _userType.length,
+                        (index) => DropdownMenuItem<String>(
+                              value: _userType[index],
+                              child: Text(_userType[index]),
+                              onTap: () {},
+                            )),
+                    // onTap: _save,
+                    onChanged: (val) {
+                      setState(
+                        () {
+                          // maritalController.text = val.toString();
+                          // _maritalstatusId = val.toString();
+                          AccountType = val.toString();
+                        },
+                      );
+                    }),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(left: 12.0, top: 14),
+              child: FaIcon(
+                  AccountType == 'BUSINESS'
+                      ? FontAwesomeIcons.userTie
+                      : FontAwesomeIcons.userAlt,
+                  color: Colors.grey,
+                  size: 20),
+            ),
+          ]),
+          const SizedBox(height: 15),
+
           TextFormField(
             style: const TextStyle(color: Colors.black),
             validator: emailValidator,
@@ -56,6 +113,10 @@ class _SignUpPageState extends State<SignUpPage> {
               FilteringTextInputFormatter.deny(' ')
             ],
             decoration: InputDecoration(
+              errorMaxLines: 2,
+              errorStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromRGBO(98, 8, 15, 1)),
               filled: true,
               fillColor: Colors.white,
               enabledBorder: UnderlineInputBorder(
@@ -76,6 +137,7 @@ class _SignUpPageState extends State<SignUpPage> {
               border: const OutlineInputBorder(),
             ),
           ),
+
           const SizedBox(height: 15),
           TextFormField(
               style: const TextStyle(color: Colors.black),
@@ -89,10 +151,10 @@ class _SignUpPageState extends State<SignUpPage> {
                 FilteringTextInputFormatter.deny(' ')
               ],
               validator: (val) {
-                if (val!.isEmpty) return 'Please Enter Password';
-                if (val.trim().isEmpty) return 'Please remove spaces';
-                if (val.trim().length < 8) {
-                  return 'Please enter Minimum 8 char Password';
+                if (val!.isEmpty) {
+                  return 'Please Enter Password';
+                } else if (!validateStructure(val)) {
+                  return 'should be a combination of upper case,lower case and special character with minimum 8 characters';
                 }
                 return null;
               },
@@ -107,6 +169,10 @@ class _SignUpPageState extends State<SignUpPage> {
                 });
               },
               decoration: InputDecoration(
+                errorMaxLines: 2,
+                errorStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromRGBO(98, 8, 15, 1)),
                 suffixIcon: IconButton(
                     icon: Icon(
                       // Based on passwordVisible state choose the icon
@@ -143,7 +209,7 @@ class _SignUpPageState extends State<SignUpPage> {
           TextFormField(
               style: const TextStyle(color: Colors.black),
               // validator:RequiredValidator(errorText: "Please Enter Your Mobile Number."),
-              controller: confirmpasswordController,
+              controller: confirmPasswordController,
               keyboardType: TextInputType.text,
               obscureText: isObscureTextc,
               cursorColor: Colors.grey,
@@ -152,22 +218,18 @@ class _SignUpPageState extends State<SignUpPage> {
                 FilteringTextInputFormatter.deny(' ')
               ],
               validator: (val) {
-                if (val!.isEmpty) return 'Please Enter Password';
-                if (val != passwordController.text) return 'Password not match';
-                if (val.trim().isEmpty) return 'Please remove spaces';
-                if (val.trim().length < 8) {
-                  return 'Please enter Minimum 8 char Password';
+                if (val!.isEmpty) return 'Please Enter Confirm Password';
+                if (val != passwordController.text) {
+                  return 'Password and Confirm Password must match.';
                 }
-                if (val.trim().length > 20) {
-                  return 'Can not enter maximum 20 char Password';
-                }
+
                 return null;
               },
               onChanged: (val) {
                 setState(() {
                   if (emailController.text.isNotEmpty &&
                       passwordController.text.isNotEmpty &&
-                      confirmpasswordController.text.isNotEmpty) {
+                      confirmPasswordController.text.isNotEmpty) {
                     isalldone = true;
                   } else {
                     isalldone = false;
@@ -175,6 +237,10 @@ class _SignUpPageState extends State<SignUpPage> {
                 });
               },
               decoration: InputDecoration(
+                errorMaxLines: 2,
+                errorStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromRGBO(98, 8, 15, 1)),
                 suffixIcon: IconButton(
                     icon: Icon(
                       // Based on passwordVisible state choose the icon
@@ -200,7 +266,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 prefixIcon:
                     const Icon(Icons.lock, color: Colors.grey, size: 20),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                 hintText: "Re-enter Password",
                 hintStyle: TextStyle(
                     color: const Color(0xFFb6b3c6).withOpacity(0.8),
@@ -236,7 +302,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   )
                 ],
               )),
-          const SizedBox(height: 40),
+          const SizedBox(height: 29),
+          // Spacer(),
           signUpButton()
         ],
       ),
@@ -259,23 +326,18 @@ class _SignUpPageState extends State<SignUpPage> {
             borderRadius: BorderRadius.all(Radius.circular(30)),
           ),
         ),
-        onPressed: () {
-          if (_formkey.currentState!.validate()) {
-            email = emailController.text;
-            password = passwordController.text.trim();
-            // SharedPreferences _prefs = await SharedPreferences.getInstance();
-            // _prefs.setString(password, passwordController.text);
-            // _prefs.setString(email, emailController.text);
-            sendOTP();
+        onPressed: _isLoading
+            ? null
+            : () {
+                if (_formkey.currentState!.validate()) {
+                  email = emailController.text;
+                  password = passwordController.text.trim();
 
-            EasyLoading.show(status: 'Please Wait ...');
+                  sendOTP();
 
-            //CircularProgressIndicator();
-            //  EasyLoading.show(status: 'Please Wait ...');
-
-            //print("Routing to your account");
-          }
-        },
+                  EasyLoading.show(status: 'Please Wait ...');
+                }
+              },
         child: const Text(
           "Sign Up",
           style: TextStyle(

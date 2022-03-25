@@ -250,6 +250,8 @@ class ReviewCommentState extends State<ReviewComment>
                                     cursorColor: Colors.grey,
                                     onChanged: (val) {},
                                     decoration: InputDecoration(
+                                      errorStyle: const TextStyle(
+                                          color: Color.fromRGBO(98, 8, 15, 1)),
                                       filled: true,
                                       fillColor: const Color.fromRGBO(
                                           237, 232, 232, 1),

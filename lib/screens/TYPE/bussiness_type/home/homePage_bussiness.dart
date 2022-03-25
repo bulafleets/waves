@@ -86,8 +86,7 @@ class _HomeBussinessState extends State<HomeBussiness> {
                           itemCount: snapshot.data!.waves.length,
                           itemBuilder: (context, index) {
                             var data = snapshot.data!.waves[index];
-                            var date =
-                                DateFormat('yyyy-MM-dd').format(data.date);
+                            var date = DateFormat('MM/dd/yy').format(data.date);
                             // DateTime tempDate = DateFormat("yyyy-MM-dd hh:mm:ss")
                             //     .parse(data.createdAt);
                             var time = DateTime.now()
@@ -167,16 +166,12 @@ class _HomeBussinessState extends State<HomeBussiness> {
                                                         .size
                                                         .width /
                                                     2,
-                                                child: Expanded(
-                                                  child: Text(
-                                                    data.waveName,
-                                                    style:
-                                                        GoogleFonts.quicksand(
-                                                            fontSize: 17,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w500),
-                                                  ),
+                                                child: Text(
+                                                  data.waveName,
+                                                  style: GoogleFonts.quicksand(
+                                                      fontSize: 17,
+                                                      fontWeight:
+                                                          FontWeight.w500),
                                                 ),
                                               ),
                                               // const SizedBox(width: 10),

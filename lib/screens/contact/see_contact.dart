@@ -6,6 +6,7 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:waves/contants/common_params.dart';
 import 'package:http/http.dart' as http;
+import 'package:waves/models/map_listing_model.dart';
 
 class ContactsPage extends StatefulWidget {
   const ContactsPage({Key? key}) : super(key: key);
@@ -105,52 +106,73 @@ class _ContactsPageState extends State<ContactsPage> {
                     // print(contactNumbers.contains(contact.phones!.first.value));
                     // var vl = contact.phones!.first.value!.trim();
                     if (index == 0) {
-                      return Container(
-                        width: 300,
-                        height: 50,
-                        margin: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color.fromRGBO(78, 114, 136, .15),
-                              )
-                            ]),
-                        child: TextField(
-                          onChanged: onSearchTextChanged,
-                          style: const TextStyle(color: Colors.black),
-                          keyboardType: TextInputType.text,
-                          cursorColor: Colors.grey,
-                          decoration: InputDecoration(
-                            suffixIcon: _searchController.text.isNotEmpty
-                                ? InkWell(
-                                    onTap: () {
-                                      _searchController.clear();
-                                      onSearchTextChanged('');
-                                    },
-                                    child: const Icon(Icons.close))
-                                : null,
-                            filled: true,
-                            fillColor: Colors.white,
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.white),
+                      return Column(children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width - 50,
+                          height: 50,
+                          margin: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color.fromRGBO(78, 114, 136, .15),
+                                )
+                              ]),
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: onSearchTextChanged,
+                            style: const TextStyle(color: Colors.black),
+                            keyboardType: TextInputType.text,
+                            cursorColor: Colors.grey,
+                            decoration: InputDecoration(
+                              errorStyle: const TextStyle(
+                                  color: Color.fromRGBO(98, 8, 15, 1)),
+                              suffixIcon: _searchController.text.isEmpty
+                                  ? null
+                                  : InkWell(
+                                      onTap: () {
+                                        _searchController.text = '';
+                                        _searchResult.clear();
+                                        FocusScope.of(context).unfocus();
+                                      },
+                                      child: const Icon(Icons.close,
+                                          color: Colors.black)),
+                              filled: true,
+                              fillColor: Colors.white,
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide:
+                                    const BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide:
+                                    const BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              prefixIcon: const Icon(Icons.search,
+                                  color: Color(0xffb7c2d5)),
+                              hintText: "Search",
+                              contentPadding: const EdgeInsets.only(top: 15),
+                              hintStyle: TextStyle(
+                                  color:
+                                      const Color(0xFFb6b3c6).withOpacity(0.8),
+                                  fontFamily: 'RobotoRegular'),
+                              border: const OutlineInputBorder(),
                             ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            prefixIcon: const Icon(Icons.search,
-                                color: Color(0xffb7c2d5)),
-                            hintText: "Search",
-                            contentPadding: const EdgeInsets.only(top: 15),
-                            hintStyle: TextStyle(
-                                color: const Color(0xFFb6b3c6).withOpacity(0.8),
-                                fontFamily: 'RobotoRegular'),
-                            border: const OutlineInputBorder(),
                           ),
                         ),
-                      );
+                        if (_searchResult.isEmpty &&
+                            _searchController.text.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Center(
+                                child: Text('No Result Found!',
+                                    style: GoogleFonts.quicksand(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black))),
+                          ),
+                      ]);
                     }
 
                     return ListTile(
@@ -276,52 +298,73 @@ class _ContactsPageState extends State<ContactsPage> {
                     // print(contactNumbers.contains(contact.phones!.first.value));
                     // var vl = contact.phones!.first.value!.trim();
                     if (index == 0) {
-                      return Container(
-                        width: 300,
-                        height: 50,
-                        margin: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color.fromRGBO(78, 114, 136, .15),
-                              )
-                            ]),
-                        child: TextField(
-                          onChanged: onSearchTextChanged,
-                          style: const TextStyle(color: Colors.black),
-                          keyboardType: TextInputType.text,
-                          cursorColor: Colors.grey,
-                          decoration: InputDecoration(
-                            suffixIcon: _searchController.text.isNotEmpty
-                                ? InkWell(
-                                    onTap: () {
-                                      _searchController.clear();
-                                      onSearchTextChanged('');
-                                    },
-                                    child: const Icon(Icons.close))
-                                : null,
-                            filled: true,
-                            fillColor: Colors.white,
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.white),
+                      return Column(children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width - 50,
+                          height: 50,
+                          margin: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color.fromRGBO(78, 114, 136, .15),
+                                )
+                              ]),
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: onSearchTextChanged,
+                            style: const TextStyle(color: Colors.black),
+                            keyboardType: TextInputType.text,
+                            cursorColor: Colors.grey,
+                            decoration: InputDecoration(
+                              errorStyle: const TextStyle(
+                                  color: Color.fromRGBO(98, 8, 15, 1)),
+                              suffixIcon: _searchController.text.isEmpty
+                                  ? null
+                                  : InkWell(
+                                      onTap: () {
+                                        _searchController.text = '';
+                                        _searchResult.clear();
+                                        FocusScope.of(context).unfocus();
+                                      },
+                                      child: const Icon(Icons.close,
+                                          color: Colors.black)),
+                              filled: true,
+                              fillColor: Colors.white,
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide:
+                                    const BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide:
+                                    const BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              prefixIcon: const Icon(Icons.search,
+                                  color: Color(0xffb7c2d5)),
+                              hintText: "Search",
+                              contentPadding: const EdgeInsets.only(top: 15),
+                              hintStyle: TextStyle(
+                                  color:
+                                      const Color(0xFFb6b3c6).withOpacity(0.8),
+                                  fontFamily: 'RobotoRegular'),
+                              border: const OutlineInputBorder(),
                             ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            prefixIcon: const Icon(Icons.search,
-                                color: Color(0xffb7c2d5)),
-                            hintText: "Search",
-                            contentPadding: const EdgeInsets.only(top: 15),
-                            hintStyle: TextStyle(
-                                color: const Color(0xFFb6b3c6).withOpacity(0.8),
-                                fontFamily: 'RobotoRegular'),
-                            border: const OutlineInputBorder(),
                           ),
                         ),
-                      );
+                        if (_searchResult.isEmpty &&
+                            _searchController.text.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Center(
+                                child: Text('No Result Found!',
+                                    style: GoogleFonts.quicksand(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black))),
+                          ),
+                      ]);
                     }
 
                     return ListTile(

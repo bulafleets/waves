@@ -15,7 +15,7 @@ class UserType extends StatefulWidget {
 }
 
 class _UserTypeState extends State<UserType> {
-  bool isselect = false;
+  bool isSelect = false;
   bool isregularclicked = false;
   bool isbussinesstclicked = false;
 
@@ -79,7 +79,7 @@ class _UserTypeState extends State<UserType> {
                             onPressed: () => {
                                   setState(() {
                                     AccountType = "REGULAR";
-                                    isselect = true;
+                                    isSelect = true;
                                     isregularclicked = true;
                                     isbussinesstclicked = false;
                                   })
@@ -125,7 +125,7 @@ class _UserTypeState extends State<UserType> {
                             onPressed: () => {
                                   setState(() {
                                     AccountType = "BUSINESS";
-                                    isselect = true;
+                                    isSelect = true;
                                     isregularclicked = false;
                                     isbussinesstclicked = true;
                                   })
@@ -180,7 +180,7 @@ class _UserTypeState extends State<UserType> {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           onPrimary: Colors.white,
-          primary: isselect
+          primary: isSelect
               ? const Color.fromRGBO(0, 69, 255, 1)
               : const Color.fromRGBO(55, 93, 159, 1),
           minimumSize: const Size(88, 36),
@@ -189,34 +189,22 @@ class _UserTypeState extends State<UserType> {
             borderRadius: BorderRadius.all(Radius.circular(30)),
           ),
         ),
-        onPressed: () {
-          if (isselect == false) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text("Please Select Type"),
-            ));
-          } else {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => LoginPage()));
-          }
-          // Navigator.of(context).push(
-          //     MaterialPageRoute(builder: (context) => const AddFriends()));
-          // if (_formkey.currentState.validate()) {
-          // showDialog(
-          //   context: context,
-          //   builder: (_) ,
-          // );
-          //  EasyLoading.show(status: 'Please Wait ...');
-          //sendRESENT();
-          //CircularProgressIndicator();
-          //  EasyLoading.show(status: 'Please Wait ...');
-
-          //print("Routing to your account");
-          // }
-        },
+        onPressed: !isSelect
+            ? null
+            : () {
+                if (isSelect == false) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text("Please Select Type"),
+                  ));
+                } else {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LoginPage()));
+                }
+              },
         child: Text(
           "Next",
           style: TextStyle(
-              color: isselect
+              color: isSelect
                   ? Colors.white
                   : const Color.fromRGBO(206, 188, 188, 1),
               fontSize: 18,

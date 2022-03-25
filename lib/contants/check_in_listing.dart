@@ -159,7 +159,7 @@ class CheckInListingState extends State<CheckInListing>
   }
 
   Future<CheckInModel> checkInListing() async {
-    var data;
+    CheckInModel data;
     http.Response response = await http
         .post(Uri.parse(CheckInListingApi), body: {'wave_id': widget.waveId});
     final jsonString = response.body;

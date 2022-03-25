@@ -51,7 +51,6 @@ class ReplyCommentWidgetState extends State<ReplyCommentWidget>
   @override
   void dispose() {
     EasyLoading.dismiss();
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -107,6 +106,8 @@ class ReplyCommentWidgetState extends State<ReplyCommentWidget>
                               cursorColor: Colors.grey,
                               onChanged: (val) {},
                               decoration: InputDecoration(
+                                errorStyle: const TextStyle(
+                                    color: Color.fromRGBO(98, 8, 15, 1)),
                                 filled: true,
                                 fillColor:
                                     const Color.fromRGBO(237, 232, 232, 1),
@@ -187,15 +188,9 @@ class ReplyCommentWidgetState extends State<ReplyCommentWidget>
       "avatar": profileimg,
       "username": name
     });
-    print(user_id +
-        widget.waveId +
-        _replyController.text +
-        widget.commentId +
-        profileimg +
-        name);
+
     EasyLoading.dismiss();
     String data = response.body;
-    print(data);
     String status = jsonDecode(data)['status'].toString();
 
     if (status == "200") {

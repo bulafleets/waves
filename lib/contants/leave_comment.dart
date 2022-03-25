@@ -7,7 +7,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:waves/contants/common_params.dart';
 import 'package:http/http.dart' as http;
-import 'package:waves/models/singlewave_model.dart';
 
 class LeaveComment extends StatefulWidget {
   final String waveId;
@@ -30,8 +29,8 @@ class LeaveCommentState extends State<LeaveComment>
   void initState() {
     super.initState();
 
-    controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 450));
+    controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 450));
     scaleAnimation =
         CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn);
 
@@ -45,116 +44,105 @@ class LeaveCommentState extends State<LeaveComment>
   @override
   void dispose() {
     EasyLoading.dismiss();
-    // TODO: implement dispose
     super.dispose();
   }
 
-  final List<String> _list = [];
-  final List<CommentReply> _d = [];
-
   @override
   Widget build(BuildContext context) {
-    return
-        // Scaffold(
-        //   backgroundColor: Color.fromRGBO(250, 255, 252, 0.9),
-        //   body:
-        BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-            child: Center(
+    return BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Center(
+          child: Material(
+            color: Colors.transparent,
+            child: ScaleTransition(
+              scale: scaleAnimation,
               child: Container(
-                child: Material(
-                  color: Colors.transparent,
-                  child: ScaleTransition(
-                    scale: scaleAnimation,
-                    child: Container(
-                        margin: EdgeInsets.all(10.0),
-                        padding: EdgeInsets.all(10.0),
-                        height: 300.0,
-                        width: 300,
-                        decoration: ShapeDecoration(
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0),
-                                side: BorderSide(
-                                    color: Color.fromRGBO(151, 151, 151, 1)))),
-                        child: Form(
-                          key: _formkey,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    const Text(
-                                      "Leave a Comment",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          color: Color.fromRGBO(38, 69, 255, 1),
-                                          fontSize: 20.0,
-                                          fontFamily: 'RobotoBold'),
-                                    ),
-                                    SizedBox(width: 5),
-                                    IconButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        icon: const FaIcon(
-                                            FontAwesomeIcons.times,
-                                            size: 16)),
-                                  ]),
-                              SizedBox(height: 8),
-                              Expanded(
-                                  child: TextFormField(
-                                      maxLines: 7,
-                                      style:
-                                          const TextStyle(color: Colors.black),
-                                      validator: (val) {
-                                        if (val!.isEmpty)
-                                          return 'Please Enter comment';
+                  margin: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(10.0),
+                  height: 300.0,
+                  width: 300,
+                  decoration: ShapeDecoration(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                          side: const BorderSide(
+                              color: Color.fromRGBO(151, 151, 151, 1)))),
+                  child: Form(
+                    key: _formkey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              const Text(
+                                "Leave a Comment",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Color.fromRGBO(38, 69, 255, 1),
+                                    fontSize: 20.0,
+                                    fontFamily: 'RobotoBold'),
+                              ),
+                              const SizedBox(width: 5),
+                              IconButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  icon: const FaIcon(FontAwesomeIcons.times,
+                                      size: 16)),
+                            ]),
+                        const SizedBox(height: 8),
+                        Expanded(
+                            child: TextFormField(
+                                maxLines: 7,
+                                style: const TextStyle(color: Colors.black),
+                                validator: (val) {
+                                  if (val!.isEmpty) {
+                                    return 'Please Enter comment';
+                                  }
 
-                                        return null;
-                                      },
-                                      // validator:RequiredValidator(errorText: "Please Enter Your Mobile Number."),
-                                      controller: _commentController,
-                                      keyboardType: TextInputType.text,
-                                      cursorColor: Colors.grey,
-                                      onChanged: (val) {},
-                                      decoration: InputDecoration(
-                                        filled: true,
-                                        fillColor:
-                                            Color.fromRGBO(237, 232, 232, 1),
-                                        enabledBorder: UnderlineInputBorder(
-                                          borderSide: const BorderSide(
-                                              color: Colors.white),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        focusedBorder: UnderlineInputBorder(
-                                          borderSide: const BorderSide(
-                                              color: Colors.white),
-                                          borderRadius:
-                                              BorderRadius.circular(2),
-                                        ),
-                                        contentPadding: EdgeInsets.symmetric(
-                                            vertical: 20, horizontal: 20),
-                                        hintText: "Your comment..",
-                                        hintStyle: GoogleFonts.quicksand(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.grey,
-                                        ),
-                                        border: const OutlineInputBorder(),
-                                      ))),
-                              submitButton()
-                            ],
-                          ),
-                        )),
-                  ),
-                ),
-              ),
-              // ),
-            ));
+                                  return null;
+                                },
+                                // validator:RequiredValidator(errorText: "Please Enter Your Mobile Number."),
+                                controller: _commentController,
+                                keyboardType: TextInputType.text,
+                                cursorColor: Colors.grey,
+                                onChanged: (val) {},
+                                decoration: InputDecoration(
+                                  errorStyle: const TextStyle(
+                                      color: Color.fromRGBO(98, 8, 15, 1)),
+                                  filled: true,
+                                  fillColor:
+                                      const Color.fromRGBO(237, 232, 232, 1),
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.white),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.white),
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 20, horizontal: 20),
+                                  hintText: "Your comment..",
+                                  hintStyle: GoogleFonts.quicksand(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey,
+                                  ),
+                                  border: const OutlineInputBorder(),
+                                ))),
+                        submitButton()
+                      ],
+                    ),
+                  )),
+            ),
+          ),
+          // ),
+        ));
   }
 
   Widget submitButton() {

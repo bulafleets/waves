@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:waves/contants/common_params.dart';
-import 'package:waves/contants/common_widgets.dart';
 import 'package:waves/contants/leave_comment.dart';
 import 'package:waves/contants/reply_comment.dart';
 import 'package:waves/contants/reply_widget.dart';
@@ -25,7 +24,6 @@ class CommentScreen extends StatefulWidget {
 }
 
 class _CommentScreenState extends State<CommentScreen> {
-  bool _isReply = false;
   var _likeData = [];
   var _likeCount = [];
   late List<bool> _reply;
@@ -47,7 +45,6 @@ class _CommentScreenState extends State<CommentScreen> {
   final List<String> _list = [];
   void _replyData(String text, String waveId, int index, String commentId) {
     // _reply = List.filled(_commentData.length + 1, false);
-    print(index);
     setState(() {
       _commentData[index].commentReply.add(CommentReply(
           userId: user_id,
@@ -306,9 +303,11 @@ class _CommentScreenState extends State<CommentScreen> {
                                       _reply[index] = !_reply[index];
                                     });
                                   },
-                                  label: const FaIcon(
-                                      FontAwesomeIcons.chevronDown,
-                                      color: Color.fromRGBO(0, 0, 0, 1),
+                                  label: FaIcon(
+                                      _reply[index]
+                                          ? FontAwesomeIcons.chevronUp
+                                          : FontAwesomeIcons.chevronDown,
+                                      color: const Color.fromRGBO(0, 0, 0, 1),
                                       size: 13),
                                   icon: Text(
                                       'view ${_commentData[index].commentReply.length} Replies',
@@ -344,9 +343,9 @@ class _CommentScreenState extends State<CommentScreen> {
       },
     );
 
-    String data = response.body;
-    print(data);
-    String status = jsonDecode(data)['status'].toString();
+    // String data = response.body;
+    // print(data);
+    // String status = jsonDecode(data)['status'].toString();
 
     // if (status == "200") {
     //   String message = jsonDecode(data)['message'];

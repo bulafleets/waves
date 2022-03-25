@@ -41,6 +41,7 @@ class _CreateProfileState extends State<CreateProfile> {
   late String birthDateInString;
   DateTime birthDate = DateTime.now();
   bool isDateSelected = false;
+  bool isLoading = true;
   var log;
   var lat;
   // ignore: prefer_typing_uninitialized_variables
@@ -49,7 +50,7 @@ class _CreateProfileState extends State<CreateProfile> {
   // var longitude;
 
   Future<Null> _selectDate(BuildContext context) async {
-    DateFormat formatter = DateFormat('dd/MM/yyyy');
+    DateFormat formatter = DateFormat('MM/dd/yy');
 
     final DateTime? picked = await showDatePicker(
         context: context,
@@ -72,7 +73,7 @@ class _CreateProfileState extends State<CreateProfile> {
         } else {
           ageController.clear();
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('You are under age'),
+            content: Text('Your age should be 18 or above years'),
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.red,
           ));
@@ -82,11 +83,9 @@ class _CreateProfileState extends State<CreateProfile> {
   }
 
   _addrss(String add, String longitute, String latitude) {
-    setState(() {
-      log = longitute;
-      lat = latitude;
-      addressController.text = add;
-    });
+    log = longitute;
+    lat = latitude;
+    addressController.text = add;
   }
 
   @override
@@ -106,7 +105,8 @@ class _CreateProfileState extends State<CreateProfile> {
 
   @override
   Widget build(BuildContext context) {
-    print(AccountType);
+    print(isBiometric);
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -204,11 +204,16 @@ class _CreateProfileState extends State<CreateProfile> {
                   // validator: emailValidator,
                   controller: nameController,
                   keyboardType: TextInputType.name,
+                  textCapitalization: TextCapitalization.words,
                   cursorColor: Colors.grey,
+
                   inputFormatters: [
                     LengthLimitingTextInputFormatter(25),
+                    NoLeadingSpaceFormatter(),
                   ],
                   decoration: InputDecoration(
+                    errorStyle:
+                        const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                     filled: true,
                     fillColor: Colors.white,
                     enabledBorder: UnderlineInputBorder(
@@ -246,6 +251,8 @@ class _CreateProfileState extends State<CreateProfile> {
                   keyboardType: TextInputType.number,
                   cursorColor: Colors.grey,
                   decoration: InputDecoration(
+                    errorStyle:
+                        const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                     filled: true,
                     fillColor: Colors.white,
                     enabledBorder: UnderlineInputBorder(
@@ -283,6 +290,8 @@ class _CreateProfileState extends State<CreateProfile> {
                   keyboardType: TextInputType.none,
                   cursorColor: Colors.grey,
                   decoration: InputDecoration(
+                    errorStyle:
+                        const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                     suffixIcon: GestureDetector(
                         onTap: () {
                           _selectDate(context);
@@ -326,6 +335,8 @@ class _CreateProfileState extends State<CreateProfile> {
                   keyboardType: TextInputType.none,
                   cursorColor: Colors.grey,
                   decoration: InputDecoration(
+                    errorStyle:
+                        const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                     filled: true,
                     fillColor: Colors.white,
                     enabledBorder: UnderlineInputBorder(
@@ -365,6 +376,8 @@ class _CreateProfileState extends State<CreateProfile> {
                   keyboardType: TextInputType.none,
                   cursorColor: Colors.grey,
                   decoration: InputDecoration(
+                    errorStyle:
+                        const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                     suffixIcon: GestureDetector(
                         onTap: () {
                           determinePosition(context);
@@ -396,11 +409,6 @@ class _CreateProfileState extends State<CreateProfile> {
                 ),
                 const SizedBox(height: 15),
                 TextFormField(
-                  validator: (val) {
-                    if (val!.isEmpty) return 'Please Enter Bio';
-
-                    return null;
-                  },
                   maxLines: 8,
                   style: const TextStyle(color: Colors.black),
                   // validator: emailValidator,
@@ -411,6 +419,8 @@ class _CreateProfileState extends State<CreateProfile> {
                   //   LengthLimitingTextInputFormatter(25),
                   // ],
                   decoration: InputDecoration(
+                    errorStyle:
+                        const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                     filled: true,
                     fillColor: Colors.white,
                     enabledBorder: UnderlineInputBorder(
@@ -423,7 +433,7 @@ class _CreateProfileState extends State<CreateProfile> {
                     ),
                     contentPadding: const EdgeInsets.symmetric(
                         vertical: 20, horizontal: 20),
-                    hintText: 'Bio',
+                    hintText: 'Bio(optional)',
                     hintStyle: TextStyle(
                         color: const Color(0xFFb6b3c6).withOpacity(1),
                         fontFamily: 'RobotoRegular'),
@@ -467,9 +477,45 @@ class _CreateProfileState extends State<CreateProfile> {
               behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.red,
             ));
+          } else if (nameController.text.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Please enter your name'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ));
+          } else if (nameController.text.length < 3) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Please enter minimum 3 characters'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ));
+          } else if (mobileController.text.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Please enter your mobile number'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ));
+          } else if (mobileController.text.length < 10) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Please enter your valid mobile number'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ));
+          } else if (dobController.text.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Please enter your date of birth'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ));
           } else if (isDateSelected && differenceDOB < 17) {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('You are under age'),
+              content: Text('Your age should be 18 or above years'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ));
+          } else if (addressController.text.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Please enter your address'),
               backgroundColor: Colors.red,
               behavior: SnackBarBehavior.floating,
             ));
@@ -553,9 +599,11 @@ class _CreateProfileState extends State<CreateProfile> {
 
   // ignore: non_constant_identifier_names
   Future<void> RegisterUser() async {
+    setState(() {
+      isLoading = true;
+    });
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     var fcmtoken = _prefs.getString(Prefs.firebasetoken);
-    print(isBiometric);
     if (imageFile != null) {
       var request = http.MultipartRequest('POST', Uri.parse(URL_Signup));
       request.files

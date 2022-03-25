@@ -31,7 +31,7 @@ class _CreateWaveScreenBussinessState extends State<CreateWaveScreenBussiness> {
   TextEditingController additionalDetailController = TextEditingController();
   bool adultEvent = false;
   bool sendToFollowers = false;
-  bool discount = true;
+  bool discount = false;
   bool discountAllusers = false;
   double _sliderValue = 30;
   var log;
@@ -133,7 +133,12 @@ class _CreateWaveScreenBussinessState extends State<CreateWaveScreenBussiness> {
                   controller: waveNameController,
                   keyboardType: TextInputType.text,
                   cursorColor: Colors.grey,
+                  inputFormatters: [
+                    NoLeadingSpaceFormatter(),
+                  ],
                   decoration: InputDecoration(
+                      errorStyle:
+                          const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                       filled: true,
                       fillColor: const Color.fromRGBO(234, 234, 234, 1),
                       enabledBorder: UnderlineInputBorder(
@@ -167,6 +172,8 @@ class _CreateWaveScreenBussinessState extends State<CreateWaveScreenBussiness> {
                   keyboardType: TextInputType.none,
                   cursorColor: Colors.grey,
                   decoration: InputDecoration(
+                      errorStyle:
+                          const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                       suffixIcon: GestureDetector(
                           onTap: () {
                             determinePosition(context);
@@ -210,7 +217,8 @@ class _CreateWaveScreenBussinessState extends State<CreateWaveScreenBussiness> {
                 //     controller: eventTypeController,
                 //     keyboardType: TextInputType.none,
                 //     cursorColor: Colors.grey,
-                //     decoration: InputDecoration(
+                //     decoration: InputDecoration( errorStyle:
+                // const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                 //         suffixIcon: GestureDetector(
                 //             onTap: () {},
                 //             child: const Padding(
@@ -248,6 +256,8 @@ class _CreateWaveScreenBussinessState extends State<CreateWaveScreenBussiness> {
                     maxLines: 6,
                     cursorColor: Colors.grey,
                     decoration: InputDecoration(
+                      errorStyle:
+                          const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                       filled: true,
                       fillColor: const Color.fromRGBO(234, 234, 234, 1),
                       enabledBorder: UnderlineInputBorder(
@@ -280,6 +290,8 @@ class _CreateWaveScreenBussinessState extends State<CreateWaveScreenBussiness> {
                     maxLines: 4,
                     cursorColor: Colors.grey,
                     decoration: InputDecoration(
+                      errorStyle:
+                          const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                       filled: true,
                       fillColor: const Color.fromRGBO(234, 234, 234, 1),
                       enabledBorder: UnderlineInputBorder(
@@ -484,6 +496,8 @@ class _CreateWaveScreenBussinessState extends State<CreateWaveScreenBussiness> {
                     maxLines: 6,
                     cursorColor: Colors.grey,
                     decoration: InputDecoration(
+                      errorStyle:
+                          const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                       filled: true,
                       fillColor: const Color.fromRGBO(234, 234, 234, 1),
                       enabledBorder: UnderlineInputBorder(
@@ -578,36 +592,42 @@ class _CreateWaveScreenBussinessState extends State<CreateWaveScreenBussiness> {
           // showBottomSheet(
           //     context: context, builder: (context) => SelectDateTime());
           // _selectDate(context);
-          if (_formkey.currentState!.validate()) {
-            if (eventValue != null) {
-              if (_load) {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => CalenderScreenBussiness(
-                          address: addressController.text,
-                          log: log,
-                          lat: lat,
-                          eventId: eventValue,
-                          eventDetails: eventDetailsController.text,
-                          waveName: waveNameController.text,
-                          isDiscountFollower: discount,
-                          isAdult: adultEvent,
-                          isDiscountAll: discountAllusers,
-                          disDetails: discountDetailController.text,
-                          radius: _sliderValue.toString(),
-                          additionalDetails: additionalDetailController.text,
-                          isSendFollower: sendToFollowers,
-                          image: imageFile.path,
-                        )));
-              } else {
-                String message = 'please add event image ';
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(message), backgroundColor: Colors.red));
-              }
-            }
-          } else {
+          if (!_load) {
+            String message = 'please add event image ';
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message), backgroundColor: Colors.red));
+          } else if (waveNameController.text.isEmpty) {
+            String message = 'please enter wave name ';
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message), backgroundColor: Colors.red));
+          } else if (addressController.text.isEmpty) {
+            String message = 'Pick your location from map';
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message), backgroundColor: Colors.red));
+          } else if (eventValue == null) {
             String message = 'please select event Type';
             ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(message), backgroundColor: Colors.red));
+          } else {
+            if (_formkey.currentState!.validate()) {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => CalenderScreenBussiness(
+                        address: addressController.text,
+                        log: log,
+                        lat: lat,
+                        eventId: eventValue,
+                        eventDetails: eventDetailsController.text,
+                        waveName: waveNameController.text,
+                        isDiscountFollower: discount,
+                        isAdult: adultEvent,
+                        isDiscountAll: discountAllusers,
+                        disDetails: discountDetailController.text,
+                        radius: _sliderValue.toString(),
+                        additionalDetails: additionalDetailController.text,
+                        isSendFollower: sendToFollowers,
+                        image: imageFile.path,
+                      )));
+            }
           }
         },
         child: const Text(

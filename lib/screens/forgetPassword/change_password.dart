@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:waves/contants/common_params.dart';
+import 'package:waves/contants/common_widgets.dart';
 import 'package:waves/screens/auth/login_page.dart';
 import 'package:http/http.dart' as http;
 
@@ -21,6 +23,7 @@ class _ChangePasswordState extends State<ChangePassword> {
   bool isObscureTextC = true;
   GlobalKey<FormState> _formkey = GlobalKey();
   bool isalldone = false;
+  bool _isLoading = false;
   @override
   void dispose() {
     EasyLoading.dismiss();
@@ -53,10 +56,15 @@ class _ChangePasswordState extends State<ChangePassword> {
               ),
               const SizedBox(height: 100),
               TextFormField(
+                  inputFormatters: <TextInputFormatter>[
+                    LengthLimitingTextInputFormatter(20),
+                    FilteringTextInputFormatter.deny(' ')
+                  ],
                   validator: (val) {
-                    if (val!.isEmpty) return 'Please Enter Password';
-                    if (val.length < 8) {
-                      return 'Please enter Minimum 8 char Password';
+                    if (val!.isEmpty) {
+                      return 'Please Enter Password';
+                    } else if (!validateStructure(val)) {
+                      return 'should be a combination of upper case,lower case and special character with minimum 8 characters';
                     }
                     return null;
                   },
@@ -66,6 +74,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                   obscureText: isObscureText,
                   cursorColor: Colors.grey,
                   decoration: InputDecoration(
+                    errorStyle:
+                        const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
+                    errorMaxLines: 2,
                     filled: true,
                     fillColor: Colors.white,
                     enabledBorder: UnderlineInputBorder(
@@ -92,25 +103,28 @@ class _ChangePasswordState extends State<ChangePassword> {
                     prefixIcon:
                         const Icon(Icons.lock, color: Colors.grey, size: 20),
                     hintText: "New Password",
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 20),
                     hintStyle: TextStyle(
                         color: const Color(0xFFb6b3c6).withOpacity(0.8),
                         fontFamily: 'RobotoRegular'),
                     border: const OutlineInputBorder(),
                   )),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               TextFormField(
+                inputFormatters: <TextInputFormatter>[
+                  LengthLimitingTextInputFormatter(20),
+                  FilteringTextInputFormatter.deny(' ')
+                ],
                 validator: (val) {
                   if (val!.isEmpty) return 'Please Enter Password';
-                  if (val != passwordController.text)
-                    return 'Password not match';
-                  if (val.length < 8) {
-                    return 'Please enter Minimum 8 char Password';
+                  if (val != passwordController.text) {
+                    return 'Password and Confirm Password must match.';
                   }
+
                   return null;
                 },
-                style: TextStyle(color: Colors.black),
+                style: const TextStyle(color: Colors.black),
                 controller: confirmcontroll,
                 keyboardType: TextInputType.text,
                 obscureText: isObscureTextC,
@@ -126,6 +140,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                   });
                 },
                 decoration: InputDecoration(
+                  errorStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(98, 8, 15, 1)),
                   suffixIcon: IconButton(
                     icon: Icon(
                       // Based on passwordVisible state choose the icon
@@ -142,20 +159,21 @@ class _ChangePasswordState extends State<ChangePassword> {
                   filled: true,
                   fillColor: Colors.white,
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
+                    borderSide: const BorderSide(color: Colors.white),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
+                    borderSide: const BorderSide(color: Colors.white),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  prefixIcon: Icon(Icons.lock, color: Colors.grey, size: 20),
+                  prefixIcon:
+                      const Icon(Icons.lock, color: Colors.grey, size: 20),
                   hintText: "Confirm New Password",
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                  hintStyle:
-                      TextStyle(color: Color(0xFFb6b3c6).withOpacity(0.8)),
-                  border: OutlineInputBorder(),
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  hintStyle: TextStyle(
+                      color: const Color(0xFFb6b3c6).withOpacity(0.8)),
+                  border: const OutlineInputBorder(),
                 ),
               )
             ]),
@@ -181,23 +199,14 @@ class _ChangePasswordState extends State<ChangePassword> {
             borderRadius: BorderRadius.all(Radius.circular(30)),
           ),
         ),
-        onPressed: () {
-          if (_formkey.currentState!.validate()) {
-            EasyLoading.show(status: 'Please Wait ...');
-            changePassword();
-          }
-          // showDialog(
-          //   context: context,
-          //   builder: (_) ,
-          // );
-          //  EasyLoading.show(status: 'Please Wait ...');
-          //sendRESENT();
-          //CircularProgressIndicator();
-          //  EasyLoading.show(status: 'Please Wait ...');
-
-          //print("Routing to your account");
-          // }
-        },
+        onPressed: _isLoading
+            ? null
+            : () {
+                if (_formkey.currentState!.validate()) {
+                  EasyLoading.show(status: 'Please Wait ...');
+                  changePassword();
+                }
+              },
         child: const Text(
           "Confirm",
           style: TextStyle(
@@ -208,6 +217,9 @@ class _ChangePasswordState extends State<ChangePassword> {
   }
 
   Future<void> changePassword() async {
+    setState(() {
+      _isLoading = true;
+    });
     final response = await http.post(
       Uri.parse(Reset_password),
       body: {'email': email, 'password': passwordController.text},
@@ -222,8 +234,11 @@ class _ChangePasswordState extends State<ChangePassword> {
     if (status == "200") {
       email = '';
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
           (Route<dynamic> route) => false);
+      setState(() {
+        _isLoading = false;
+      });
       String message = jsonDecode(data)['message'];
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(message),
@@ -235,6 +250,9 @@ class _ChangePasswordState extends State<ChangePassword> {
       // Navigator.of(context).pushNamed(OTP_SCREEN);
     }
     if (status == "400") {
+      setState(() {
+        _isLoading = false;
+      });
       String message = jsonDecode(data)['message'];
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(message),

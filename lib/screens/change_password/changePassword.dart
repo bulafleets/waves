@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:waves/contants/common_params.dart';
+import 'package:waves/contants/common_widgets.dart';
 import 'package:waves/screens/auth/login_page.dart';
 import 'package:http/http.dart' as http;
 
@@ -23,6 +25,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool isObscureTextC = true;
   GlobalKey<FormState> _formkey = GlobalKey();
   bool isalldone = false;
+  bool _isLoading = false;
   @override
   void dispose() {
     EasyLoading.dismiss();
@@ -56,7 +59,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               const SizedBox(height: 100),
               TextFormField(
                   validator: (val) {
-                    if (val!.isEmpty) return 'Please Enter Password';
+                    if (val!.isEmpty) return 'Please Enter Current Password';
                     if (val.length < 8) {
                       return 'Please enter Minimum 8 char Password';
                     }
@@ -68,6 +71,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   obscureText: currentObscure,
                   cursorColor: Colors.grey,
                   decoration: InputDecoration(
+                    errorStyle:
+                        const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                     filled: true,
                     fillColor: Colors.white,
                     enabledBorder: UnderlineInputBorder(
@@ -105,10 +110,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   )),
               const SizedBox(height: 15),
               TextFormField(
+                  inputFormatters: <TextInputFormatter>[
+                    LengthLimitingTextInputFormatter(20),
+                    FilteringTextInputFormatter.deny(' ')
+                  ],
                   validator: (val) {
-                    if (val!.isEmpty) return 'Please Enter Password';
-                    if (val.length < 8) {
-                      return 'Please enter Minimum 8 char Password';
+                    if (val!.isEmpty) {
+                      return 'Please Enter New Password';
+                    } else if (!validateStructure(val)) {
+                      return 'should be a combination of upper case,lower case and special character with minimum 8 characters';
                     }
                     return null;
                   },
@@ -118,6 +128,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   obscureText: isObscureText,
                   cursorColor: Colors.grey,
                   decoration: InputDecoration(
+                    errorStyle:
+                        const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
+                    errorMaxLines: 2,
                     filled: true,
                     fillColor: Colors.white,
                     enabledBorder: UnderlineInputBorder(
@@ -154,12 +167,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               const SizedBox(height: 15),
               TextFormField(
                 validator: (val) {
-                  if (val!.isEmpty) return 'Please Enter Password';
-                  if (val != passwordController.text)
-                    return 'Password not match';
-                  if (val.length < 8) {
-                    return 'Please enter Minimum 8 char Password';
+                  if (val!.isEmpty) return 'Please Enter Confirm Password';
+                  if (val != passwordController.text) {
+                    return 'New password and confirm password does not match';
                   }
+
                   return null;
                 },
                 style: const TextStyle(color: Colors.black),
@@ -178,6 +190,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   });
                 },
                 decoration: InputDecoration(
+                  errorStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(98, 8, 15, 1)),
+                  errorMaxLines: 2,
                   suffixIcon: IconButton(
                     icon: Icon(
                       // Based on passwordVisible state choose the icon
@@ -234,23 +250,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             borderRadius: BorderRadius.all(Radius.circular(30)),
           ),
         ),
-        onPressed: () {
-          if (_formkey.currentState!.validate()) {
-            EasyLoading.show(status: 'Please Wait ...');
-            updatePassword();
-          }
-          // showDialog(
-          //   context: context,
-          //   builder: (_) ,
-          // );
-          //  EasyLoading.show(status: 'Please Wait ...');
-          //sendRESENT();
-          //CircularProgressIndicator();
-          //  EasyLoading.show(status: 'Please Wait ...');
-
-          //print("Routing to your account");
-          // }
-        },
+        onPressed: _isLoading
+            ? null
+            : () {
+                if (_formkey.currentState!.validate()) {
+                  EasyLoading.show(status: 'Please Wait ...');
+                  updatePassword();
+                }
+              },
         child: const Text(
           "Save",
           style: TextStyle(
@@ -261,6 +268,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   Future<void> updatePassword() async {
+    setState(() {
+      _isLoading = true;
+    });
     final response = await http.post(
       Uri.parse(Change_password),
       body: {
@@ -280,14 +290,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         content: Text(message),
         backgroundColor: Colors.green,
       ));
+      setState(() {
+        _isLoading = false;
+      });
       Navigator.of(context).pop();
-      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      //   content: Text('OTP send successfully'),
-      //   backgroundColor: Colors.green,
-      // ));
-      // Navigator.of(context).pushNamed(OTP_SCREEN);
     }
     if (status == 'false' || status == '403' || status == '400') {
+      setState(() {
+        _isLoading = false;
+      });
       String message = jsonDecode(data)['message'];
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(message),

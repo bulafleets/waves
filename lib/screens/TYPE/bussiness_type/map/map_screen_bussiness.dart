@@ -14,6 +14,9 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:waves/screens/TYPE/bussiness_type/wave/create_wave_bussiness.dart';
+import 'package:waves/screens/TYPE/regular_type/wave/create_wave.dart';
+
 class MapScreenBussiness extends StatefulWidget {
   const MapScreenBussiness({Key? key}) : super(key: key);
 
@@ -143,18 +146,18 @@ class _MapScreenBussinessState extends State<MapScreenBussiness> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-          preferredSize: Size.fromHeight(80.0), // here the desired height
+          preferredSize: const Size.fromHeight(80.0), // here the desired height
           child: AppBar(
             backgroundColor: Theme.of(context).primaryColor,
-            leading: Padding(
-              padding: const EdgeInsets.only(top: 17.0, right: 5),
-              child: IconButton(
-                iconSize: 24,
-                alignment: Alignment.bottomLeft,
-                icon: const FaIcon(FontAwesomeIcons.addressCard),
-                onPressed: () {},
-              ),
-            ),
+            // leading: Padding(
+            //   padding: const EdgeInsets.only(top: 17.0, right: 5),
+            //   child: IconButton(
+            //     iconSize: 24,
+            //     alignment: Alignment.bottomLeft,
+            //     icon: const FaIcon(FontAwesomeIcons.addressCard),
+            //     onPressed: () {},
+            //   ),
+            // ),
             actions: [
               Padding(
                 padding: const EdgeInsets.only(top: 18.0, right: 5),
@@ -162,7 +165,12 @@ class _MapScreenBussinessState extends State<MapScreenBussiness> {
                   iconSize: 24,
                   alignment: Alignment.bottomLeft,
                   icon: const FaIcon(FontAwesomeIcons.plus),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => AccountType == 'REGULAR'
+                            ? const CreateWaveScreen()
+                            : const CreateWaveScreenBussiness()));
+                  },
                 ),
               )
             ],

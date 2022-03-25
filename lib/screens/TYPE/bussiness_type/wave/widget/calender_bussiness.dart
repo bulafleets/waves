@@ -209,6 +209,8 @@ class _CalenderScreenBussinessState extends State<CalenderScreenBussiness> {
                               keyboardType: TextInputType.none,
                               cursorColor: Colors.grey,
                               decoration: InputDecoration(
+                                  errorStyle: const TextStyle(
+                                      color: Color.fromRGBO(98, 8, 15, 1)),
                                   suffixIcon: const FaIcon(
                                       Icons.arrow_drop_down_outlined,
                                       size: 45,
@@ -250,6 +252,8 @@ class _CalenderScreenBussinessState extends State<CalenderScreenBussiness> {
                               keyboardType: TextInputType.none,
                               cursorColor: Colors.grey,
                               decoration: InputDecoration(
+                                  errorStyle: const TextStyle(
+                                      color: Color.fromRGBO(98, 8, 15, 1)),
                                   suffixIcon: const FaIcon(
                                       Icons.arrow_drop_down_outlined,
                                       size: 45,

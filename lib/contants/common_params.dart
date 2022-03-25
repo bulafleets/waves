@@ -1,5 +1,4 @@
 import 'package:waves/models/notification_model.dart';
-import 'package:waves/models/singlewave_model.dart';
 
 String AccountType = '';
 

@@ -42,6 +42,8 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
   TextEditingController _starttimeController = TextEditingController();
   TextEditingController _dateController = TextEditingController();
   TextEditingController _endTimeController = TextEditingController();
+  bool _isLoading = false;
+
   @override
   void initState() {
     _starttimeController.text = formatDate(
@@ -203,6 +205,8 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
                               keyboardType: TextInputType.none,
                               cursorColor: Colors.grey,
                               decoration: InputDecoration(
+                                  errorStyle: const TextStyle(
+                                      color: Color.fromRGBO(98, 8, 15, 1)),
                                   suffixIcon: const FaIcon(
                                       Icons.arrow_drop_down_outlined,
                                       size: 45,
@@ -248,6 +252,8 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
                               keyboardType: TextInputType.none,
                               cursorColor: Colors.grey,
                               decoration: InputDecoration(
+                                  errorStyle: const TextStyle(
+                                      color: Color.fromRGBO(98, 8, 15, 1)),
                                   suffixIcon: const FaIcon(
                                       Icons.arrow_drop_down_outlined,
                                       size: 45,
@@ -296,30 +302,32 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
             borderRadius: BorderRadius.all(Radius.circular(30)),
           ),
         ),
-        onPressed: () {
-          // showBottomSheet(
-          //     context: context, builder: (context) => SelectDateTime());
-          // _selectDate(context);
-          if (widget.isInviteOnly) {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => InviteScreen(
-                    wavename: widget.wavename,
-                    address: widget.address,
-                    log: widget.log,
-                    lat: widget.lat,
-                    eventId: widget.eventId,
-                    eventDetails: widget.eventDetails,
-                    isFriendOnly: widget.isFriendOnly,
-                    isInviteOnly: widget.isInviteOnly,
-                    image: widget.image,
-                    startTime: _starttimeController.text,
-                    endTime: _endTimeController.text,
-                    date: _dateController.text)));
-          } else {
-            createWaveRegular();
-            EasyLoading.show(status: 'Please Wait ...');
-          }
-        },
+        onPressed: _isLoading
+            ? null
+            : () {
+                // showBottomSheet(
+                //     context: context, builder: (context) => SelectDateTime());
+                // _selectDate(context);
+                if (widget.isInviteOnly) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => InviteScreen(
+                          wavename: widget.wavename,
+                          address: widget.address,
+                          log: widget.log,
+                          lat: widget.lat,
+                          eventId: widget.eventId,
+                          eventDetails: widget.eventDetails,
+                          isFriendOnly: widget.isFriendOnly,
+                          isInviteOnly: widget.isInviteOnly,
+                          image: widget.image,
+                          startTime: _starttimeController.text,
+                          endTime: _endTimeController.text,
+                          date: _dateController.text)));
+                } else {
+                  createWaveRegular();
+                  EasyLoading.show(status: 'Please Wait ...');
+                }
+              },
         child: Text(
           widget.isInviteOnly ? 'Select Invites' : "Confirm",
           style: const TextStyle(
@@ -330,6 +338,9 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
   }
 
   Future<void> createWaveRegular() async {
+    setState(() {
+      _isLoading = true;
+    });
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     var userid = _prefs.getString('user_id');
     var request = http.MultipartRequest('POST', Uri.parse(WaveCreate));
@@ -356,6 +367,9 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
     String status = jsonDecode(data)['status'].toString();
     EasyLoading.dismiss();
     if (status == "200") {
+      setState(() {
+        _isLoading = false;
+      });
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => WaveCreatedSuccesfully()));
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -368,6 +382,9 @@ class _CalenderScreenRegularState extends State<CalenderScreenRegular> {
       // Navigator.of(context).pushNamed(OTP_SCREEN);
     }
     if (status == "400") {
+      setState(() {
+        _isLoading = false;
+      });
       String message = jsonDecode(data)['message'];
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message), backgroundColor: Colors.red));

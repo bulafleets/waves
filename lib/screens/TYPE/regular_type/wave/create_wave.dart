@@ -27,7 +27,7 @@ class _CreateWaveScreenState extends State<CreateWaveScreen> {
 
   bool friendsOnly = false;
   bool inviteOnly = false;
-  late PickedFile imageFile;
+  late XFile imageFile;
   bool _load = false;
   var log;
   var lat;
@@ -122,11 +122,16 @@ class _CreateWaveScreenState extends State<CreateWaveScreen> {
 
                     return null;
                   },
+                  inputFormatters: [
+                    NoLeadingSpaceFormatter(),
+                  ],
                   style: const TextStyle(color: Colors.black),
                   controller: waveNameController,
                   keyboardType: TextInputType.text,
                   cursorColor: Colors.grey,
                   decoration: InputDecoration(
+                      errorStyle:
+                          const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                       filled: true,
                       fillColor: const Color.fromRGBO(234, 234, 234, 1),
                       enabledBorder: UnderlineInputBorder(
@@ -161,6 +166,8 @@ class _CreateWaveScreenState extends State<CreateWaveScreen> {
                   keyboardType: TextInputType.none,
                   cursorColor: Colors.grey,
                   decoration: InputDecoration(
+                      errorStyle:
+                          const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                       suffixIcon: GestureDetector(
                           onTap: () {
                             determinePosition(context);
@@ -206,7 +213,8 @@ class _CreateWaveScreenState extends State<CreateWaveScreen> {
                 //     controller: eventTypeController,
                 //     keyboardType: TextInputType.none,
                 //     cursorColor: Colors.grey,
-                //     decoration: InputDecoration(
+                //     decoration: InputDecoration( errorStyle:
+                // const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                 //         suffixIcon: GestureDetector(
                 //             onTap: () {},
                 //             child: const Padding(
@@ -244,6 +252,8 @@ class _CreateWaveScreenState extends State<CreateWaveScreen> {
                     maxLines: 9,
                     cursorColor: Colors.grey,
                     decoration: InputDecoration(
+                      errorStyle:
+                          const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                       filled: true,
                       fillColor: const Color.fromRGBO(234, 234, 234, 1),
                       enabledBorder: UnderlineInputBorder(
@@ -366,12 +376,10 @@ class _CreateWaveScreenState extends State<CreateWaveScreen> {
   }
 
   _imgFromCamera() async {
-    final pickedFile = await ImagePicker().getImage(
-        source: ImageSource.camera,
-        //  maxWidth: 2300,
-        // maxHeight: 1500,
-        imageQuality: 50);
+    final pickedFile = await ImagePicker()
+        .pickImage(source: ImageSource.camera, imageQuality: 50);
     setState(() {
+      // XFile ff=pickedFile!;
       imageFile = pickedFile!;
       _load = true;
     });
@@ -379,7 +387,7 @@ class _CreateWaveScreenState extends State<CreateWaveScreen> {
 
   _imgFromGallery() async {
     final pickedFile = await ImagePicker()
-        .getImage(source: ImageSource.gallery, imageQuality: 50);
+        .pickImage(source: ImageSource.gallery, imageQuality: 50);
 
     setState(() {
       imageFile = pickedFile!;
@@ -403,33 +411,36 @@ class _CreateWaveScreenState extends State<CreateWaveScreen> {
           ),
         ),
         onPressed: () {
-          // showBottomSheet(
-          //     context: context, builder: (context) => SelectDateTime());
-          // _selectDate(context);
-          if (_formkey.currentState!.validate()) {
-            if (eventValue != null) {
-              if (_load) {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => CalenderScreenRegular(
-                          wavename: waveNameController.text,
-                          address: addressController.text,
-                          log: log,
-                          lat: lat,
-                          eventId: eventValue,
-                          eventDetails: eventDetailsController.text,
-                          isFriendOnly: friendsOnly,
-                          isInviteOnly: inviteOnly,
-                          image: imageFile.path,
-                        )));
-              } else {
-                String message = 'please add event image';
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(message), backgroundColor: Colors.red));
-              }
-            } else {
-              String message = 'please select event Type';
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(message), backgroundColor: Colors.red));
+          if (!_load) {
+            String message = 'please add event image ';
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message), backgroundColor: Colors.red));
+          } else if (waveNameController.text.isEmpty) {
+            String message = 'please enter wave name ';
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message), backgroundColor: Colors.red));
+          } else if (addressController.text.isEmpty) {
+            String message = 'Pick your location from map';
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message), backgroundColor: Colors.red));
+          } else if (eventValue == null) {
+            String message = 'please select event Type';
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message), backgroundColor: Colors.red));
+          } else {
+            if (_formkey.currentState!.validate()) {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => CalenderScreenRegular(
+                        wavename: waveNameController.text,
+                        address: addressController.text,
+                        log: log,
+                        lat: lat,
+                        eventId: eventValue,
+                        eventDetails: eventDetailsController.text,
+                        isFriendOnly: friendsOnly,
+                        isInviteOnly: inviteOnly,
+                        image: imageFile.path,
+                      )));
             }
           }
         },

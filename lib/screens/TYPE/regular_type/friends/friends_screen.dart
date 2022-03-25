@@ -20,6 +20,7 @@ class FriendsScreen extends StatefulWidget {
 }
 
 class _FriendsScreenState extends State<FriendsScreen> {
+  TextEditingController _searchController = TextEditingController();
   late Future<MyAllFriendRequestsModel?> _futureRequests;
   late Future<MyAllFriendModel?> _futurefriends;
   var hasRequestedData = false;
@@ -43,6 +44,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(_searchResult.isEmpty && _searchController.text.isNotEmpty);
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -79,17 +81,20 @@ class _FriendsScreenState extends State<FriendsScreen> {
                   margin: const EdgeInsets.all(15),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        const BoxShadow(
-                          color: const Color.fromRGBO(78, 114, 136, .15),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color.fromRGBO(78, 114, 136, .15),
                         )
                       ]),
                   child: TextField(
+                    controller: _searchController,
                     onChanged: onSearchTextChanged,
                     style: const TextStyle(color: Colors.black),
                     keyboardType: TextInputType.text,
                     cursorColor: Colors.grey,
                     decoration: InputDecoration(
+                      errorStyle:
+                          const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                       filled: true,
                       fillColor: Colors.white,
                       enabledBorder: UnderlineInputBorder(
@@ -102,6 +107,19 @@ class _FriendsScreenState extends State<FriendsScreen> {
                       ),
                       prefixIcon: const Icon(Icons.search,
                           color: Color(0xffb7c2d5), size: 20),
+                      suffixIcon: _searchController.text.isEmpty
+                          ? null
+                          : InkWell(
+                              onTap: () {
+                                _searchController.text = '';
+                                _searchResult.clear();
+                                FocusScope.of(context).unfocus();
+                              },
+                              child:
+                                  const Icon(Icons.close, color: Colors.black)),
+                      //  IconButton(
+                      //     icon: Icon(Icons.close, color: Colors.black),
+                      //     onPressed: () {}),
                       hintText: "Search",
                       contentPadding: const EdgeInsets.only(top: 15),
                       // contentPadding:
@@ -113,7 +131,18 @@ class _FriendsScreenState extends State<FriendsScreen> {
                     ),
                   ),
                 ),
-                if (!hasRequestedData)
+                if (_searchResult.isEmpty && _searchController.text.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Center(
+                        child: Text('No Result Found!',
+                            style: GoogleFonts.quicksand(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white))),
+                  ),
+
+                if (!hasRequestedData && _searchResult.isEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 25.0, vertical: 8),
@@ -123,7 +152,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                             fontWeight: FontWeight.w500,
                             color: Colors.white)),
                   ),
-                if (!hasRequestedData)
+                if (!hasRequestedData && _searchResult.isEmpty)
                   FutureBuilder<MyAllFriendRequestsModel?>(
                       future: _futureRequests,
                       builder: (context, snapshot) {
@@ -269,137 +298,117 @@ class _FriendsScreenState extends State<FriendsScreen> {
                   SizedBox(
                       height: MediaQuery.of(context).size.height,
                       child: _searchResult.isNotEmpty
-                          ? Expanded(
-                              child: ListView.builder(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: _searchResult.length,
-                                  itemBuilder: (context, index) {
-                                    var data = _searchResult[index];
-                                    int age = data.age;
-                                    // if (index == 0) {
-                                    //   return const SizedBox(height: 20);
-                                    // }
-                                    return Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0, horizontal: 15),
-                                      child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                          ? ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: _searchResult.length,
+                              itemBuilder: (context, index) {
+                                var data = _searchResult[index];
+                                int age = data.age;
+                                // if (index == 0) {
+                                //   return const SizedBox(height: 20);
+                                // }
+                                return Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8.0, horizontal: 15),
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
                                           children: [
-                                            Row(
-                                              children: [
-                                                Container(
-                                                    // margin: const EdgeInsets.only(right: 5),
-                                                    padding:
-                                                        const EdgeInsets.all(3),
-                                                    decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        color: age > 17 &&
-                                                                age < 30
+                                            Container(
+                                                // margin: const EdgeInsets.only(right: 5),
+                                                padding:
+                                                    const EdgeInsets.all(3),
+                                                decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: age > 17 && age < 30
+                                                        ? const Color.fromRGBO(
+                                                            0, 0, 255, 1)
+                                                        : age > 29 && age < 50
                                                             ? const Color
                                                                     .fromRGBO(
-                                                                0, 0, 255, 1)
-                                                            : age > 29 &&
-                                                                    age < 50
-                                                                ? const Color
-                                                                        .fromRGBO(
-                                                                    255,
-                                                                    255,
-                                                                    0,
-                                                                    1)
-                                                                : const Color
-                                                                        .fromRGBO(
-                                                                    0,
-                                                                    255,
-                                                                    128,
-                                                                    1)),
-                                                    child: CircleAvatar(
-                                                      radius: 25,
-                                                      child: CachedNetworkImage(
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          width: 80.0,
-                                                          height: 80.0,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            image: DecorationImage(
-                                                                image:
-                                                                    imageProvider,
-                                                                fit: BoxFit
-                                                                    .cover),
-                                                          ),
-                                                        ),
-                                                        imageUrl: data.avatar,
-                                                        placeholder: (context,
-                                                                url) =>
-                                                            const CircularProgressIndicator(),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            const Icon(
-                                                                Icons.error),
+                                                                255, 255, 0, 1)
+                                                            : const Color
+                                                                    .fromRGBO(0,
+                                                                255, 128, 1)),
+                                                child: CircleAvatar(
+                                                  radius: 25,
+                                                  child: CachedNetworkImage(
+                                                    imageBuilder: (context,
+                                                            imageProvider) =>
+                                                        Container(
+                                                      width: 80.0,
+                                                      height: 80.0,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        image: DecorationImage(
+                                                            image:
+                                                                imageProvider,
+                                                            fit: BoxFit.cover),
                                                       ),
-                                                    )),
-                                                const SizedBox(width: 15),
-                                                Text(data.name,
-                                                    style:
-                                                        GoogleFonts.quicksand(
-                                                            fontSize: 17,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color:
-                                                                Colors.white)),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              // margin: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 50.0),
-                                              height: 40,
-                                              child: ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                  onPrimary: Colors.white,
-                                                  primary: const Color.fromRGBO(
-                                                      0, 69, 255, 1),
-                                                  minimumSize:
-                                                      const Size(88, 36),
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      horizontal: 16),
-                                                  shape:
-                                                      const RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.all(
-                                                            Radius.circular(
-                                                                30)),
+                                                    ),
+                                                    imageUrl: data.avatar,
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        const CircularProgressIndicator(),
+                                                    errorWidget: (context, url,
+                                                            error) =>
+                                                        const Icon(Icons.error),
                                                   ),
-                                                ),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    _futurefriends =
-                                                        seeAllFriends();
-                                                  });
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (_) =>
-                                                          ShowDialogRemoveFriend(
-                                                              data.userId,
-                                                              context));
-                                                },
-                                                child: const Text(
-                                                  "Remove",
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 18,
-                                                      fontFamily: 'RobotoBold'),
-                                                ),
+                                                )),
+                                            const SizedBox(width: 15),
+                                            Text(data.name,
+                                                style: GoogleFonts.quicksand(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.white)),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          // margin: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 50.0),
+                                          height: 40,
+                                          child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              onPrimary: Colors.white,
+                                              primary: const Color.fromRGBO(
+                                                  0, 69, 255, 1),
+                                              minimumSize: const Size(88, 36),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 16),
+                                              shape:
+                                                  const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(30)),
                                               ),
-                                            )
-                                          ]),
-                                    );
-                                  }))
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                _futurefriends =
+                                                    seeAllFriends();
+                                              });
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (_) =>
+                                                      ShowDialogRemoveFriend(
+                                                          data.userId,
+                                                          context));
+                                            },
+                                            child: const Text(
+                                              "Remove",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18,
+                                                  fontFamily: 'RobotoBold'),
+                                            ),
+                                          ),
+                                        )
+                                      ]),
+                                );
+                              })
                           : FutureBuilder<MyAllFriendModel?>(
                               future: _futurefriends,
                               builder: (context, snapshot) {

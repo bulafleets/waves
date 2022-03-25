@@ -24,6 +24,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
   ]);
   GlobalKey<FormState> _formkey = GlobalKey();
   String OTP = '';
+  bool _isLoading = false;
   @override
   void dispose() {
     EasyLoading.dismiss();
@@ -71,6 +72,9 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                     LengthLimitingTextInputFormatter(25),
                   ],
                   decoration: InputDecoration(
+                    errorStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromRGBO(98, 8, 15, 1)),
                     filled: true,
                     fillColor: Colors.white,
                     enabledBorder: UnderlineInputBorder(
@@ -83,8 +87,8 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                     ),
                     prefixIcon:
                         const Icon(Icons.email, color: Colors.grey, size: 20),
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 20),
                     hintText: "Email",
                     hintStyle: TextStyle(
                         color: const Color(0xFFb6b3c6).withOpacity(0.8),
@@ -114,23 +118,14 @@ class _ForgetPasswordState extends State<ForgetPassword> {
             borderRadius: BorderRadius.all(Radius.circular(30)),
           ),
         ),
-        onPressed: () {
-          if (_formkey.currentState!.validate()) {
-            sendOTP();
-            EasyLoading.show(status: 'Please Wait ...');
-          }
-          // showDialog(
-          //   context: context,
-          //   builder: (_) ,
-          // );
-          //  EasyLoading.show(status: 'Please Wait ...');
-          //sendRESENT();
-          //CircularProgressIndicator();
-          //  EasyLoading.show(status: 'Please Wait ...');
-
-          //print("Routing to your account");
-          // }
-        },
+        onPressed: _isLoading
+            ? null
+            : () {
+                if (_formkey.currentState!.validate()) {
+                  sendOTP();
+                  EasyLoading.show(status: 'Please Wait ...');
+                }
+              },
         child: const Text(
           "Send Code",
           style: TextStyle(
@@ -141,6 +136,9 @@ class _ForgetPasswordState extends State<ForgetPassword> {
   }
 
   Future<void> sendOTP() async {
+    setState(() {
+      _isLoading = true;
+    });
     final response = await http.post(
       Uri.parse(Reset_passwordOtp),
       body: {
@@ -158,6 +156,9 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       isSignUp = 'false';
       OTP = jsonDecode(data)['otp'];
       email = emailController.text;
+      setState(() {
+        _isLoading = false;
+      });
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => OtpPage(emailController.text, OTP)));
       // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -167,6 +168,9 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       // Navigator.of(context).pushNamed(OTP_SCREEN);
     }
     if (status == "400") {
+      setState(() {
+        _isLoading = false;
+      });
       String message = jsonDecode(data)['message'];
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(message),

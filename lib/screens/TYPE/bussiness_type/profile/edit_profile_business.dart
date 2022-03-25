@@ -149,8 +149,12 @@ class _EditProfileScreenBusinessState extends State<EditProfileScreenBusiness> {
                 cursorColor: Colors.grey,
                 inputFormatters: [
                   LengthLimitingTextInputFormatter(25),
+                  NoLeadingSpaceFormatter()
                 ],
                 decoration: InputDecoration(
+                  errorStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(98, 8, 15, 1)),
                   prefixIcon:
                       const Icon(Icons.person, color: Colors.grey, size: 20),
                   filled: true,
@@ -191,6 +195,8 @@ class _EditProfileScreenBusinessState extends State<EditProfileScreenBusiness> {
                   minLines: 1,
                   maxLines: 8,
                   decoration: InputDecoration(
+                    errorStyle:
+                        const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                     filled: true,
                     fillColor: Colors.white,
                     enabledBorder: UnderlineInputBorder(
@@ -228,6 +234,9 @@ class _EditProfileScreenBusinessState extends State<EditProfileScreenBusiness> {
                 keyboardType: TextInputType.number,
                 cursorColor: Colors.grey,
                 decoration: InputDecoration(
+                  errorStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(98, 8, 15, 1)),
                   prefixIcon:
                       const Icon(Icons.phone, color: Colors.grey, size: 20),
                   filled: true,
@@ -257,6 +266,9 @@ class _EditProfileScreenBusinessState extends State<EditProfileScreenBusiness> {
                 keyboardType: TextInputType.number,
                 cursorColor: Colors.grey,
                 decoration: InputDecoration(
+                  errorStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(98, 8, 15, 1)),
                   prefixIcon:
                       const Icon(Icons.email, color: Colors.grey, size: 20),
                   filled: true,
@@ -279,6 +291,8 @@ class _EditProfileScreenBusinessState extends State<EditProfileScreenBusiness> {
               ),
               const SizedBox(height: 15),
               TextFormField(
+                minLines: 1,
+                maxLines: 3,
                 onChanged: (value) {
                   setState(() {
                     _isChange = true;
@@ -300,7 +314,10 @@ class _EditProfileScreenBusinessState extends State<EditProfileScreenBusiness> {
                 keyboardType: TextInputType.none,
                 cursorColor: Colors.grey,
                 decoration: InputDecoration(
-                  suffixIcon: GestureDetector(
+                  errorStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(98, 8, 15, 1)),
+                  prefixIcon: GestureDetector(
                       onTap: () {
                         determinePosition(context);
                         Navigator.of(context).push(MaterialPageRoute(

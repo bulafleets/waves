@@ -62,7 +62,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   // var longitude;
 
   Future<Null> _selectDate(BuildContext context) async {
-    DateFormat formatter = DateFormat('dd/MM/yyyy');
+    DateFormat formatter = DateFormat('MM/dd/yy');
 
     final DateTime? picked = await showDatePicker(
         context: context,
@@ -204,8 +204,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 cursorColor: Colors.grey,
                 inputFormatters: [
                   LengthLimitingTextInputFormatter(25),
+                  NoLeadingSpaceFormatter()
                 ],
                 decoration: InputDecoration(
+                  errorStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(98, 8, 15, 1)),
                   prefixIcon:
                       const Icon(Icons.person, color: Colors.grey, size: 20),
                   filled: true,
@@ -246,6 +250,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   minLines: 1,
                   maxLines: 8,
                   decoration: InputDecoration(
+                    errorStyle:
+                        const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                     filled: true,
                     fillColor: Colors.white,
                     enabledBorder: UnderlineInputBorder(
@@ -283,6 +289,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 keyboardType: TextInputType.number,
                 cursorColor: Colors.grey,
                 decoration: InputDecoration(
+                  errorStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(98, 8, 15, 1)),
                   prefixIcon:
                       const Icon(Icons.phone, color: Colors.grey, size: 20),
                   filled: true,
@@ -312,6 +321,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 keyboardType: TextInputType.number,
                 cursorColor: Colors.grey,
                 decoration: InputDecoration(
+                  errorStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(98, 8, 15, 1)),
                   prefixIcon:
                       const Icon(Icons.email, color: Colors.grey, size: 20),
                   filled: true,
@@ -359,6 +371,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 keyboardType: TextInputType.none,
                 cursorColor: Colors.grey,
                 decoration: InputDecoration(
+                  errorStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(98, 8, 15, 1)),
                   prefixIcon: const Padding(
                     padding: EdgeInsets.all(12.0),
                     child: FaIcon(FontAwesomeIcons.birthdayCake,
@@ -405,6 +420,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 keyboardType: TextInputType.none,
                 cursorColor: Colors.grey,
                 decoration: InputDecoration(
+                  errorStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(98, 8, 15, 1)),
                   prefixIcon: const Padding(
                     padding: EdgeInsets.all(12.0),
                     child: FaIcon(FontAwesomeIcons.birthdayCake,
@@ -451,8 +469,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 controller: addressController,
                 keyboardType: TextInputType.none,
                 cursorColor: Colors.grey,
+                minLines: 1,
+                maxLines: 3,
                 decoration: InputDecoration(
-                  suffixIcon: GestureDetector(
+                  errorStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(98, 8, 15, 1)),
+                  prefixIcon: GestureDetector(
                       onTap: () {
                         determinePosition(context);
                         Navigator.of(context).push(MaterialPageRoute(

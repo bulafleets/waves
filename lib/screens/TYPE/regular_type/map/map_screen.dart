@@ -124,17 +124,17 @@ class _MapScreenRegularState extends State<MapScreenRegular> {
                 },
               ),
             ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(top: 18.0, right: 5),
-                child: IconButton(
-                  iconSize: 24,
-                  alignment: Alignment.bottomLeft,
-                  icon: const FaIcon(FontAwesomeIcons.plus),
-                  onPressed: () {},
-                ),
-              )
-            ],
+            // actions: [
+            //   Padding(
+            //     padding: const EdgeInsets.only(top: 18.0, right: 5),
+            //     child: IconButton(
+            //       iconSize: 24,
+            //       alignment: Alignment.bottomLeft,
+            //       icon: const FaIcon(FontAwesomeIcons.plus),
+            //       onPressed: () {},
+            //     ),
+            //   )
+            // ],
             flexibleSpace: Container(
                 width: 85,
                 height: 70,

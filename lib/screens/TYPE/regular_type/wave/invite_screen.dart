@@ -49,6 +49,7 @@ class _InviteScreenState extends State<InviteScreen> {
   bool haveFriends = false;
   bool _isAdded = false;
   List<UserId> _inviteIdData = [];
+  bool _isLoading = false;
   @override
   void initState() {
     seeAllFriends();
@@ -115,17 +116,18 @@ class _InviteScreenState extends State<InviteScreen> {
                   keyboardType: TextInputType.text,
                   cursorColor: Colors.grey,
                   decoration: InputDecoration(
-                      suffixIcon: searchController.text.isNotEmpty
-                          ? GestureDetector(
+                      errorStyle:
+                          const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
+                      suffixIcon: searchController.text.isEmpty
+                          ? null
+                          : InkWell(
                               onTap: () {
-                                searchController.clear();
-                                onSearchTextChanged('');
+                                searchController.text = '';
+                                _searchResult.clear();
+                                FocusScope.of(context).unfocus();
                               },
-                              child: const Padding(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: FaIcon(Icons.close,
-                                      size: 20, color: Colors.black)))
-                          : null,
+                              child:
+                                  const Icon(Icons.close, color: Colors.black)),
                       filled: true,
                       fillColor: const Color.fromRGBO(234, 234, 234, 1),
                       enabledBorder: UnderlineInputBorder(
@@ -142,6 +144,16 @@ class _InviteScreenState extends State<InviteScreen> {
                           fontFamily: 'RobotoRegular'),
                       border: const OutlineInputBorder()),
                 ),
+                if (_searchResult.isEmpty && searchController.text.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Center(
+                        child: Text('No Result Found!',
+                            style: GoogleFonts.quicksand(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black))),
+                  ),
                 const SizedBox(height: 10),
                 if (_data.isNotEmpty)
                   Flexible(
@@ -416,19 +428,18 @@ class _InviteScreenState extends State<InviteScreen> {
             borderRadius: BorderRadius.all(Radius.circular(30)),
           ),
         ),
-        onPressed: () {
-          // showBottomSheet(
-          //     context: context, builder: (context) => SelectDateTime());
-          // _selectDate(context);
-          if (_data.isEmpty) {
-            String message = 'Please add invity first';
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(message), backgroundColor: Colors.red));
-          } else {
-            createWaveRegular();
-            EasyLoading.show(status: 'Please Wait ...');
-          }
-        },
+        onPressed: _isLoading
+            ? null
+            : () {
+                if (_data.isEmpty) {
+                  String message = 'Please add invity first';
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(message), backgroundColor: Colors.red));
+                } else {
+                  createWaveRegular();
+                  EasyLoading.show(status: 'Please Wait ...');
+                }
+              },
         child: const Text(
           "Confirm",
           style: TextStyle(
@@ -439,6 +450,9 @@ class _InviteScreenState extends State<InviteScreen> {
   }
 
   Future<void> createWaveRegular() async {
+    setState(() {
+      _isLoading = true;
+    });
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     // var userid = _prefs.getString('user_id');
     var request = http.MultipartRequest('POST', Uri.parse(WaveCreate));
@@ -472,6 +486,9 @@ class _InviteScreenState extends State<InviteScreen> {
     // print(data);
 
     if (status == "200") {
+      setState(() {
+        _isLoading = false;
+      });
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => const WaveCreatedSuccesfully()));
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -484,6 +501,9 @@ class _InviteScreenState extends State<InviteScreen> {
       // Navigator.of(context).pushNamed(OTP_SCREEN);
     }
     if (status == "400") {
+      setState(() {
+        _isLoading = false;
+      });
       String message = jsonDecode(data)['message'];
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message), backgroundColor: Colors.red));

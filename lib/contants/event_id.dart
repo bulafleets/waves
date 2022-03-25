@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 
 class EventListWidget extends StatefulWidget {
   final void Function(String idd, String name) id;
-  EventListWidget(this.id);
+  const EventListWidget(this.id, {Key? key}) : super(key: key);
   @override
   _EventListWidgetState createState() => _EventListWidgetState();
 }
@@ -23,7 +23,7 @@ class _EventListWidgetState extends State<EventListWidget> {
   Future<EventIdModel> eventIdAPi() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     var token = _prefs.getString(Prefs.accessToken);
-    var dataDropDown;
+    EventIdModel dataDropDown;
     http.Response response = await http.get(Uri.parse(EventList),
         headers: {HttpHeaders.authorizationHeader: "Bearer $token"});
     final jsonString = response.body;

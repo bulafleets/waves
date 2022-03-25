@@ -14,7 +14,7 @@ class WaveListingRegularModel {
   });
 
   int status;
-  String message;
+  var message;
   List<WavesList> wavesList;
 
   factory WaveListingRegularModel.fromJson(Map<String, dynamic> json) =>
@@ -79,7 +79,7 @@ class WavesList {
   List<String> inviteTags;
   List<String> friendTags;
   String userId;
-  var userType;
+  String userType;
   var eventId;
   DateTime date;
   var isFriend;
@@ -103,8 +103,8 @@ class WavesList {
   bool isFriendAdd;
   bool isCheckedIn;
   bool isBusinessUser;
-  String avatar;
-  String username;
+  var avatar;
+  var username;
   var isDiscountFollower;
   var isDiscountAll;
   var discountDetail;
@@ -142,7 +142,7 @@ class WavesList {
         totalWaveCommentsCount: json["totalWaveCommentsCount"],
         waveRating: json["waveRating"],
         isFriendAdd: json["isFriendAdd"],
-        isCheckedIn: json["isCheckedIn"],
+        isCheckedIn: json["isCheckedIn"] ?? false,
         isBusinessUser: json["isBusinessUser"],
         avatar: json["avatar"],
         username: json["username"],
@@ -393,7 +393,7 @@ class WaveComment {
   });
 
   String id;
-  List<String> commentLikes;
+  var commentLikes;
   List<CommentReply> commentReply;
   var userId;
   String waveId;
@@ -404,15 +404,17 @@ class WaveComment {
 
   factory WaveComment.fromJson(Map<String, dynamic> json) => WaveComment(
         id: json["_id"],
-        commentLikes: List<String>.from(json["comment_likes"].map((x) => x)),
+        commentLikes: json["comment_likes"] == null
+            ? []
+            : List<String>.from(json["comment_likes"].map((x) => x)),
         commentReply: List<CommentReply>.from(
             json["comment_reply"].map((x) => CommentReply.fromJson(x))),
         userId: json["user_id"],
-        waveId: json["wave_id"],
+        waveId: json["wave_id"] ?? '',
         comment: json["comment"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        v: json["__v"],
+        v: json["__v"] ?? 1,
       );
 
   Map<String, dynamic> toJson() => {

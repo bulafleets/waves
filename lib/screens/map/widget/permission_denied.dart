@@ -17,7 +17,7 @@ class PermissionDialog extends StatelessWidget {
                 color: Theme.of(context).primaryColor, size: 100),
             SizedBox(height: 20),
             Text(
-              'you_denied_location_permission',
+              'Please move to settings screen to provide location permission to application',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20),
             ),

@@ -142,6 +142,9 @@ class _CreateProfileForBusinessState extends State<CreateProfileForBusiness> {
                 TextFormField(
                   validator: (val) {
                     if (val!.isEmpty) return 'Please Enter Your Business Name';
+                    if (val.length < 3) {
+                      return 'Please Enter minimum 3 characters';
+                    }
 
                     return null;
                   },
@@ -150,10 +153,14 @@ class _CreateProfileForBusinessState extends State<CreateProfileForBusiness> {
                   controller: nameController,
                   keyboardType: TextInputType.name,
                   cursorColor: Colors.grey,
+                  textCapitalization: TextCapitalization.words,
                   inputFormatters: [
                     LengthLimitingTextInputFormatter(25),
+                    NoLeadingSpaceFormatter(),
                   ],
                   decoration: InputDecoration(
+                    errorStyle:
+                        const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                     filled: true,
                     fillColor: Colors.white,
                     enabledBorder: UnderlineInputBorder(
@@ -191,6 +198,8 @@ class _CreateProfileForBusinessState extends State<CreateProfileForBusiness> {
                   keyboardType: TextInputType.number,
                   cursorColor: Colors.grey,
                   decoration: InputDecoration(
+                    errorStyle:
+                        const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                     filled: true,
                     fillColor: Colors.white,
                     enabledBorder: UnderlineInputBorder(
@@ -232,6 +241,8 @@ class _CreateProfileForBusinessState extends State<CreateProfileForBusiness> {
                   keyboardType: TextInputType.none,
                   cursorColor: Colors.grey,
                   decoration: InputDecoration(
+                    errorStyle:
+                        const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                     suffixIcon: GestureDetector(
                         onTap: () {
                           determinePosition(context);
@@ -263,11 +274,11 @@ class _CreateProfileForBusinessState extends State<CreateProfileForBusiness> {
                 ),
                 const SizedBox(height: 15),
                 TextFormField(
-                  validator: (val) {
-                    if (val!.isEmpty) return 'Please Enter business Bio';
+                  // validator: (val) {
+                  //   if (val!.isEmpty) return 'Please Enter business Bio';
 
-                    return null;
-                  },
+                  //   return null;
+                  // },
                   maxLines: 8,
                   style: const TextStyle(color: Colors.black),
                   // validator: emailValidator,
@@ -278,6 +289,8 @@ class _CreateProfileForBusinessState extends State<CreateProfileForBusiness> {
                   //   LengthLimitingTextInputFormatter(25),
                   // ],
                   decoration: InputDecoration(
+                    errorStyle:
+                        const TextStyle(color: Color.fromRGBO(98, 8, 15, 1)),
                     filled: true,
                     fillColor: Colors.white,
                     enabledBorder: UnderlineInputBorder(
@@ -290,7 +303,7 @@ class _CreateProfileForBusinessState extends State<CreateProfileForBusiness> {
                     ),
                     contentPadding: const EdgeInsets.symmetric(
                         vertical: 20, horizontal: 20),
-                    hintText: 'Business bio',
+                    hintText: 'Business bio(optional)',
                     hintStyle: TextStyle(
                         color: const Color(0xFFb6b3c6).withOpacity(1),
                         fontFamily: 'RobotoRegular'),
@@ -333,6 +346,36 @@ class _CreateProfileForBusinessState extends State<CreateProfileForBusiness> {
               content: Text('Upload Profile picture'),
               behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.red,
+            ));
+          } else if (nameController.text.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Please enter your name'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ));
+          } else if (nameController.text.length < 3) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Please enter minimum 3 characters'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ));
+          } else if (mobileController.text.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Please enter your mobile number'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ));
+          } else if (mobileController.text.length < 10) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Please enter your valid mobile number'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ));
+          } else if (addressController.text.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Please enter your address'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
             ));
           } else {
             if (_formkey.currentState!.validate()) {

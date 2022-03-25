@@ -37,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
                   fit: BoxFit.cover,
                 )),
             DefaultTabController(
-                length: 2, // length of tabs
+                length: 2,
                 initialIndex: 0,
                 child: Column(
 
@@ -62,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                       Container(
-                          height: 500, //height of TabBarView
+                          height: 540, //height of TabBarView
                           padding: const EdgeInsets.symmetric(
                               horizontal: 30, vertical: 30),
                           child: const TabBarView(

@@ -26,13 +26,14 @@ class CheckIn extends StatefulWidget {
 class CheckInState extends State<CheckIn> with SingleTickerProviderStateMixin {
   late AnimationController controller;
   late Animation<double> scaleAnimation;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
 
-    controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 450));
+    controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 450));
     scaleAnimation =
         CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn);
 
@@ -164,17 +165,19 @@ class CheckInState extends State<CheckIn> with SingleTickerProviderStateMixin {
                                                 color: Colors.white,
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w500)),
-                                        onPressed: () {
-                                          EasyLoading.show(
-                                              status: 'Please Wait ...');
-                                          checkInApi();
+                                        onPressed: _isLoading
+                                            ? null
+                                            : () {
+                                                EasyLoading.show(
+                                                    status: 'Please Wait ...');
+                                                checkInApi();
 
-                                          setState(() {
-                                            widget.checkInData(true);
-                                          }); // Navigator.of(context).push(MaterialPageRoute(
-                                          //     builder: (context) =>
-                                          //       ));
-                                        },
+                                                setState(() {
+                                                  widget.checkInData(true);
+                                                }); // Navigator.of(context).push(MaterialPageRoute(
+                                                //     builder: (context) =>
+                                                //       ));
+                                              },
                                       ))),
                             ],
                           )
@@ -187,6 +190,9 @@ class CheckInState extends State<CheckIn> with SingleTickerProviderStateMixin {
   }
 
   Future<void> checkInApi() async {
+    setState(() {
+      _isLoading = true;
+    });
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     var userId = _prefs.getString('user_id');
     final response = await http.post(
@@ -196,10 +202,12 @@ class CheckInState extends State<CheckIn> with SingleTickerProviderStateMixin {
     EasyLoading.dismiss();
 
     String data = response.body;
-    print(data);
     String status = jsonDecode(data)['status'].toString();
 
     if (status == "200") {
+      setState(() {
+        _isLoading = false;
+      });
       String message = jsonDecode(data)['message'];
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(message),
@@ -207,6 +215,9 @@ class CheckInState extends State<CheckIn> with SingleTickerProviderStateMixin {
     }
     Navigator.of(context).pop();
     if (status == "400") {
+      setState(() {
+        _isLoading = false;
+      });
       String message = jsonDecode(data)['message'];
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(message),

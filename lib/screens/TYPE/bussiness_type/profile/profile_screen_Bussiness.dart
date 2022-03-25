@@ -8,6 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waves/contants/common_params.dart';
+import 'package:waves/contants/show_dialog_forSignOut.dart';
 import 'package:waves/models/get_following_data_model.dart';
 import 'package:waves/screens/TYPE/bussiness_type/followers/followers_screen.dart';
 import 'package:waves/screens/TYPE/bussiness_type/profile/edit_profile_business.dart';
@@ -101,7 +102,7 @@ class _MyProfileBussinessScreenState extends State<MyProfileBussinessScreen> {
               ),
               const SizedBox(height: 15),
               RatingBarIndicator(
-                rating: averageReviews,
+                rating: averageReviews * 1.0,
                 itemBuilder: (context, index) => FaIcon(
                     FontAwesomeIcons.solidStar,
                     color: Theme.of(context).primaryColor,
@@ -217,15 +218,18 @@ class _MyProfileBussinessScreenState extends State<MyProfileBussinessScreen> {
                 },
               ),
               ListTile(
-                  onTap: () async {
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    prefs.remove('email');
-                    // prefs.clear();
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext ctx) => const LoginPage()));
+                  onTap: () {
+                    showDialog(
+                        context: context,
+                        builder: (_) => ShowDialogSignOutScreen());
+                    // SharedPreferences prefs =
+                    //     await SharedPreferences.getInstance();
+                    // prefs.remove('email');
+                    // // prefs.clear();
+                    // Navigator.pushReplacement(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (BuildContext ctx) => const LoginPage()));
                   },
                   title: Text('Sign out',
                       style: GoogleFonts.quicksand(
@@ -253,14 +257,16 @@ class _MyProfileBussinessScreenState extends State<MyProfileBussinessScreen> {
             borderRadius: BorderRadius.all(Radius.circular(30)),
           ),
         ),
-        onPressed: () async {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.remove('email');
-          prefs.clear();
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext ctx) => const LoginPage()));
+        onPressed: () {
+          showDialog(
+              context: context, builder: (_) => ShowDialogSignOutScreen());
+          // SharedPreferences prefs = await SharedPreferences.getInstance();
+          // prefs.remove('email');
+          // prefs.clear();
+          // Navigator.pushReplacement(
+          //     context,
+          //     MaterialPageRoute(
+          //         builder: (BuildContext ctx) => const LoginPage()));
         },
         child: const Text(
           "Sign Out",

@@ -261,23 +261,23 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                       ],
                                     ),
                                   ),
-                                  Positioned(
-                                    top: -6,
-                                    right: 15,
-                                    // padding: const EdgeInsets.only(right: 8.0),
-                                    child: IconButton(
-                                        iconSize: 30,
-                                        onPressed: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (_) =>
-                                                  ShowDialogScreen());
-                                        },
-                                        icon: const FaIcon(
-                                          FontAwesomeIcons.solidTimesCircle,
-                                          color: Colors.black,
-                                        )),
-                                  ),
+                                  // Positioned(
+                                  //   top: -6,
+                                  //   right: 15,
+                                  //   // padding: const EdgeInsets.only(right: 8.0),
+                                  //   child: IconButton(
+                                  //       iconSize: 30,
+                                  //       onPressed: () {
+                                  //         showDialog(
+                                  //             context: context,
+                                  //             builder: (_) =>
+                                  //                 ShowDialogScreen());
+                                  //       },
+                                  //       icon: const FaIcon(
+                                  //         FontAwesomeIcons.solidTimesCircle,
+                                  //         color: Colors.black,
+                                  //       )),
+                                  // ),
                                 ]);
                           }));
                 } else {

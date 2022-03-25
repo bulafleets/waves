@@ -98,9 +98,11 @@ class _AddFriendsState extends State<AddFriends> {
                               'permission in system settings'),
                           actions: <Widget>[
                             CupertinoDialogAction(
-                              child: const Text('OK'),
-                              onPressed: () => Navigator.of(context).pop(),
-                            )
+                                child: const Text('OK'),
+                                onPressed: () async {
+                                  await openAppSettings();
+                                  Navigator.pop(context);
+                                })
                           ],
                         ));
               }
@@ -130,22 +132,24 @@ class _AddFriendsState extends State<AddFriends> {
                     )
                   ]),
               child: TextField(
+                controller: _searchController,
                 onChanged: onSearchTextChanged,
                 style: const TextStyle(color: Colors.black),
                 keyboardType: TextInputType.text,
                 cursorColor: Colors.grey,
                 decoration: InputDecoration(
-                  suffixIcon: _searchController.text.isNotEmpty
-                      ? GestureDetector(
+                  errorStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(98, 8, 15, 1)),
+                  suffixIcon: _searchController.text.isEmpty
+                      ? null
+                      : InkWell(
                           onTap: () {
-                            _searchController.clear();
-                            onSearchTextChanged('');
+                            _searchController.text = '';
+                            _searchResult.clear();
+                            FocusScope.of(context).unfocus();
                           },
-                          child: const Padding(
-                              padding: EdgeInsets.all(2.0),
-                              child: FaIcon(Icons.close,
-                                  size: 20, color: Colors.black)))
-                      : null,
+                          child: const Icon(Icons.close, color: Colors.black)),
 
                   filled: true,
                   fillColor: Colors.white,
@@ -182,6 +186,16 @@ class _AddFriendsState extends State<AddFriends> {
                   ),
                   textAlign: TextAlign.center),
             ),
+            if (_searchResult.isEmpty && _searchController.text.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Center(
+                    child: Text('No Result Found!',
+                        style: GoogleFonts.quicksand(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white))),
+              ),
             const SizedBox(height: 10),
             Expanded(
                 // height: MediaQuery.of(context).size.height,

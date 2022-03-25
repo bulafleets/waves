@@ -127,7 +127,7 @@ class _HomePageState extends State<HomePage> {
                         itemCount: snapshot.data!.wavesList.length,
                         itemBuilder: (context, index) {
                           var data = snapshot.data!.wavesList[index];
-                          var date = DateFormat('yyyy/MM/dd').format(data.date);
+                          var date = DateFormat('MM/dd/yy').format(data.date);
                           // DateTime tempDate = DateFormat("yyyy-MM-dd hh:mm:ss")
                           //     .parse(data.createdAt);
                           var time = DateTime.now()
@@ -196,27 +196,30 @@ class _HomePageState extends State<HomePage> {
                                             backgroundColor: Colors.black,
                                             child: CircleAvatar(
                                               radius: 48,
-                                              child: CachedNetworkImage(
-                                                imageUrl:
-                                                    data.media.first.location,
-                                                imageBuilder:
-                                                    (context, imageProvider) =>
-                                                        Container(
-                                                  width: double.infinity,
-                                                  height: double.infinity,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    image: DecorationImage(
-                                                        image: imageProvider,
-                                                        fit: BoxFit.cover),
-                                                  ),
-                                                ),
-                                                placeholder: (context, url) =>
-                                                    const CircularProgressIndicator(),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        const Icon(Icons.error),
-                                              ),
+                                              backgroundImage: NetworkImage(
+                                                  data.media.first.location),
+                                              // child: NetworkImage(url)
+                                              // CachedNetworkImage(
+                                              //   imageUrl:
+                                              //       data.media.first.location,
+                                              //   imageBuilder:
+                                              //       (context, imageProvider) =>
+                                              //           Container(
+                                              //     width: double.infinity,
+                                              //     height: double.infinity,
+                                              //     decoration: BoxDecoration(
+                                              //       shape: BoxShape.circle,
+                                              //       image: DecorationImage(
+                                              //           image: imageProvider,
+                                              //           fit: BoxFit.cover),
+                                              //     ),
+                                              //   ),
+                                              //   placeholder: (context, url) =>
+                                              //       const CircularProgressIndicator(),
+                                              //   errorWidget:
+                                              //       (context, url, error) =>
+                                              //           const Icon(Icons.error),
+                                              // ),
                                               // backgroundImage: NetworkImage(
                                               //     data.media.first.location),
                                             ),
@@ -239,26 +242,28 @@ class _HomePageState extends State<HomePage> {
                                                 : Colors.white,
                                             child: CircleAvatar(
                                               radius: 15,
-                                              child: CachedNetworkImage(
-                                                imageUrl: data.avatar,
-                                                imageBuilder:
-                                                    (context, imageProvider) =>
-                                                        Container(
-                                                  width: double.infinity,
-                                                  height: double.infinity,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    image: DecorationImage(
-                                                        image: imageProvider,
-                                                        fit: BoxFit.cover),
-                                                  ),
-                                                ),
-                                                placeholder: (context, url) =>
-                                                    const CircularProgressIndicator(),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        const Icon(Icons.error),
-                                              ),
+                                              backgroundImage: NetworkImage(
+                                                  data.userInfo.avatar),
+                                              // child: CachedNetworkImage(
+                                              //   imageUrl: data.avatar,
+                                              //   imageBuilder:
+                                              //       (context, imageProvider) =>
+                                              //           Container(
+                                              //     width: double.infinity,
+                                              //     height: double.infinity,
+                                              //     decoration: BoxDecoration(
+                                              //       shape: BoxShape.circle,
+                                              //       image: DecorationImage(
+                                              //           image: imageProvider,
+                                              //           fit: BoxFit.cover),
+                                              //     ),
+                                              //   ),
+                                              //   placeholder: (context, url) =>
+                                              //       const CircularProgressIndicator(),
+                                              //   errorWidget:
+                                              //       (context, url, error) =>
+                                              //           const Icon(Icons.error),
+                                              // ),
                                               // backgroundImage:
                                               //     NetworkImage(data.avatar),
                                             ),
@@ -302,7 +307,7 @@ class _HomePageState extends State<HomePage> {
                                                   },
                                                   child: Text(
                                                     data.userType != 'BUSINESS'
-                                                        ? data.username
+                                                        ? data.userInfo.username
                                                         : data.waveName,
                                                     overflow:
                                                         TextOverflow.ellipsis,
@@ -386,7 +391,7 @@ class _HomePageState extends State<HomePage> {
                                                   ? data.isCheckedIn
                                                       ? 'Checked into  ${data.eventInfo.eventName}'
                                                       : 'Wave at ${data.waveName}'
-                                                  : data.username,
+                                                  : data.userInfo.username,
                                               style: GoogleFonts.quicksand(
                                                   fontSize: 17,
                                                   fontWeight: FontWeight.w400),
@@ -478,7 +483,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<WaveListingRegularModel> waveListingRegular() async {
-    var data;
+    WaveListingRegularModel data;
     http.Response response = await http.post(Uri.parse(waveListing),
         body: {'user_id': user_id},
         headers: {HttpHeaders.authorizationHeader: "Bearer $authorization"});
