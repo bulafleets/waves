@@ -626,9 +626,8 @@ class _CreateProfileState extends State<CreateProfile> {
       var response = await http.Response.fromStream(res);
       String data = response.body;
       print(data);
-      String status = jsonDecode(data)['status'].toString();
-
       EasyLoading.dismiss();
+      String status = jsonDecode(data)['status'].toString();
       if (status == '200') {
         user_id = jsonDecode(data)['user']['id'].toString();
         authorization = jsonDecode(data)['accessToken'];

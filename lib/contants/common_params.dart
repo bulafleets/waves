@@ -27,7 +27,7 @@ var isNotification = false;
 int totalFollowing = 0;
 var averageReviews;
 
-final String BASE = "http://54.167.80.99/api/";
+final String BASE = "http://wavesbackend.plenumnetworks.com/api/";
 final String URL_Login = BASE + "user/login";
 final String URL_OTP = BASE + "send-otp";
 final String URL_Signup = BASE + "signup";
